@@ -18,6 +18,6 @@ const clickSchema = new mongoose.Schema(
   }
 );
 
-const Click = mongoose.model('Click', clickSchema);
+const ClickModel = mongoose.model('Click', clickSchema);
 
-export default Click;
+export default ClickModel;

@@ -1,3 +1,4 @@
+import ClickModel from '../models/click.model.js';
 import linkModel from '../models/link.model.js';
 import userModel from '../models/user.model.js';
 
@@ -149,11 +150,112 @@ export const redirectToLink = async (req, res) => {
       });
     }
 
-    link.clicks += 1;
+    await ClickModel.create({
+  link: link._id,
+  ipAddress: req.ip,
+});
+
+link.clicks += 1;
+
+await link.save();
+
+    return res.redirect(link.url);
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const restoreDeletedLink = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const link = await linkModel.findOne({
+      _id: id,
+      user: req.user.id,
+      isDeleted: true,
+    });
+
+    if (!link) {
+      return res.status(404).json({
+        message: 'Link not found',
+      });
+    }
+
+    link.isDeleted = false;
+    link.deletedAt = null;
 
     await link.save();
 
-    return res.redirect(link.url);
+    return res.status(200).json({
+      message: 'Link restored successfully',
+      link,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+export const getLinkAnalytics = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const link = await linkModel.findOne({
+      _id: id,
+      user: req.user.id,
+    });
+
+    if (!link) {
+      return res.status(404).json({
+        message: 'Link not found',
+      });
+    }
+
+    const sevenDaysAgo = new Date();
+
+    sevenDaysAgo.setDate(
+      sevenDaysAgo.getDate() - 6
+    );
+
+    const analytics = await Click.aggregate([
+      {
+        $match: {
+          link: new mongoose.Types.ObjectId(id),
+          createdAt: {
+            $gte: sevenDaysAgo,
+          },
+        },
+      },
+
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$createdAt",
+            },
+          },
+
+          clicks: {
+            $sum: 1,
+          },
+        },
+      },
+
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      analytics,
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message,

@@ -21,6 +21,12 @@ router.get(
   linkController.getDeletedLinks
 );
 
+router.patch(
+  "/deleted/:id/restore",
+  authMiddleware,
+  linkController.restoreDeletedLink
+);
+
 router.delete(
   "/deleted/:id",
   authMiddleware,
@@ -34,6 +40,11 @@ router.get(
   linkController.redirectToLink
 );
 
+router.get(
+  "/analytics/:id",
+  authMiddleware,
+  linkController.getLinkAnalytics
+);
 
 router.get("/:username", linkController.getLinksByUsername)
 

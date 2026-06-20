@@ -37,4 +37,4 @@ export const getLinkIcon = (url) => {
     return <FaSpotify className="text-green-500 text-2xl" />;
 
   return <FaGlobe className="text-lime-400 text-2xl" />;
-};
+};  

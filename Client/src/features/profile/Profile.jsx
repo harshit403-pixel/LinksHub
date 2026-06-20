@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { useParams } from "react-router-dom";
-import { getLinkIcon } from "./getLinkIcon.jsx";
+import { getLinkIcon } from "./getLinkIcon";
 import { useProfileLinks } from "./useProfileLinks";
 
 import { getLinkColor } from "./getLinkColor";
