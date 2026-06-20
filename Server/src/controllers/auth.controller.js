@@ -32,7 +32,12 @@ export const registerUser = async (req, res) => {
             password,
         });
 
-        res.cookie('token', generateToken(user._id))
+       res.cookie('token', generateToken(user._id), {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
         return res.status(201).json({
             message: 'User registered successfully',
@@ -94,4 +99,26 @@ export const loginUser = async (req, res) => {
             message: error.message || 'Failed to login user',
         });
     }
+};
+
+export const getCurrentUser = async (req, res) => {
+  const user = await User.findById(req.user.id).select("-password");
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
+
+  return res.status(200).json({
+    user,
+  });
+};
+
+export const logoutUser = (req, res) => {
+  res.clearCookie("token");
+
+  return res.status(200).json({
+    message: "Logged out successfully",
+  });
 };
