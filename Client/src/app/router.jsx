@@ -10,6 +10,7 @@ import Dashboard from "../features/links/Dashboard";
 import Analytics from "../features/analytics/Analytics";
 
 import Profile from "../features/profile/Profile";
+import DeletedLinks from "../features/links/DeletedLinks";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
         path: "/dashboard/analytics",
         element: <Analytics />,
       },
+      {
+  path: "/dashboard/deleted",
+  element: <DeletedLinks />,
+}
     ],
   },
 ]);

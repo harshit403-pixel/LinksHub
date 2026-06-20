@@ -12,6 +12,65 @@ import Button from "../../components/ui/Button";
 import { register } from "./auth.api";
 
 function Register() {
+    const RESERVED_USERNAMES = [
+  "admin",
+  "api",
+  "login",
+  "register",
+  "dashboard",
+  "analytics",
+  "settings",
+  "profile",
+  "support",
+  "help",
+];
+
+const validateUsername = (username) => {
+  if (!username) {
+    return {
+      valid: false,
+      message: "",
+    };
+  }
+
+  if (username.length < 3) {
+    return {
+      valid: false,
+      message: "Minimum 3 characters",
+    };
+  }
+
+  if (username.length > 20) {
+    return {
+      valid: false,
+      message: "Maximum 20 characters",
+    };
+  }
+
+  if (!/^[a-zA-Z0-9]+$/.test(username)) {
+    return {
+      valid: false,
+      message:
+        "Only letters and numbers allowed",
+    };
+  }
+
+  if (
+    RESERVED_USERNAMES.includes(
+      username.toLowerCase()
+    )
+  ) {
+    return {
+      valid: false,
+      message: "Reserved username",
+    };
+  }
+
+  return {
+    valid: true,
+    message: "Username looks good",
+  };
+};
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -19,6 +78,9 @@ function Register() {
     email: "",
     password: "",
   });
+
+const usernameValidation =
+  validateUsername(formData.username);
 
   const { mutate, isPending } = useMutation({
     mutationFn: register,
@@ -78,12 +140,26 @@ function Register() {
               onSubmit={handleSubmit}
               className="space-y-10"
             >
-              <Input
-                label="Username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-              />
+              <div>
+  <Input
+    label="Username"
+    name="username"
+    value={formData.username}
+    onChange={handleChange}
+  />
+
+  {formData.username && (
+    <p
+      className={`mt-2 text-sm ${
+        usernameValidation.valid
+          ? "text-lime-400"
+          : "text-red-400"
+      }`}
+    >
+      {usernameValidation.message}
+    </p>
+  )}
+</div>
 
               <Input
                 label="Email"
@@ -101,7 +177,12 @@ function Register() {
                 onChange={handleChange}
               />
 
-              <Button disabled={isPending}>
+              <Button
+  disabled={
+    isPending ||
+    !usernameValidation.valid
+  }
+>
                 {isPending
                   ? "Creating Account..."
                   : "Create Account"}
