@@ -133,4 +133,30 @@ export const purgeDeletedLink = async (req, res) => {
   }
 };
 
-    
+
+export const redirectToLink = async (req, res) => {
+  try {
+    const { linkId } = req.params;
+
+    const link = await linkModel.findOne({
+      _id: linkId,
+      isDeleted: false,
+    });
+
+    if (!link) {
+      return res.status(404).json({
+        message: 'Link not found',
+      });
+    }
+
+    link.clicks += 1;
+
+    await link.save();
+
+    return res.redirect(link.url);
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
