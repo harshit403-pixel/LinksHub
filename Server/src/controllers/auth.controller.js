@@ -121,14 +121,18 @@ export const updateProfile = async (
 ) => {
   try {
     const {
-      displayName,
-      bio,
-    } = req.body;
+  displayName,
+  bio,
+  theme,
+} = req.body;
 
     const user =
       await User.findById(
         req.user.id
       );
+      if (theme) {
+  user.theme = theme;
+}
 
     if (!user) {
       return res.status(404).json({

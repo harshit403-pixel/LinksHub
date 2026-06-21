@@ -30,3 +30,16 @@ export const logout = async () => {
 
   return data;
 };
+
+
+export const updateProfile = async (
+  profileData
+) => {
+  const { data } =
+    await axiosInstance.patch(
+      "/auth/profile",
+      profileData
+    );
+
+  return data;
+};

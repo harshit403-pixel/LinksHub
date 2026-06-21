@@ -15,11 +15,19 @@ export const createLink = async (req, res) => {
     }
 
     try {
-        const newLink = await linkModel.create({
-            user: user.id,
-            title,
-            url,
-        });
+       const lastLink = await linkModel
+  .findOne({
+    user: user.id,
+  })
+  .sort("-order");
+
+const newLink = await linkModel.create({
+  user: user.id,
+  title,
+  url,
+  order:
+    (lastLink?.order || 0) + 1,
+});
         return res.status(201).json({
             message: 'Link created successfully',
             link: newLink,
@@ -44,15 +52,25 @@ export const getLinksByUsername = async (req, res) => {
     }
 
     //add the is Deleted feild too
-    const links = await linkModel.find({
-  user: user._id,
-  isDeleted: false,
-});
+   const links = await linkModel
+  .find({
+    user: user._id,
+    isDeleted: false,
+  })
+  .sort({ order: 1 });
 
 return res.status(200).json({
-        message: 'Links retrieved successfully',
-        links,
-    });
+  message: "Links retrieved successfully",
+
+  profile: {
+    username: user.username,
+    displayName: user.displayName,
+    bio: user.bio,
+     theme: user.theme,
+  },
+
+  links,
+});
 }
 
 
@@ -90,10 +108,12 @@ export const deleteLink = async (req, res) => {
 
 export const getDeletedLinks = async (req, res) => {
   try {
-    const links = await linkModel.find({
-      user: req.user.id,
-      isDeleted: true,
-    });
+    const links = await linkModel
+  .find({
+    user: req.user.id,
+    isDeleted: true,
+  })
+  .sort({ order: 1 });
 
     return res.status(200).json({
       links,
@@ -268,11 +288,12 @@ export const updateLink = async (req, res) => {
     const { id } = req.params;
     const { title, url } = req.body;
 
-    const link = await linkModel.findOne({
-      _id: id,
-      user: req.user.id,
-      isDeleted: false,
-    });
+    const links = await linkModel
+  .find({
+    user: req.user.id,
+    isDeleted: false,
+  })
+  .sort({ order: 1 });
     if (!title?.trim() || !url?.trim()) {
   return res.status(400).json({
     message: "Title and URL are required",
@@ -325,3 +346,33 @@ export const getMyLinks = async (
     });
   }
 };
+
+export const reorderLinks =  async (req, res) => {
+    try {
+      const { links } = req.body;
+
+      await Promise.all(
+        links.map((link) =>
+          linkModel.findOneAndUpdate(
+            {
+              _id: link.id,
+              user: req.user.id,
+            },
+            {
+              order: link.order,
+            }
+          )
+        )
+      );
+
+      return res.status(200).json({
+        message:
+          "Links reordered successfully",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message:
+          error.message,
+      });
+    }
+  };
