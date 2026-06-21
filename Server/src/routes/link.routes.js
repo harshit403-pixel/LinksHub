@@ -8,6 +8,12 @@ const router = Router();
 
 router.post("/", authMiddleware, linkController.createLink)
 
+router.patch(
+  "/:id",
+  authMiddleware,
+  linkController.updateLink
+);
+
 
 router.delete(
   "/:id",
@@ -27,6 +33,7 @@ router.patch(
   linkController.restoreDeletedLink
 );
 
+
 router.delete(
   "/deleted/:id",
   authMiddleware,
@@ -45,7 +52,13 @@ router.get(
   authMiddleware,
   linkController.getLinkAnalytics
 );
-
+router.get(
+  "/me",
+  authMiddleware,
+  linkController.getMyLinks
+);
 router.get("/:username", linkController.getLinksByUsername)
+
+
 
 export default router;

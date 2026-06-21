@@ -1,26 +1,19 @@
 import { FaGlobe, FaTrash, FaEdit } from "react-icons/fa";
 import { useDeleteLink } from "./useDeleteLink";
 
-function LinkCard({ link }) {
+
+function LinkCard({ link, onEdit, onDelete }) {
   const { mutate: deleteLink, isPending } =
     useDeleteLink();
 
-  const handleDelete = () => {
-    const confirmed = window.confirm(
-      `Delete "${link.title}"?`
-    );
+  
+const handleDelete = () => {
+  onDelete(link);
+};
 
-    if (!confirmed) return;
-
-    deleteLink(link._id);
-  };
-
-  const handleEdit = () => {
-    alert(
-      "Edit feature coming next. Backend is ready."
-    );
-  };
-
+const handleEdit = () => {
+  onEdit(link);
+};
   return (
     <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 hover:border-lime-400 hover:-translate-y-1 transition-all duration-300">
       <div className="flex items-start justify-between">

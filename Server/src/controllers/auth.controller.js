@@ -115,6 +115,57 @@ export const getCurrentUser = async (req, res) => {
   });
 };
 
+export const updateProfile = async (
+  req,
+  res
+) => {
+  try {
+    const {
+      displayName,
+      bio,
+    } = req.body;
+
+    const user =
+      await User.findById(
+        req.user.id
+      );
+
+    if (!user) {
+      return res.status(404).json({
+        message:
+          "User not found",
+      });
+    }
+
+    user.displayName =
+      displayName?.trim() || "";
+
+    user.bio =
+      bio?.trim() || "";
+
+    await user.save();
+
+const updatedUser =
+  await User.findById(user._id)
+    .select("-password");
+
+return res.status(200).json({
+  message:
+    "Profile updated successfully",
+
+  user: updatedUser,
+});
+
+
+  } catch (error) {
+    return res.status(500).json({
+      message:
+        error.message,
+    });
+  }
+};
+
+
 export const logoutUser = (req, res) => {
   res.clearCookie("token");
 

@@ -1,7 +1,7 @@
 import ClickModel from '../models/click.model.js';
 import linkModel from '../models/link.model.js';
 import userModel from '../models/user.model.js';
-
+import mongoose from "mongoose";
 
 export const createLink = async (req, res) => {
 
@@ -221,7 +221,7 @@ export const getLinkAnalytics = async (req, res) => {
       sevenDaysAgo.getDate() - 6
     );
 
-    const analytics = await Click.aggregate([
+    const analytics = await ClickModel.aggregate([
       {
         $match: {
           link: new mongoose.Types.ObjectId(id),
@@ -255,6 +255,69 @@ export const getLinkAnalytics = async (req, res) => {
 
     return res.status(200).json({
       analytics,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const updateLink = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, url } = req.body;
+
+    const link = await linkModel.findOne({
+      _id: id,
+      user: req.user.id,
+      isDeleted: false,
+    });
+    if (!title?.trim() || !url?.trim()) {
+  return res.status(400).json({
+    message: "Title and URL are required",
+  });
+}
+
+    if (!link) {
+      return res.status(404).json({
+        message: "Link not found",
+      });
+    }
+
+    if (title) {
+      link.title = title;
+    }
+
+    if (url) {
+      link.url = url;
+    }
+
+    await link.save();
+
+    return res.status(200).json({
+      message: "Link updated successfully",
+      link,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getMyLinks = async (
+  req,
+  res
+) => {
+  try {
+    const links = await linkModel.find({
+      user: req.user.id,
+      isDeleted: false,
+    });
+
+    return res.status(200).json({
+      links,
     });
   } catch (error) {
     return res.status(500).json({
