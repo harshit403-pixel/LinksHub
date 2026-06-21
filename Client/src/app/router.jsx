@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import PublicLayout from "../layouts/PublicLayout";
-import DashboardLayout from "../layouts/DashboardLayout";
+import PublicLayout from "../Layouts/PublicLayout";
+import DashboardLayout from "../Layouts/DashboardLayout";
 
 import Login from "../features/auth/Login";
 import Register from "../features/auth/Register";
