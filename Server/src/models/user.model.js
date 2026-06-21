@@ -29,6 +29,16 @@ bio: {
   type: String,
   default: "",
 },
+theme: {
+  type: String,
+  enum: [
+    "lime",
+    "blue",
+    "purple",
+    "rose",
+  ],
+  default: "lime",
+},
 }, { timestamps: true });
 
 

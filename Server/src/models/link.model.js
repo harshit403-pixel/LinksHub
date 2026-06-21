@@ -26,7 +26,11 @@ const linkSchema = new mongoose.Schema({
 deletedAt: {
   type: Date,
   default: null,
-}
+},
+order: {
+  type: Number,
+  default: 0,
+},
 }, { timestamps: true });
 
 const Link = mongoose.model('Link', linkSchema);

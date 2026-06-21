@@ -4,7 +4,7 @@ import { getLinkIcon } from "./getLinkIcon";
 import { useProfileLinks } from "./useProfileLinks";
 
 import { getLinkColor } from "./getLinkColor";
-
+import { themes } from "./themes";
 function Profile() {
   const { username } = useParams();
 
@@ -32,6 +32,17 @@ function Profile() {
   }
 
   const links = data?.links || [];
+  const profile = data?.profile;
+  const currentTheme =
+  profile?.theme || "lime";
+  const themeText =
+  currentTheme === "blue"
+    ? "text-blue-500"
+    : currentTheme === "purple"
+    ? "text-purple-500"
+    : currentTheme === "rose"
+    ? "text-rose-500"
+    : "text-lime-400";
 
   return (
     <div className="min-h-screen bg-black px-4 py-10">
@@ -44,18 +55,45 @@ function Profile() {
           className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 mb-6"
         >
           <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-full bg-lime-400 flex items-center justify-center text-black text-3xl font-bold">
-              {username?.[0]?.toUpperCase()}
-            </div>
+           <div
+  className={`
+    w-20 h-20 rounded-full
+    ${
+      currentTheme === "blue"
+        ? "bg-blue-500"
+        : currentTheme === "purple"
+        ? "bg-purple-500"
+        : currentTheme === "rose"
+        ? "bg-rose-500"
+        : "bg-lime-400"
+    }
+    flex items-center justify-center
+    text-black text-3xl font-bold
+  `}
+>
+  {(
+    profile?.displayName ||
+    username
+  )?.[0]?.toUpperCase()}
+</div>
 
             <div>
-              <h1 className="text-white text-4xl font-black">
-                @{username}
-              </h1>
+             <h1 className="text-white text-4xl font-black">
+  {profile?.displayName ||
+    `@${username}`}
+</h1>
 
-              <p className="text-zinc-400">
-                LinksHub Profile
-              </p>
+<p
+  className={`${themeText} mt-1`}
+>
+  @{profile?.username}
+</p>
+
+{profile?.bio && (
+  <p className="text-zinc-400 mt-3 max-w-xl">
+    {profile.bio}
+  </p>
+)}
             </div>
           </div>
         </motion.div>
@@ -66,7 +104,7 @@ function Profile() {
           {links.map((link, index) => (
 <motion.a
   key={link._id}
-  href={`${import.meta.env.VITE_API_URL}/links/go/${link._id}`}
+  href={`/api/links/go/${link._id}`}
   target="_blank"
   rel="noreferrer"
   initial={{ opacity: 0, y: 20 }}
@@ -111,7 +149,7 @@ function Profile() {
   <div className="relative z-10 h-full flex flex-col justify-between">
     <div>
       <div
-  className="
+  className={`
     w-12
     h-12
     rounded-full
@@ -123,14 +161,14 @@ function Profile() {
     items-center
     justify-center
 
-    text-lime-400
+    ${themeText}
 
     transition-all
     duration-300
 
     group-hover:text-white
     group-hover:scale-110
-  "
+  `}
 >
   {getLinkIcon(link.url)}
 </div>
