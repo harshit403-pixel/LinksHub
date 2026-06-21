@@ -73,3 +73,17 @@ export const getLinkAnalytics = async (
 
   return data;
 };
+
+export const reorderLinks = async (
+  links
+) => {
+  const { data } =
+    await axiosInstance.patch(
+      "/links/reorder",
+      {
+        links,
+      }
+    );
+
+  return data;
+};

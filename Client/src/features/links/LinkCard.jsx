@@ -1,5 +1,6 @@
 import { FaGlobe, FaTrash, FaEdit } from "react-icons/fa";
 import { useDeleteLink } from "./useDeleteLink";
+import { FaGripVertical } from "react-icons/fa";
 
 
 function LinkCard({ link, onEdit, onDelete }) {
@@ -22,17 +23,19 @@ const handleEdit = () => {
             {link.title}
           </h3>
 
-          <a
-            href={link.url}
-            target="_blank"
-            rel="noreferrer"
-            className="text-zinc-400 text-sm break-all"
-          >
-            {link.url}
-          </a>
+
         </div>
 
-        <FaGlobe className="text-lime-400" />
+       
+        <div className="flex text-zinc-500 justify-center items-center gap-1   " >
+            Drag to Reorder
+            <FaGripVertical
+  className="
+    text-zinc-500
+    cursor-grab
+  "
+/>
+        </div>
       </div>
 
       <div className="mt-6 flex items-center justify-between">

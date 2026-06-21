@@ -9,6 +9,11 @@ const router = Router();
 router.post("/", authMiddleware, linkController.createLink)
 
 router.patch(
+  "/reorder",
+  authMiddleware,
+  linkController.reorderLinks
+);
+router.patch(
   "/:id",
   authMiddleware,
   linkController.updateLink
@@ -57,6 +62,9 @@ router.get(
   authMiddleware,
   linkController.getMyLinks
 );
+
+
+
 router.get("/:username", linkController.getLinksByUsername)
 
 

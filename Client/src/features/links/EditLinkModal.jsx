@@ -113,6 +113,7 @@ function EditLinkModal({
     border
     border-zinc-700
     py-4
+    
     text-white
     font-semibold
     hover:border-zinc-500
@@ -123,6 +124,8 @@ function EditLinkModal({
 </button>
 
               <Button
+              className="flex-4"
+              
   type="submit"
   disabled={
     isPending ||

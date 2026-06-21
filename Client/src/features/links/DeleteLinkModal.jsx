@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 
 import { useDeleteLink } from "./useDeleteLink";
+import { FaTimesCircle } from "react-icons/fa";
 
 function DeleteLinkModal({
   link,
@@ -106,7 +107,7 @@ function DeleteLinkModal({
                 rounded-2xl
                 border
                 border-zinc-700
-                py-4
+                py-4 
                 text-white
                 font-semibold
                 hover:border-zinc-500
@@ -121,7 +122,7 @@ function DeleteLinkModal({
               disabled={isPending}
               onClick={handleDelete}
               className="
-                flex-1
+                flex-4
                 rounded-2xl
                 bg-red-500
                 py-4
