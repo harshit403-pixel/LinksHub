@@ -3,14 +3,19 @@ import { FaTrash, FaUndo } from "react-icons/fa";
 import { useDeletedLinks } from "./useDeletedLinks";
 import { useRestoreLink } from "./useRestoreLink";
 import { usePurgeLink } from "./usePurgeLink";
+import { useState } from "react";
+import DeleteLinkModal from "./DeleteLinkModal";
 
 function DeletedLinks() {
+    const [deletingLink, setDeletingLink] =
+  useState(null);
   const { data, isLoading } = useDeletedLinks();
 
   const { mutate: restore } = useRestoreLink();
   const { mutate: purge } = usePurgeLink();
 
   const links = data?.links || [];
+  
 
   return (
     <div className="min-h-screen bg-black p-6">
@@ -68,27 +73,46 @@ function DeletedLinks() {
                     Restore
                   </button>
 
-                  <button
-                    onClick={() => {
-                      const ok =
-                        window.confirm(
-                          "Permanently delete this link?"
-                        );
-
-                      if (ok) {
-                        purge(link._id);
-                      }
-                    }}
-                    className="rounded-xl border border-red-500 text-red-500 px-4"
-                  >
-                    <FaTrash />
-                  </button>
+                 <button
+  onClick={() =>
+    setDeletingLink(link)
+  }
+  className="
+    rounded-xl
+    border
+    border-red-500
+    text-red-500
+    px-4
+    cursor-pointer
+    hover:bg-red-500
+    hover:text-white
+    transition
+  "
+>
+  <FaTrash />
+</button>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+     {deletingLink && (
+  <DeleteLinkModal
+    link={deletingLink}
+    onClose={() =>
+      setDeletingLink(null)
+    }
+    onConfirm={() => {
+      purge(deletingLink._id);
+
+      setDeletingLink(null);
+    }}
+    title="Permanently Delete"
+    description="This action cannot be undone. The link will be permanently removed from the database."
+    confirmText="Delete Forever"
+  />
+)}
     </div>
   );
 }
