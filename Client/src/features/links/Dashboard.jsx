@@ -1,11 +1,20 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaLink,
   FaTrashRestore,
   FaChartBar,
 } from "react-icons/fa";
 import { toast } from "sonner";
+
+import {
+  Reorder,
+} from "motion/react";
+
+import { useReorderLinks } from "./useReorderLinks";
+
+import { FaUserCog } from "react-icons/fa";
+import ProfileSettingsModal from "../profile/ProfileSettingsModal";
 
 import { useAuth } from "../auth/useAuth";
 import { useLogout } from "../auth/useLogout";
@@ -17,10 +26,15 @@ import LinkCard from "./LinkCard";
 import EditLinkModal from "./EditLinkModal";
 import DeleteLinkModal from "./DeleteLinkModal";
 
+import { FaQrcode } from "react-icons/fa";
+import ProfileQrModal from "../profile/ProfileQrModal";
+
 function Dashboard() {
   const { data: authData } = useAuth();
   const { data, isLoading } = useMyLinks();
 
+  const [qrOpen, setQrOpen] =
+  useState(false);
   const { mutate: logout } = useLogout();
 
   const [editingLink, setEditingLink] =
@@ -29,7 +43,22 @@ function Dashboard() {
   const [deletingLink, setDeletingLink] =
     useState(null);
 
+    const [profileSettingsOpen,
+  setProfileSettingsOpen] =
+  useState(false);
+
   const links = data?.links || [];
+
+  const [orderedLinks, setOrderedLinks] =
+  useState([]);
+
+const {
+  mutate: reorderLinks,
+} = useReorderLinks();
+
+useEffect(() => {
+  setOrderedLinks(links);
+}, [links]);
 
   const profileUrl = `/${authData?.user?.username}`;
 
@@ -41,66 +70,16 @@ function Dashboard() {
     toast.success("Profile URL copied");
   };
 
+
+
   return (
     <div className="min-h-screen bg-black">
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-50 border-b border-zinc-800 bg-black/80 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <h1 className="text-2xl font-black text-white">
-            LinksHub
-          </h1>
 
-          <div className="flex items-center gap-6 text-sm">
-            <Link
-              to="/dashboard"
-              className="text-lime-400 cursor-pointer"
-            >
-              Dashboard
-            </Link>
-
-            <Link
-              to="/dashboard/deleted"
-              className="text-zinc-400 hover:text-white transition cursor-pointer"
-            >
-              Deleted
-            </Link>
-
-            <Link
-              to="/dashboard/analytics"
-              className="text-zinc-400 hover:text-white transition cursor-pointer"
-            >
-              Analytics
-            </Link>
-
-            <Link
-              to={profileUrl}
-              target="_blank"
-              className="text-zinc-400 hover:text-white transition cursor-pointer"
-            >
-              View Profile
-            </Link>
-
-            <button
-              onClick={handleCopyProfile}
-              className="text-zinc-400 hover:text-white transition cursor-pointer"
-            >
-              Copy Profile
-            </button>
-
-            <button
-              onClick={() => logout()}
-              className="text-red-400 hover:text-red-300 transition cursor-pointer"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
 
       {/* CONTENT */}
       <main className="max-w-7xl mx-auto p-6">
         {/* TOP CARDS */}
-        <div className="grid lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid lg:grid-cols-5 gap-4 mb-8">
           {/* TOTAL LINKS */}
           <div
             className="
@@ -146,7 +125,7 @@ function Dashboard() {
             "
           >
             <p className="text-zinc-500 text-sm">
-              Profile URL
+              Copy Profile URL
             </p>
 
             <p className="text-white mt-3 font-medium truncate">
@@ -154,34 +133,35 @@ function Dashboard() {
             </p>
           </button>
 
-          {/* DELETED LINKS */}
-          <Link
-            to="/dashboard/deleted"
-            className="
-              rounded-3xl
-              border
-              border-zinc-800
-              bg-zinc-900
-              p-6
-              hover:border-lime-400
-              hover:-translate-y-1
-              transition-all
-              duration-300
-              cursor-pointer
-            "
-          >
-            <p className="text-zinc-500 text-sm">
-              Deleted Links
-            </p>
+          {/* PROFILE QR CODE */}
+          <button
+  onClick={() => setQrOpen(true)}
+  className="
+    rounded-3xl
+    border
+    border-zinc-800
+    bg-zinc-900
+    p-6
+    text-left
+    hover:border-lime-400
+    hover:-translate-y-1
+    transition-all
+    duration-300
+    cursor-pointer
+  "
+>
+  <p className="text-zinc-500 text-sm">
+    Profile QR
+  </p>
 
-            <div className="flex items-center justify-between mt-3">
-              <span className="text-white text-xl font-bold">
-                Manage
-              </span>
+  <div className="flex items-center justify-between mt-3">
+    <span className="text-white text-xl font-bold">
+      Open
+    </span>
 
-              <FaTrashRestore className="text-lime-400" />
-            </div>
-          </Link>
+    <FaQrcode className="text-lime-400" />
+  </div>
+</button>
 
           {/* ANALYTICS */}
           <Link
@@ -211,6 +191,39 @@ function Dashboard() {
               <FaChartBar className="text-lime-400" />
             </div>
           </Link>
+
+
+{/* edit profile */}
+          <button
+  onClick={() =>
+    setProfileSettingsOpen(true)
+  }
+  className="
+    rounded-3xl
+    border
+    border-zinc-800
+    bg-zinc-900
+    p-6
+    text-left
+    hover:border-lime-400
+    hover:-translate-y-1
+    transition-all
+    duration-300
+    cursor-pointer
+  "
+>
+  <p className="text-zinc-500 text-sm">
+    Profile Settings
+  </p>
+
+  <div className="flex items-center justify-between mt-3">
+    <span className="text-white text-xl font-bold">
+      Edit
+    </span>
+
+    <FaUserCog className="text-lime-400" />
+  </div>
+</button>
         </div>
 
         {/* CREATE LINK */}
@@ -245,16 +258,39 @@ function Dashboard() {
               </p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {links.map((link) => (
-                <LinkCard
-                  key={link._id}
-                  link={link}
-                  onEdit={setEditingLink}
-                  onDelete={setDeletingLink}
-                />
-              ))}
-            </div>
+           <Reorder.Group
+  axis="y"
+  values={orderedLinks}
+  onReorder={(newOrder) => {
+    setOrderedLinks(newOrder);
+
+    reorderLinks(
+      newOrder.map(
+        (link, index) => ({
+          id: link._id,
+          order: index + 1,
+        })
+      )
+    );
+  }}
+  className="
+   flex flex-col gap-4
+  "
+>
+  {orderedLinks.map((link) => (
+    <Reorder.Item
+      key={link._id}
+      value={link}
+      className="cursor-grab"
+    >
+      <LinkCard
+        link={link}
+        onEdit={setEditingLink}
+        onDelete={setDeletingLink}
+      />
+    </Reorder.Item>
+  ))}
+</Reorder.Group>
           )}
         </section>
       </main>
@@ -277,6 +313,23 @@ function Dashboard() {
           }
         />
       )}
+
+      {profileSettingsOpen && (
+  <ProfileSettingsModal
+    user={authData?.user}
+    onClose={() =>
+      setProfileSettingsOpen(false)
+    }
+  />
+)}
+{qrOpen && (
+  <ProfileQrModal
+    profileUrl={`${window.location.origin}/${authData?.user?.username}`}
+    onClose={() =>
+      setQrOpen(false)
+    }
+  />
+)}
     </div>
   );
 }

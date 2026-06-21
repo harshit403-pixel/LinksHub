@@ -146,43 +146,53 @@ function Analytics() {
           </div>
         </div>
 
-        {/* Leaderboard */}
-        <div className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="text-white text-2xl font-bold mb-6">
-            Top Performing Links
-          </h2>
+       {/* Leaderboard */}
+<div className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
+  <h2 className="text-white text-xl sm:text-2xl font-bold mb-6">
+    Top Performing Links
+  </h2>
 
-          <div className="space-y-4">
-            {rankedLinks.map(
-              (link, index) => (
-                <div
-                  key={link._id}
-                  className="flex items-center justify-between border-b border-zinc-800 pb-4"
-                >
-                  <div className="flex gap-3">
-                    <span className="text-lime-400 font-bold">
-                      #{index + 1}
-                    </span>
+  <div className="space-y-4">
+    {rankedLinks.map(
+      (link, index) => (
+        <div
+          key={link._id}
+          className="
+            flex
+            flex-col
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+            gap-3
+            border-b
+            border-zinc-800
+            pb-4
+          "
+        >
+          <div className="flex gap-3 min-w-0">
+            <span className="text-lime-400 font-bold shrink-0">
+              #{index + 1}
+            </span>
 
-                    <div>
-                      <p className="text-white font-medium">
-                        {link.title}
-                      </p>
+            <div className="min-w-0">
+              <p className="text-white font-medium truncate">
+                {link.title}
+              </p>
 
-                      <p className="text-zinc-500 text-sm">
-                        {link.url}
-                      </p>
-                    </div>
-                  </div>
-
-                  <span className="text-lime-400 font-bold">
-                    {link.clicks}
-                  </span>
-                </div>
-              )
-            )}
+              <p className="text-zinc-500 text-sm truncate">
+                {link.url}
+              </p>
+            </div>
           </div>
+
+          <span className="text-lime-400 font-bold text-sm sm:text-base self-start sm:self-center">
+            {link.clicks} clicks
+          </span>
         </div>
+      )
+    )}
+  </div>
+</div>
 
         {/* 7 Day Analytics */}
         <div className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
