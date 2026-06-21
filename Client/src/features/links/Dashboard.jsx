@@ -1,23 +1,49 @@
 import { Link } from "react-router-dom";
-import { FaLink, FaTrashRestore, FaChartBar } from "react-icons/fa";
+import { useState } from "react";
+import {
+  FaLink,
+  FaTrashRestore,
+  FaChartBar,
+} from "react-icons/fa";
+import { toast } from "sonner";
 
 import { useAuth } from "../auth/useAuth";
+import { useLogout } from "../auth/useLogout";
+
 import { useMyLinks } from "./useMyLinks";
 
 import CreateLinkForm from "./CreateLinkForm";
 import LinkCard from "./LinkCard";
+import EditLinkModal from "./EditLinkModal";
+import DeleteLinkModal from "./DeleteLinkModal";
 
 function Dashboard() {
   const { data: authData } = useAuth();
   const { data, isLoading } = useMyLinks();
 
+  const { mutate: logout } = useLogout();
+
+  const [editingLink, setEditingLink] =
+    useState(null);
+
+  const [deletingLink, setDeletingLink] =
+    useState(null);
+
   const links = data?.links || [];
 
   const profileUrl = `/${authData?.user?.username}`;
 
+  const handleCopyProfile = () => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/${authData?.user?.username}`
+    );
+
+    toast.success("Profile URL copied");
+  };
+
   return (
     <div className="min-h-screen bg-black">
-      {/* Navbar */}
+      {/* NAVBAR */}
       <header className="sticky top-0 z-50 border-b border-zinc-800 bg-black/80 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <h1 className="text-2xl font-black text-white">
@@ -27,21 +53,21 @@ function Dashboard() {
           <div className="flex items-center gap-6 text-sm">
             <Link
               to="/dashboard"
-              className="text-lime-400"
+              className="text-lime-400 cursor-pointer"
             >
               Dashboard
             </Link>
 
             <Link
               to="/dashboard/deleted"
-              className="text-zinc-400 hover:text-white transition"
+              className="text-zinc-400 hover:text-white transition cursor-pointer"
             >
               Deleted
             </Link>
 
             <Link
               to="/dashboard/analytics"
-              className="text-zinc-400 hover:text-white transition"
+              className="text-zinc-400 hover:text-white transition cursor-pointer"
             >
               Analytics
             </Link>
@@ -49,23 +75,46 @@ function Dashboard() {
             <Link
               to={profileUrl}
               target="_blank"
-              className="text-zinc-400 hover:text-white transition"
+              className="text-zinc-400 hover:text-white transition cursor-pointer"
             >
               View Profile
             </Link>
 
-            <span className="text-zinc-500">
-              @{authData?.user?.username}
-            </span>
+            <button
+              onClick={handleCopyProfile}
+              className="text-zinc-400 hover:text-white transition cursor-pointer"
+            >
+              Copy Profile
+            </button>
+
+            <button
+              onClick={() => logout()}
+              className="text-red-400 hover:text-red-300 transition cursor-pointer"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Content */}
+      {/* CONTENT */}
       <main className="max-w-7xl mx-auto p-6">
-        {/* Top Cards */}
+        {/* TOP CARDS */}
         <div className="grid lg:grid-cols-4 gap-4 mb-8">
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          {/* TOTAL LINKS */}
+          <div
+            className="
+              rounded-3xl
+              border
+              border-zinc-800
+              bg-zinc-900
+              p-6
+              hover:border-lime-400
+              hover:-translate-y-1
+              transition-all
+              duration-300
+            "
+          >
             <p className="text-zinc-500 text-sm">
               Total Links
             </p>
@@ -79,7 +128,23 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          {/* PROFILE URL */}
+          <button
+            onClick={handleCopyProfile}
+            className="
+              rounded-3xl
+              border
+              border-zinc-800
+              bg-zinc-900
+              p-6
+              text-left
+              hover:border-lime-400
+              hover:-translate-y-1
+              transition-all
+              duration-300
+              cursor-pointer
+            "
+          >
             <p className="text-zinc-500 text-sm">
               Profile URL
             </p>
@@ -87,9 +152,24 @@ function Dashboard() {
             <p className="text-white mt-3 font-medium truncate">
               /{authData?.user?.username}
             </p>
-          </div>
+          </button>
 
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          {/* DELETED LINKS */}
+          <Link
+            to="/dashboard/deleted"
+            className="
+              rounded-3xl
+              border
+              border-zinc-800
+              bg-zinc-900
+              p-6
+              hover:border-lime-400
+              hover:-translate-y-1
+              transition-all
+              duration-300
+              cursor-pointer
+            "
+          >
             <p className="text-zinc-500 text-sm">
               Deleted Links
             </p>
@@ -101,9 +181,24 @@ function Dashboard() {
 
               <FaTrashRestore className="text-lime-400" />
             </div>
-          </div>
+          </Link>
 
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          {/* ANALYTICS */}
+          <Link
+            to="/dashboard/analytics"
+            className="
+              rounded-3xl
+              border
+              border-zinc-800
+              bg-zinc-900
+              p-6
+              hover:border-lime-400
+              hover:-translate-y-1
+              transition-all
+              duration-300
+              cursor-pointer
+            "
+          >
             <p className="text-zinc-500 text-sm">
               Analytics
             </p>
@@ -115,15 +210,15 @@ function Dashboard() {
 
               <FaChartBar className="text-lime-400" />
             </div>
-          </div>
+          </Link>
         </div>
 
-        {/* Create Link */}
+        {/* CREATE LINK */}
         <div className="mb-8">
           <CreateLinkForm />
         </div>
 
-        {/* Links */}
+        {/* LINKS */}
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-white text-2xl font-bold">
@@ -140,9 +235,13 @@ function Dashboard() {
               Loading links...
             </div>
           ) : links.length === 0 ? (
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-10 text-center">
-              <p className="text-zinc-500">
-                No links created yet.
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-12 text-center">
+              <p className="text-zinc-400 text-lg">
+                No links yet
+              </p>
+
+              <p className="text-zinc-600 mt-2">
+                Create your first link and start sharing.
               </p>
             </div>
           ) : (
@@ -151,12 +250,33 @@ function Dashboard() {
                 <LinkCard
                   key={link._id}
                   link={link}
+                  onEdit={setEditingLink}
+                  onDelete={setDeletingLink}
                 />
               ))}
             </div>
           )}
         </section>
       </main>
+
+      {/* MODALS */}
+      {editingLink && (
+        <EditLinkModal
+          link={editingLink}
+          onClose={() =>
+            setEditingLink(null)
+          }
+        />
+      )}
+
+      {deletingLink && (
+        <DeleteLinkModal
+          link={deletingLink}
+          onClose={() =>
+            setDeletingLink(null)
+          }
+        />
+      )}
     </div>
   );
 }

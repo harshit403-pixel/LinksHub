@@ -8,21 +8,40 @@ import Register from "../features/auth/Register";
 
 import Dashboard from "../features/links/Dashboard";
 import Analytics from "../features/analytics/Analytics";
+import DeletedLinks from "../features/links/DeletedLinks";
 
 import Profile from "../features/profile/Profile";
-import DeletedLinks from "../features/links/DeletedLinks";
+
+import ProtectedRoute from "./ProtectedRoute";
+import GuestRoute from "./GuestRoute";
 
 export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     children: [
       {
+        path: "/",
+        element: (
+          <GuestRoute>
+            <Login />
+          </GuestRoute>
+        ),
+      },
+      {
         path: "/login",
-        element: <Login />,
+        element: (
+          <GuestRoute>
+            <Login />
+          </GuestRoute>
+        ),
       },
       {
         path: "/register",
-        element: <Register />,
+        element: (
+          <GuestRoute>
+            <Register />
+          </GuestRoute>
+        ),
       },
       {
         path: "/:username",
@@ -32,7 +51,11 @@ export const router = createBrowserRouter([
   },
 
   {
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/dashboard",
@@ -43,9 +66,9 @@ export const router = createBrowserRouter([
         element: <Analytics />,
       },
       {
-  path: "/dashboard/deleted",
-  element: <DeletedLinks />,
-}
+        path: "/dashboard/deleted",
+        element: <DeletedLinks />,
+      },
     ],
   },
 ]);
