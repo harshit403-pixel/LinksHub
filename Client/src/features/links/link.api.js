@@ -18,14 +18,6 @@ export const getLinksByUsername = async (username) => {
 };
 
 
-export const updateLink = async (id, payload) => {
-  const { data } = await axiosInstance.patch(
-    `/links/${id}`,
-    payload
-  );
-
-  return data;
-};
 
 export const deleteLink = async (id) => {
   const { data } = await axiosInstance.delete(
@@ -55,6 +47,29 @@ export const purgeLink = async (id) => {
   const { data } = await axiosInstance.delete(
     `/links/deleted/${id}`
   );
+
+  return data;
+};
+
+export const updateLink = async (
+  id,
+  payload
+) => {
+  const { data } = await axiosInstance.patch(
+    `/links/${id}`,
+    payload
+  );
+
+  return data;
+};
+
+export const getLinkAnalytics = async (
+  id
+) => {
+  const { data } =
+    await axiosInstance.get(
+      `/links/analytics/${id}`
+    );
 
   return data;
 };

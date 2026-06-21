@@ -20,6 +20,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    displayName: {
+  type: String,
+  default: "",
+},
+
+bio: {
+  type: String,
+  default: "",
+},
 }, { timestamps: true });
 
 

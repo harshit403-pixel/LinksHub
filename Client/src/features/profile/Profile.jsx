@@ -64,9 +64,9 @@ function Profile() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {links.map((link, index) => (
-            <motion.a
+<motion.a
   key={link._id}
-  href={link.url}
+  href={`${import.meta.env.VITE_API_URL}/links/go/${link._id}`}
   target="_blank"
   rel="noreferrer"
   initial={{ opacity: 0, y: 20 }}
