@@ -67,6 +67,7 @@ return res.status(200).json({
     displayName: user.displayName,
     bio: user.bio,
      theme: user.theme,
+     profilePicture: user.profilePicture,
   },
 
   links,

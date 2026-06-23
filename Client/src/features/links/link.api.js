@@ -17,8 +17,6 @@ export const getLinksByUsername = async (username) => {
   return data;
 };
 
-
-
 export const deleteLink = async (id) => {
   const { data } = await axiosInstance.delete(
     `/links/${id}`

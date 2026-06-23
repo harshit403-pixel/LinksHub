@@ -31,6 +31,20 @@ order: {
   type: Number,
   default: 0,
 },
+previewTitle: {
+  type: String,
+  default: "",
+},
+
+previewDescription: {
+  type: String,
+  default: "",
+},
+
+previewImage: {
+  type: String,
+  default: "",
+},
 }, { timestamps: true });
 
 const Link = mongoose.model('Link', linkSchema);

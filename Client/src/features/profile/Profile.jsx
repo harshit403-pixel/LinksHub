@@ -54,34 +54,49 @@ function Profile() {
           animate={{ opacity: 1, y: 0 }}
           className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 mb-6"
         >
-          <div className="flex items-center gap-5">
-           <div
-  className={`
-    w-20 h-20 rounded-full
-    ${
-      currentTheme === "blue"
-        ? "bg-blue-500"
-        : currentTheme === "purple"
-        ? "bg-purple-500"
-        : currentTheme === "rose"
-        ? "bg-rose-500"
-        : "bg-lime-400"
-    }
-    flex items-center justify-center
-    text-black text-3xl font-bold
-  `}
->
-  {(
-    profile?.displayName ||
-    username
-  )?.[0]?.toUpperCase()}
-</div>
+<div className="flex items-center gap-5">
+  {profile?.profilePicture ? (
+    <img
+      src={profile.profilePicture}
+      alt={profile?.displayName}
+      className="
+        w-20
+        h-20
+        rounded-full
+        object-cover
+        border
+        border-zinc-800
+      "
+    />
+  ) : (
+    <div
+      className={`
+        w-20 h-20 rounded-full
+        ${
+          currentTheme === "blue"
+            ? "bg-blue-500"
+            : currentTheme === "purple"
+            ? "bg-purple-500"
+            : currentTheme === "rose"
+            ? "bg-rose-500"
+            : "bg-lime-400"
+        }
+        flex items-center justify-center
+        text-black text-3xl font-bold
+      `}
+    >
+      {(
+        profile?.displayName ||
+        username
+      )?.[0]?.toUpperCase()}
+    </div>
+  )}
 
-            <div>
-             <h1 className="text-white text-4xl font-black">
-  {profile?.displayName ||
-    `@${username}`}
-</h1>
+  <div>
+    <h1 className="text-white text-4xl font-black">
+      {profile?.displayName ||
+        `@${username}`}
+    </h1>
 
 <p
   className={`${themeText} mt-1`}

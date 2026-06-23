@@ -39,6 +39,10 @@ theme: {
   ],
   default: "lime",
 },
+profilePicture: {
+  type: String,
+  default: "",
+},
 }, { timestamps: true });
 
 

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from '../config/config.js';
 import User from '../models/user.model.js';
+import cloudinary from '../config/cloudinary.js';
 
 const generateToken = (userId) => {
     if (!config.JWT_SECRET) {
@@ -168,6 +169,67 @@ return res.status(200).json({
     });
   }
 };
+
+export const uploadProfilePicture =
+  async (req, res) => {
+    try {
+      console.log("STEP 1");
+
+      if (!req.file) {
+        return res.status(400).json({
+          message: "Image required",
+        });
+      }
+
+      console.log("STEP 2");
+
+      const base64 =
+        `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+
+      console.log("STEP 3");
+
+      const result =
+        await cloudinary.uploader.upload(
+          base64,
+          {
+            folder:
+              "linkshub/profile-pictures",
+          }
+        );
+
+      console.log("STEP 4", result.secure_url);
+
+      const user =
+        await User.findById(
+          req.user.id
+        );
+
+      console.log("STEP 5");
+
+      user.profilePicture =
+        result.secure_url;
+
+      await user.save();
+
+      console.log("STEP 6");
+
+      return res.status(200).json({
+        message:
+          "Profile picture updated",
+        profilePicture:
+          result.secure_url,
+      });
+    } catch (error) {
+      console.log("FAILED HERE");
+      console.dir(error, {
+        depth: null,
+      });
+
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
 
 
 export const logoutUser = (req, res) => {

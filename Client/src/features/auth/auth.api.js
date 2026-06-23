@@ -41,5 +41,26 @@ export const updateProfile = async (
       profileData
     );
 
+ 
+
   return data;
 };
+
+   export const uploadProfilePicture =
+  async (file) => {
+    const formData =
+      new FormData();
+
+    formData.append(
+      "image",
+      file
+    );
+
+    const { data } =
+      await axiosInstance.patch(
+        "/auth/profile-picture",
+        formData
+      );
+
+    return data;
+  };

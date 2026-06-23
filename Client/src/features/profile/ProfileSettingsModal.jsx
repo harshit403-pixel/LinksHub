@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-
+import { useUploadProfilePicture }
+from "../auth/useUploadProfilePicture";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
@@ -10,6 +11,11 @@ function ProfileSettingsModal({
   user,
   onClose,
 }) {
+
+  const {
+  mutate: uploadMutate,
+  isPending: isUploading,
+} = useUploadProfilePicture();
 
   const [theme, setTheme] =
   useState("lime");
@@ -115,6 +121,23 @@ function ProfileSettingsModal({
             onSubmit={handleSubmit}
             className="space-y-8"
           >
+            <label className="text-zinc-500 text-sm">
+                Profile Picture
+              </label>
+           <Input
+           
+  label="Profile Picture"
+  type="file"
+  accept="image/*"
+  onChange={(e) => {
+    const file =
+      e.target.files?.[0];
+
+    if (file) {
+      uploadMutate(file);
+    }
+  }}
+/>
             <Input
               label="Display Name"
               value={displayName}
