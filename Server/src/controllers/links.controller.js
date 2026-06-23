@@ -2,42 +2,85 @@ import ClickModel from '../models/click.model.js';
 import linkModel from '../models/link.model.js';
 import userModel from '../models/user.model.js';
 import mongoose from "mongoose";
+import ogs from "open-graph-scraper";
 
-export const createLink = async (req, res) => {
+export const createLink = async (
+  req,
+  res
+) => {
+  const user = req.user;
 
-    const user = req.user;
-    const { title, url } = req.body;
+  const { title, url } = req.body;
 
-    if (!title || !url) {
-        return res.status(400).json({
-            message: 'Title and URL are required',
-        });
-    }
+  if (!title || !url) {
+    return res.status(400).json({
+      message:
+        "Title and URL are required",
+    });
+  }
+
+  try {
+    let previewTitle = "";
+    let previewDescription = "";
+    let previewImage = "";
 
     try {
-       const lastLink = await linkModel
-  .findOne({
-    user: user.id,
-  })
-  .sort("-order");
+      const { result } =
+        await ogs({
+          url,
+        });
 
-const newLink = await linkModel.create({
-  user: user.id,
-  title,
-  url,
-  order:
-    (lastLink?.order || 0) + 1,
-});
-        return res.status(201).json({
-            message: 'Link created successfully',
-            link: newLink,
-        });
+      previewTitle =
+        result.ogTitle || "";
+
+      previewDescription =
+        result.ogDescription || "";
+
+      previewImage =
+        result.ogImage?.[0]?.url ||
+        result.ogImage?.url ||
+        "";
     } catch (error) {
-        return res.status(500).json({
-            message: error.message || 'Failed to create link',
-        });
+      console.log(
+        "Preview fetch failed"
+      );
     }
-}
+
+    const lastLink =
+      await linkModel
+        .findOne({
+          user: user.id,
+        })
+        .sort("-order");
+
+    const newLink =
+      await linkModel.create({
+        user: user.id,
+        title,
+        url,
+
+        previewTitle,
+        previewDescription,
+        previewImage,
+
+        order:
+          (lastLink?.order || 0) +
+          1,
+      });
+
+    return res.status(201).json({
+      message:
+        "Link created successfully",
+      link: newLink,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message:
+        error.message ||
+        "Failed to create link",
+    });
+  }
+};
 
 export const getLinksByUsername = async (req, res) => {
 

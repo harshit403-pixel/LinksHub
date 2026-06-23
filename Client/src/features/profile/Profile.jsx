@@ -159,9 +159,57 @@ function Profile() {
       ${getLinkColor(link.url)}
     `}
   />
+  {link.previewImage && (
+  <div
+    className="
+      absolute
+      inset-0
+      opacity-0
+      group-hover:opacity-100
+      transition-all
+      duration-500
+      z-20
+    "
+  >
+    <img
+      src={link.previewImage}
+      alt={link.previewTitle}
+      className="
+        absolute
+        inset-0
+        w-full
+        h-full
+        object-cover
+        
+        object-[50%_20%]
+        
+      "
+    />
+
+    <div
+      className="
+        absolute
+        inset-0
+        bg-black/70
+        p-6
+        flex
+        flex-col
+        justify-end
+      "
+    >
+      <h3 className="text-white font-bold text-xl">
+        {link.previewTitle}
+      </h3>
+
+      <p className="text-zinc-300 text-sm mt-2 line-clamp-2">
+        {link.previewDescription}
+      </p>
+    </div>
+  </div>
+)}
 
   {/* Content */}
-  <div className="relative z-10 h-full flex flex-col justify-between">
+  <div className="relative z-10 h-full flex flex-col  justify-between">
     <div>
       <div
   className={`

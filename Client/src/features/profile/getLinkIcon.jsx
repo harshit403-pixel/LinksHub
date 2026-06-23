@@ -3,11 +3,12 @@ import {
   FaInstagram,
   FaLinkedin,
   FaYoutube,
-  FaTwitter,
+  FaXTwitter,
   FaDiscord,
   FaSpotify,
   FaGlobe,
-} from "react-icons/fa";
+  
+} from "react-icons/fa6";
 
 export const getLinkIcon = (url) => {
   const lowerUrl = url.toLowerCase();
@@ -28,7 +29,7 @@ export const getLinkIcon = (url) => {
     lowerUrl.includes("twitter") ||
     lowerUrl.includes("x.com")
   )
-    return <FaTwitter className="text-sky-500 text-2xl" />;
+    return <FaXTwitter className="text-gray-100 text-2xl" />;
 
   if (lowerUrl.includes("discord"))
     return <FaDiscord className="text-indigo-500 text-2xl" />;
