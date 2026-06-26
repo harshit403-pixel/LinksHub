@@ -426,8 +426,7 @@ export const reorderLinks =  async (req, res) => {
 
 
 
-export const importLinktree =
-  async (req, res) => {
+export const importLinktree = async (req, res) => {
     try {
       const { url } = req.body;
 
@@ -575,16 +574,31 @@ export const bulkCreateLinks =
           docs
         );
 
+      created.forEach(
+        async (link) => {
+          const preview =
+            await fetchLinkPreview(
+              link.url
+            );
+
+          await linkModel.findByIdAndUpdate(
+            link._id,
+            preview
+          );
+        }
+      );
+
       return res.status(201).json({
         message:
           "Links imported successfully",
+        imported:
+          created.length,
         links: created,
       });
     } catch (error) {
       return res.status(500).json({
         message:
-          error.message ||
-          "Failed to import links",
+          error.message,
       });
     }
   };

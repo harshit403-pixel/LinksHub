@@ -283,7 +283,7 @@ const COLORS = [
 
             return (
               <div
-                key={item.name}
+                key={`${item.name || "untitled"}-${index}`}
                 className="
                   flex
                   items-center

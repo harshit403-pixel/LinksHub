@@ -90,8 +90,8 @@ function ImportLinktreeModal({
         {
           onSuccess: () => {
             toast.success(
-              "Links imported successfully"
-            );
+  `Imported ${data.imported} links • Skipped ${data.skipped} duplicates`
+);
 
             onClose();
           },
@@ -210,9 +210,7 @@ function ImportLinktreeModal({
                   index
                 ) => (
                   <button
-                    key={
-                      index
-                    }
+                    key={index}
                     onClick={() =>
                       toggleLink(
                         index

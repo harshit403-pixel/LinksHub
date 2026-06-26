@@ -3,13 +3,28 @@ import { motion, AnimatePresence } from "motion/react";
 
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-
+import {
+  
+  useEffect,
+} from "react";
 import {useGenerateBio} from '../ai/useGenerateBio.js'
+
+
 
 function AIBioModal({
   onClose,
   onSelectBio,
 }) {
+
+    useEffect(() => {
+  document.body.style.overflow =
+    "hidden";
+
+  return () => {
+    document.body.style.overflow =
+      "auto";
+  };
+}, []);
   const [profession, setProfession] =
     useState("");
 
@@ -81,14 +96,16 @@ function AIBioModal({
             e.stopPropagation()
           }
           className="
-            w-full
-            max-w-2xl
-            rounded-3xl
-            border
-            border-zinc-800
-            bg-zinc-900
-            p-8
-          "
+  w-full
+  max-w-2xl
+  max-h-[85vh]
+  rounded-3xl
+  border
+  border-zinc-800
+  bg-zinc-900
+  p-8
+  overflow-y-auto
+"
         >
           <h2 className="text-3xl font-black text-white">
             AI Bio Generator
@@ -191,39 +208,48 @@ function AIBioModal({
           </div>
 
           {bios.length > 0 && (
-            <div className="mt-8 space-y-4">
-              <h3 className="text-white text-xl font-bold">
-                Choose a Bio
-              </h3>
+  <div className="mt-8">
+    <h3 className="text-white text-xl font-bold mb-4">
+      Choose a Bio
+    </h3>
 
-              {bios.map(
-                (bio, index) => (
-                  <button
-                    key={index}
-                    onClick={() =>
-                      onSelectBio(
-                        bio
-                      )
-                    }
-                    className="
-                      w-full
-                      text-left
-                      rounded-2xl
-                      border
-                      border-zinc-800
-                      p-5
-                      text-zinc-300
-                      hover:border-lime-400
-                      hover:bg-zinc-800
-                      transition-all
-                    "
-                  >
-                    {bio}
-                  </button>
-                )
-              )}
-            </div>
-          )}
+    <div
+      className="
+        space-y-4
+        max-h-80
+        overflow-y-auto
+        pr-2
+      "
+    >
+      {bios.map(
+        (bio, index) => (
+          <button
+            key={index}
+            onClick={() =>
+              onSelectBio(
+                bio
+              )
+            }
+            className="
+              w-full
+              text-left
+              rounded-2xl
+              border
+              border-zinc-800
+              p-5
+              text-zinc-300
+              hover:border-lime-400
+              hover:bg-zinc-800
+              transition-all
+            "
+          >
+            {bio}
+          </button>
+        )
+      )}
+    </div>
+  </div>
+)}
         </motion.div>
       </motion.div>
     </AnimatePresence>
