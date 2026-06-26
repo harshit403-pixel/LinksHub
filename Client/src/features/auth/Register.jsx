@@ -1,7 +1,6 @@
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { FaUser, FaEnvelope, FaRocket } from "react-icons/fa";
@@ -9,7 +8,10 @@ import { FaUser, FaEnvelope, FaRocket } from "react-icons/fa";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
-import { register } from "./auth.api";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getMe, register } from "./auth.api";
+
 
 function Register() {
     const RESERVED_USERNAMES = [
@@ -82,23 +84,48 @@ const validateUsername = (username) => {
 const usernameValidation =
   validateUsername(formData.username);
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: register,
+  const queryClient = useQueryClient();
 
-    onSuccess: () => {
-      toast.success("Account created successfully");
 
-      navigate("/login");
-    },
+const { mutate, isPending } = useMutation({
+  mutationFn: register,
 
-    onError: (error) => {
-      toast.error(
-        error?.response?.data?.message ||
-          "Registration failed"
+  onSuccess: async () => {
+    try {
+      // remove old 401 cache
+      queryClient.removeQueries({
+        queryKey: ["auth"],
+      });
+
+      // wait a tiny bit for browser to persist cookie
+      await new Promise((r) =>
+        setTimeout(r, 100)
       );
-    },
-  });
 
+      // fetch fresh auth state
+      await queryClient.fetchQuery({
+        queryKey: ["auth"],
+        queryFn: getMe,
+      });
+
+      navigate("/dashboard");
+
+      toast.success(
+        "Welcome to LinksHub"
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
+  onError: (error) => {
+    toast.error(
+      error?.response?.data?.message ||
+        "Registration failed"
+    );
+  },
+});
+  
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
