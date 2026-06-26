@@ -3,6 +3,9 @@ import linkModel from '../models/link.model.js';
 import userModel from '../models/user.model.js';
 import mongoose from "mongoose";
 import ogs from "open-graph-scraper";
+import axios from "axios";
+import * as cheerio from "cheerio";
+
 
 export const createLink = async (
   req,
@@ -417,6 +420,171 @@ export const reorderLinks =  async (req, res) => {
       return res.status(500).json({
         message:
           error.message,
+      });
+    }
+  };
+
+
+
+export const importLinktree =
+  async (req, res) => {
+    try {
+      const { url } = req.body;
+
+      if (!url) {
+        return res.status(400).json({
+          message:
+            "Linktree URL is required",
+        });
+      }
+
+      if (
+        !url.includes("linktr.ee")
+      ) {
+        return res.status(400).json({
+          message:
+            "Invalid Linktree URL",
+        });
+      }
+
+      const { data } =
+        await axios.get(url);
+
+      const $ =
+        cheerio.load(data);
+
+      const nextData =
+        $("#__NEXT_DATA__").html();
+
+      if (!nextData) {
+        return res.status(400).json({
+          message:
+            "Unable to parse Linktree profile",
+        });
+      }
+
+      const parsed =
+        JSON.parse(nextData);
+
+      // inspect once if this changes in future
+      console.log(
+        parsed.props?.pageProps
+      );
+
+      const links =
+        parsed.props?.pageProps
+          ?.links?.filter(
+            (link) =>
+              link.url &&
+              !link.locked
+          )
+          .map((link) => ({
+            title:
+              link.title ||
+              "Untitled",
+            url: link.url,
+          })) || [];
+
+      return res.json({
+        message:
+          "Links fetched successfully",
+        links,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message:
+          error.message ||
+          "Failed to import links",
+      });
+    }
+  };
+
+
+
+export const bulkCreateLinks =
+  async (req, res) => {
+    try {
+      const user = req.user;
+      const { links } = req.body;
+
+      if (
+        !links ||
+        !Array.isArray(links) ||
+        links.length === 0
+      ) {
+        return res.status(400).json({
+          message:
+            "No links provided",
+        });
+      }
+
+      const existingLinks =
+        await linkModel.find({
+          user: user.id,
+        });
+
+      const existingUrls =
+        new Set(
+          existingLinks.map(
+            (link) => link.url
+          )
+        );
+
+      const filteredLinks =
+        links.filter(
+          (link) =>
+            !existingUrls.has(
+              link.url
+            )
+        );
+
+      if (
+        filteredLinks.length === 0
+      ) {
+        return res.status(400).json({
+          message:
+            "All links already exist",
+        });
+      }
+
+      const lastLink =
+        await linkModel
+          .findOne({
+            user: user.id,
+          })
+          .sort("-order");
+
+      const lastOrder =
+        lastLink?.order || 0;
+
+      const docs =
+        filteredLinks.map(
+          (link, index) => ({
+            user: user.id,
+            title: link.title,
+            url: link.url,
+            order:
+              lastOrder +
+              index +
+              1,
+          })
+        );
+
+      const created =
+        await linkModel.insertMany(
+          docs
+        );
+
+      return res.status(201).json({
+        message:
+          "Links imported successfully",
+        links: created,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message:
+          error.message ||
+          "Failed to import links",
       });
     }
   };

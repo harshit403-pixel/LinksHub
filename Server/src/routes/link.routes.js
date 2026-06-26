@@ -63,6 +63,17 @@ router.get(
   linkController.getMyLinks
 );
 
+router.post(
+  "/import-linktree",
+  authMiddleware,
+  linkController.importLinktree
+);
+
+router.post(
+  "/bulk-create",
+  authMiddleware,
+  linkController.bulkCreateLinks
+);
 
 
 router.get("/:username", linkController.getLinksByUsername)

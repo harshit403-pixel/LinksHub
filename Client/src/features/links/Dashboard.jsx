@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   FaLink,
   FaTrashRestore,
+    FaFileImport,
   FaChartBar,
 } from "react-icons/fa";
 import { toast } from "sonner";
@@ -28,8 +29,14 @@ import DeleteLinkModal from "./DeleteLinkModal";
 
 import { FaQrcode } from "react-icons/fa";
 import ProfileQrModal from "../profile/ProfileQrModal";
+import ImportLinktreeModal from "./ImportLinktreeModal.jsx";
 
 function Dashboard() {
+
+  const [
+  importModalOpen,
+  setImportModalOpen,
+] = useState(false);
   const { data: authData } = useAuth();
   const { data, isLoading } = useMyLinks();
 
@@ -81,31 +88,36 @@ useEffect(() => {
         {/* TOP CARDS */}
         <div className="grid lg:grid-cols-5 gap-4 mb-8">
           {/* TOTAL LINKS */}
-          <div
-            className="
-              rounded-3xl
-              border
-              border-zinc-800
-              bg-zinc-900
-              p-6
-              hover:border-lime-400
-              hover:-translate-y-1
-              transition-all
-              duration-300
-            "
-          >
-            <p className="text-zinc-500 text-sm">
-              Total Links
-            </p>
+          <button
+  onClick={() =>
+    setImportModalOpen(true)
+  }
+  className="
+    rounded-3xl
+    border
+    border-zinc-800
+    bg-zinc-900
+    p-6
+    text-left
+    hover:border-lime-400
+    hover:-translate-y-1
+    transition-all
+    duration-300
+    cursor-pointer
+  "
+>
+  <p className="text-zinc-500 text-sm">
+    Import Links
+  </p>
 
-            <div className="flex items-center justify-between mt-3">
-              <h2 className="text-4xl font-black text-white">
-                {links.length}
-              </h2>
+  <div className="flex items-center justify-between mt-3">
+    <span className="text-white text-xl font-bold">
+      Linktree
+    </span>
 
-              <FaLink className="text-lime-400 text-xl" />
-            </div>
-          </div>
+    <FaFileImport className="text-lime-400" />
+  </div>
+</button>
 
           {/* PROFILE URL */}
           <button
@@ -330,6 +342,15 @@ useEffect(() => {
     }
   />
 )}
+{
+  importModalOpen && (
+    <ImportLinktreeModal
+      onClose={() =>
+        setImportModalOpen(false)
+      }
+    />
+  )
+}
     </div>
   );
 }

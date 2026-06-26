@@ -85,3 +85,23 @@ export const reorderLinks = async (
 
   return data;
 };
+
+export const importLinktree =async (url) => {
+    const { data } =
+      await axiosInstance.post(
+        "/links/import-linktree",
+        { url }
+      );
+
+    return data;
+  };
+
+export const bulkCreateLinks =async (links) => {
+    const { data } =
+      await axiosInstance.post(
+        "/links/bulk-create",
+        { links }
+      );
+
+    return data;
+  };
