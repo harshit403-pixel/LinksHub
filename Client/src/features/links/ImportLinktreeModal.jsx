@@ -88,13 +88,15 @@ function ImportLinktreeModal({
       importLinks(
         selectedLinks,
         {
-          onSuccess: () => {
-            toast.success(
-  `Imported ${data.imported} links • Skipped ${data.skipped} duplicates`
-);
+          onSuccess: (data) => {
+  toast.success(
+    `Imported ${data.imported} links • Skipped ${data.skipped} duplicates`
+  );
 
-            onClose();
-          },
+  onClose();
+},
+
+           
         }
       );
     };

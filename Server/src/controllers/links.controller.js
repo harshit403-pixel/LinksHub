@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import ogs from "open-graph-scraper";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { fetchLinkPreview } from '../utils/fetchLinkPreview.js';
 
 
 export const createLink = async (

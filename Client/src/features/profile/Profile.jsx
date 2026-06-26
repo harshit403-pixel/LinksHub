@@ -2,14 +2,19 @@ import { motion } from "motion/react";
 import { useParams } from "react-router-dom";
 import { getLinkIcon } from "./getLinkIcon";
 import { useProfileLinks } from "./useProfileLinks";
-
+import { FaShareAlt } from "react-icons/fa";
+import ProfileShareModal from "./ProfileShareModal";
 import { getLinkColor } from "./getLinkColor";
 import { themes } from "./themes";
+import { useState } from "react";
 function Profile() {
   const { username } = useParams();
 
   const { data, isLoading, isError } =
     useProfileLinks();
+
+const [shareOpen, setShareOpen] =
+  useState(false);
 
   if (isLoading) {
     return (
@@ -54,63 +59,105 @@ function Profile() {
           animate={{ opacity: 1, y: 0 }}
           className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 mb-6"
         >
-<div className="flex items-center gap-5">
-  {profile?.profilePicture ? (
-    <img
-      src={profile.profilePicture}
-      alt={profile?.displayName}
-      className="
-        w-20
-        h-20
-        rounded-full
-        object-cover
-        border
-        border-zinc-800
-      "
-    />
-  ) : (
-    <div
-      className={`
-        w-20 h-20 rounded-full
-        ${
-          currentTheme === "blue"
-            ? "bg-blue-500"
-            : currentTheme === "purple"
-            ? "bg-purple-500"
-            : currentTheme === "rose"
-            ? "bg-rose-500"
-            : "bg-lime-400"
-        }
-        flex items-center justify-center
-        text-black text-3xl font-bold
-      `}
-    >
-      {(
-        profile?.displayName ||
-        username
-      )?.[0]?.toUpperCase()}
+<div className="flex items-start justify-between gap-4">
+  <div className="flex items-center gap-4 flex-1 min-w-0">
+    {profile?.profilePicture ? (
+      <img
+        src={profile.profilePicture}
+        alt={profile?.displayName}
+        className="
+          w-16
+          h-16
+          sm:w-20
+          sm:h-20
+          rounded-full
+          object-cover
+          border
+          border-zinc-800
+          shrink-0
+        "
+      />
+    ) : (
+      <div
+        className={`
+          w-16
+          h-16
+          sm:w-20
+          sm:h-20
+          rounded-full
+          shrink-0
+          ${
+            currentTheme === "blue"
+              ? "bg-blue-500"
+              : currentTheme === "purple"
+              ? "bg-purple-500"
+              : currentTheme === "rose"
+              ? "bg-rose-500"
+              : "bg-lime-400"
+          }
+          flex
+          items-center
+          justify-center
+          text-black
+          text-2xl
+          sm:text-3xl
+          font-bold
+        `}
+      >
+        {(
+          profile?.displayName ||
+          username
+        )?.[0]?.toUpperCase()}
+      </div>
+    )}
+
+    <div className="min-w-0 flex-1">
+      <h1 className="text-2xl sm:text-4xl font-black text-white break-words">
+        {profile?.displayName ||
+          `@${username}`}
+      </h1>
+
+      <p
+        className={`${themeText} mt-1 text-sm sm:text-base truncate`}
+      >
+        @{profile?.username}
+      </p>
+
+      {profile?.bio && (
+        <p className="text-zinc-400 mt-3 text-sm sm:text-base max-w-xl break-words">
+          {profile.bio}
+        </p>
+      )}
     </div>
-  )}
+  </div>
 
-  <div>
-    <h1 className="text-white text-4xl font-black">
-      {profile?.displayName ||
-        `@${username}`}
-    </h1>
-
-<p
-  className={`${themeText} mt-1`}
->
-  @{profile?.username}
-</p>
-
-{profile?.bio && (
-  <p className="text-zinc-400 mt-3 max-w-xl">
-    {profile.bio}
-  </p>
-)}
-            </div>
-          </div>
+  <button
+    onClick={() =>
+      setShareOpen(true)
+    }
+    className="
+      w-11
+      h-11
+      sm:w-12
+      sm:h-12
+      rounded-2xl
+      border
+      border-zinc-800
+      bg-black/40
+      flex
+      items-center
+      justify-center
+      text-white
+      shrink-0
+      hover:border-lime-400
+      hover:bg-zinc-800
+      transition-all
+      duration-300
+    "
+  >
+    <FaShareAlt className="text-sm sm:text-base" />
+  </button>
+</div>
         </motion.div>
 
         {/* BENTO GRID */}
@@ -259,6 +306,14 @@ function Profile() {
           </div>
         )}
       </div>
+      {shareOpen && (
+  <ProfileShareModal
+    profileUrl={window.location.href}
+    onClose={() =>
+      setShareOpen(false)
+    }
+  />
+)}
     </div>
   );
 }
