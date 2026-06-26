@@ -5,12 +5,18 @@ from "../auth/useUploadProfilePicture";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
+import AIBioModal from "./AIBioModal";
+
 import { useUpdateProfile } from "../auth/useUpdateProfile";
 
 function ProfileSettingsModal({
   user,
   onClose,
 }) {
+
+  const [showAIModal,
+  setShowAIModal] =
+  useState(false);
 
   const {
   mutate: uploadMutate,
@@ -176,6 +182,21 @@ function ProfileSettingsModal({
                   resize-none
                 "
               />
+              <button
+  type="button"
+  onClick={() =>
+    setShowAIModal(true)
+  }
+  className="
+    mt-3
+    text-sm
+    text-lime-400
+    hover:text-lime-300
+    transition
+  "
+>
+  ✨ Generate with AI
+</button>
             </div>
             <div>
   <p className="text-zinc-500 mb-3">
@@ -241,6 +262,7 @@ function ProfileSettingsModal({
               </button>
 
               <Button
+              className="flex-4"
                 type="submit"
                 disabled={isPending}
               >
@@ -252,6 +274,19 @@ function ProfileSettingsModal({
           </form>
         </motion.div>
       </motion.div>
+      {
+  showAIModal && (
+    <AIBioModal
+      onClose={() =>
+        setShowAIModal(false)
+      }
+      onSelectBio={(selectedBio) => {
+        setBio(selectedBio);
+        setShowAIModal(false);
+      }}
+    />
+  )
+}
     </AnimatePresence>
   );
 }
