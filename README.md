@@ -1,4 +1,4 @@
-````markdown
+
 # 🔗 LinksHub
 
 A modern, production-ready Link-in-Bio platform inspired by Linktree and Bento, featuring AI-powered bios, analytics, Linktree import, QR sharing, and deep profile customization.
