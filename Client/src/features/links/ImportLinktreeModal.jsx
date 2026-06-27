@@ -75,27 +75,61 @@ function ImportLinktreeModal({
     }
   };
 
-  const handleImport =
-    () => {
-      const selectedLinks =
-        links.filter(
-          (_, index) =>
-            selected.includes(
-              index
-            )
-        );
+const handleImport = () => {
+  const selectedLinks =
+    links.filter((_, index) =>
+      selected.includes(index)
+    );
+
+  if (
+    selectedLinks.length === 0
+  ) {
+    toast.error(
+      "Please select at least one link."
+    );
+    return;
+  }
 
       importLinks(
         selectedLinks,
         {
-          onSuccess: (data) => {
-  toast.success(
-    `Imported ${data.imported} links • Skipped ${data.skipped} duplicates`
-  );
+        onSuccess: (data) => {
+  const {
+    imported,
+    skipped,
+  } = data;
 
-  onClose();
+  if (
+    imported === 0 &&
+    skipped > 0
+  ) {
+    toast.info(
+  "Nothing to import. All selected links already exist."
+);
+
+    return;
+  }
+
+  if (
+    imported > 0 &&
+    skipped > 0
+  ) {
+    toast.success(
+      `Imported ${imported} links • Skipped ${skipped} duplicates`
+    );
+
+    onClose();
+    return;
+  }
+
+  if (imported > 0) {
+    toast.success(
+      `Imported ${imported} links successfully`
+    );
+
+    onClose();
+  }
 },
-
            
         }
       );
@@ -242,8 +276,8 @@ function ImportLinktreeModal({
                       className="w-6 h-6"
                     />
 
-                    <div className="text-left">
-                      <p className="text-white">
+                    <div className="text-left overflow-hidden">
+                      <p className="text-white  ">
                         {
                           link.title
                         }

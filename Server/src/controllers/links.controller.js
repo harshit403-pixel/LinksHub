@@ -459,6 +459,7 @@ export const importLinktree = async (req, res) => {
       Referer:
         "https://linktr.ee/",
     },
+    timeout: 10000,
   });
 
       const $ =
@@ -503,19 +504,17 @@ export const importLinktree = async (req, res) => {
       });
     } catch (error) {
   console.log(
-    "Status:",
-    error.response?.status
-  );
-
-  console.log(
-    "Data:",
-    error.response?.data
+    "Import Linktree Error:",
+    error.response?.status,
+    error.response?.data ||
+      error.message
   );
 
   return res.status(500).json({
     message:
       error.response?.data ||
-      error.message,
+      error.message ||
+      "Failed to import links",
   });
 }
   };
@@ -558,14 +557,14 @@ export const bulkCreateLinks = async (req, res) => {
             )
         );
 
-      if (
-        filteredLinks.length === 0
-      ) {
-        return res.status(400).json({
-          message:
-            "All links already exist",
-        });
-      }
+      if (filteredLinks.length === 0) {
+  return res.status(200).json({
+    message: "All links already exist",
+    imported: 0,
+    skipped: links.length,
+    links: [],
+  });
+}
 
       const lastLink =
         await linkModel
@@ -610,12 +609,12 @@ export const bulkCreateLinks = async (req, res) => {
       );
 
       return res.status(201).json({
-        message:
-          "Links imported successfully",
-        imported:
-          created.length,
-        links: created,
-      });
+  message: "Links imported successfully",
+  imported: created.length,
+  skipped:
+    links.length - created.length,
+  links: created,
+});
     } catch (error) {
       return res.status(500).json({
         message:
