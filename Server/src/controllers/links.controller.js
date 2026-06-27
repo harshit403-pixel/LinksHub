@@ -522,8 +522,7 @@ export const importLinktree = async (req, res) => {
 
 
 
-export const bulkCreateLinks =
-  async (req, res) => {
+export const bulkCreateLinks = async (req, res) => {
     try {
       const user = req.user;
       const { links } = req.body;
