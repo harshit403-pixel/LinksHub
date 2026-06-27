@@ -1,6 +1,7 @@
+````markdown
 # 🔗 LinksHub
 
-A modern, production-ready Link-in-Bio platform built with the MERN stack. Create a personalized public profile, manage links, track analytics, customize profile themes, generate QR codes, and share everything from a single page.
+A modern, production-ready Link-in-Bio platform inspired by Linktree and Bento, featuring AI-powered bios, analytics, Linktree import, QR sharing, and deep profile customization.
 
 ![React](https://img.shields.io/badge/React-19-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-Backend-green)
@@ -17,13 +18,34 @@ A modern, production-ready Link-in-Bio platform built with the MERN stack. Creat
 - JWT Authentication
 - HTTP-only Cookie Sessions
 - Protected Dashboard Routes
+- Persistent Login Sessions
+
+---
 
 ### 👤 Profile Management
 - Custom Username
 - Display Name
 - Bio Section
+- Profile Picture Upload
 - Theme Customization
 - Public Profile Page
+- Responsive Profile Layout
+- Share Profile Modal
+- Profile QR Code
+- One-click Profile Sharing
+
+---
+
+### 🤖 AI Features
+- AI Bio Generator powered by Gemini
+- Generate Multiple Bio Suggestions
+- Multiple Bio Tones:
+  - Professional
+  - Creative
+  - Minimal
+  - Funny
+
+---
 
 ### 🔗 Link Management
 - Create Links
@@ -32,17 +54,68 @@ A modern, production-ready Link-in-Bio platform built with the MERN stack. Creat
 - Restore Deleted Links
 - Permanently Remove Links
 - Drag & Drop Reordering
+- Bulk Link Import
+- Import Links Directly from Linktree
+- Duplicate Link Detection During Import
+- Automatic Favicon Detection
+- Automatic Link Preview Metadata Generation:
+  - Preview Title
+  - Preview Description
+  - Preview Image
+
+---
+
+### 🎨 Public Profile Experience
+- Bento-style Profile Layout
+- Dynamic Platform Icons:
+  - GitHub
+  - LinkedIn
+  - Instagram
+  - YouTube
+  - X (Twitter)
+  - Discord
+  - Spotify
+  - WhatsApp
+  - HackerRank
+  - LeetCode
+  - CodeChef
+  - Codeforces
+- Animated Link Cards
+- Hover Preview Cards
+- Theme-aware UI Colors
+- Fully Responsive Design
+
+---
 
 ### 📊 Analytics
-- Click Tracking
-- Total Click Count
-- Most Clicked Link
-- Link Performance Overview
+- Total Click Tracking
+- Total Links Counter
+- Average Clicks Per Link
+- Champion (Most Clicked) Link
+- Traffic Distribution Pie Chart
+- Link Ranking Chart
+- Link Performance Dashboard
+- Click History Storage
+
+---
 
 ### 📱 Sharing
 - Public Profile URL
 - QR Code Generation
 - One-click Copy Profile URL
+- Native Share API Support (Mobile)
+- Share Modal with QR Preview
+
+---
+
+### ✨ User Experience
+- Beautiful Animations with Motion
+- Toast Notifications
+- Loading States
+- Empty States
+- Responsive Modals
+- Smooth Transitions
+- Optimistic UI Updates
 
 ---
 
@@ -59,7 +132,6 @@ A modern, production-ready Link-in-Bio platform built with the MERN stack. Creat
 - React Icons
 - Sonner
 - QRCode React
-- Hello Pangea DnD
 
 ### Backend
 - Node.js
@@ -71,6 +143,13 @@ A modern, production-ready Link-in-Bio platform built with the MERN stack. Creat
 - Cookie Parser
 - Morgan
 - CORS
+- Multer
+- Cloudinary
+
+### AI & Utilities
+- Google Gemini API
+- Cheerio
+- Link Preview JS
 
 ---
 
@@ -84,17 +163,18 @@ LinksHub
 │   │   ├── app
 │   │   ├── components
 │   │   ├── features
+│   │   │   ├── ai
 │   │   │   ├── analytics
 │   │   │   ├── auth
 │   │   │   ├── links
 │   │   │   └── profile
 │   │   ├── layouts
+│   │   ├── routes
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── index.css
 │   │
 │   ├── public
-│   ├── dist
 │   ├── package.json
 │   └── vite.config.js
 │
@@ -106,6 +186,8 @@ LinksHub
 │   │   ├── middlewares
 │   │   ├── models
 │   │   ├── routes
+│   │   ├── services
+│   │   ├── utils
 │   │   ├── validators
 │   │   └── app.js
 │   │
@@ -113,7 +195,7 @@ LinksHub
 │   └── package.json
 │
 └── package.json
-```
+````
 
 ---
 
@@ -140,6 +222,12 @@ PORT=4000
 MONGODB_URI=your_mongodb_uri
 JWT_SECRET=your_secret_key
 CLIENT_URL=http://localhost:5173
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+GEMINI_API_KEY=
 ```
 
 Run backend:
@@ -154,6 +242,12 @@ npm run dev
 cd Client
 npm install
 npm run dev
+```
+
+Create `.env`
+
+```env
+VITE_API_URL=http://localhost:4000/api
 ```
 
 ---
@@ -174,37 +268,41 @@ npm start
 
 ---
 
-## 📊 Analytics
-
-- Total Click Tracking
-- Most Clicked Links
-- Link Performance Dashboard
-- Click History Storage
-
----
-
 ## 🎨 Themes
 
-- Lime
-- Blue
-- Purple
-- Rose
-
----
-
-## 🔄 Drag & Drop
-
-Users can reorder links using drag-and-drop and instantly update their public profile layout.
+* 🟢 Lime
+* 🔵 Blue
+* 🟣 Purple
+* 🌹 Rose
 
 ---
 
 ## 🛡️ Security
 
-- bcrypt Password Hashing
-- JWT Authentication
-- HTTP-only Cookies
-- Protected Routes
-- Input Validation
+* bcrypt Password Hashing
+* JWT Authentication
+* HTTP-only Cookies
+* Protected Routes
+* Input Validation
+* Secure File Uploads
+* Duplicate Link Protection
+
+---
+
+## 🚀 Future Improvements
+
+* Custom Domains
+* Device Analytics
+* Country Analytics
+* Link Scheduling
+* Pinned Links
+* Social Icons Section
+* Custom Backgrounds
+* Themes Marketplace
+* Profile Visitor Count
+* Export as Digital Business Card
+* Email Verification
+* Two Factor Authentication
 
 ---
 
@@ -214,4 +312,7 @@ Users can reorder links using drag-and-drop and instantly update their public pr
 
 GitHub: https://github.com/harshit403-pixel
 
-⭐ If you like this project, consider giving it a star.
+⭐ If you like this project, consider giving it a star!
+
+```
+```
