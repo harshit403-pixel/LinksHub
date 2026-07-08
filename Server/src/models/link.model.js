@@ -14,6 +14,19 @@ const linkSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    category: {
+  type: String,
+  enum: [
+    "career",
+    "creator",
+    "social",
+    "contact",
+    "community",
+    "music",
+    "other",
+  ],
+  default: "other",
+},
     clicks: {
         type: Number,
         default: 0,

@@ -6,6 +6,7 @@ import ogs from "open-graph-scraper";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { fetchLinkPreview } from '../utils/fetchLinkPreview.js';
+import { getLinkCategory } from "../utils/getLinkCategory.js";
 
 
 export const createLink = async (
@@ -57,20 +58,21 @@ export const createLink = async (
         })
         .sort("-order");
 
-    const newLink =
-      await linkModel.create({
-        user: user.id,
-        title,
-        url,
+   const newLink =
+  await linkModel.create({
+    user: user.id,
+    title,
+    url,
 
-        previewTitle,
-        previewDescription,
-        previewImage,
+    category: getLinkCategory(url),
 
-        order:
-          (lastLink?.order || 0) +
-          1,
-      });
+    previewTitle,
+    previewDescription,
+    previewImage,
+
+    order:
+      (lastLink?.order || 0) + 1,
+  });
 
     return res.status(201).json({
       message:
@@ -359,8 +361,9 @@ export const updateLink = async (req, res) => {
     }
 
     if (url) {
-      link.url = url;
-    }
+  link.url = url;
+  link.category = getLinkCategory(url);
+}
 
     await link.save();
 
@@ -577,17 +580,18 @@ export const bulkCreateLinks = async (req, res) => {
         lastLink?.order || 0;
 
       const docs =
-        filteredLinks.map(
-          (link, index) => ({
-            user: user.id,
-            title: link.title,
-            url: link.url,
-            order:
-              lastOrder +
-              index +
-              1,
-          })
-        );
+  filteredLinks.map(
+    (link, index) => ({
+      user: user.id,
+      title: link.title,
+      url: link.url,
+
+      category: getLinkCategory(link.url),
+
+      order:
+        lastOrder + index + 1,
+    })
+  );
 
       const created =
         await linkModel.insertMany(
