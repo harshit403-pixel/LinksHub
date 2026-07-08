@@ -7,6 +7,9 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { fetchLinkPreview } from '../utils/fetchLinkPreview.js';
 import { getLinkCategory } from "../utils/getLinkCategory.js";
+import { detectVisitor } from '../utils/detectVisitor.js';
+import { rankLinks } from '../utils/rankLinks.js';
+import { getLinkRole } from '../utils/getLinkRole.js';
 
 
 export const createLink = async (
@@ -69,6 +72,7 @@ export const createLink = async (
     previewTitle,
     previewDescription,
     previewImage,
+    role: getLinkRole(url),
 
     order:
       (lastLink?.order || 0) + 1,
@@ -89,39 +93,62 @@ export const createLink = async (
 };
 
 export const getLinksByUsername = async (req, res) => {
-
+  try {
     const { username } = req.params;
 
-    const user = await userModel.findOne({ username })
+    const user = await userModel.findOne({
+      username,
+    });
 
     if (!user) {
-        return res.status(404).json({
-            message: 'User not found',
-        });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
-    //add the is Deleted feild too
-   const links = await linkModel
-  .find({
-    user: user._id,
-    isDeleted: false,
-  })
-  .sort({ order: 1 });
+    const links = await linkModel.find({
+      user: user._id,
+      isDeleted: false,
+    });
 
-return res.status(200).json({
+    // Detect visitor type
+    const visitorType =
+      detectVisitor(req);
+
+    // Adaptive sorting
+    const rankedLinks =
+      rankLinks(
+        links,
+        visitorType
+      );
+
+    const response = {
   message: "Links retrieved successfully",
 
   profile: {
     username: user.username,
     displayName: user.displayName,
     bio: user.bio,
-     theme: user.theme,
-     profilePicture: user.profilePicture,
+    theme: user.theme,
+    profilePicture: user.profilePicture,
   },
 
-  links,
-});
+  links: rankedLinks,
+};
+
+if (process.env.NODE_ENV !== "production") {
+  response.visitorType = visitorType;
 }
+
+return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      message:
+        error.message ||
+        "Failed to retrieve links",
+    });
+  }
+};
 
 
 export const deleteLink = async (req, res) => {
@@ -587,6 +614,7 @@ export const bulkCreateLinks = async (req, res) => {
       url: link.url,
 
       category: getLinkCategory(link.url),
+      role: getLinkRole(link.url),
 
       order:
         lastOrder + index + 1,

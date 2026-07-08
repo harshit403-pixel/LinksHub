@@ -27,6 +27,10 @@ const linkSchema = new mongoose.Schema({
   ],
   default: "other",
 },
+role: {
+    type: String,
+    default: "other",
+},
     clicks: {
         type: Number,
         default: 0,
