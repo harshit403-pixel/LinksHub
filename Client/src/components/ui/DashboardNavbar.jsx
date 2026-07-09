@@ -6,8 +6,7 @@ import { useLogout } from "../../features/auth/useLogout";
 function DashboardNavbar() {
   const { data: authData } = useAuth();
 
-  const { mutate: logout } =
-    useLogout();
+  const { mutate: logout } = useLogout();
 
   const profileUrl = `/${authData?.user?.username}`;
 
@@ -25,6 +24,13 @@ function DashboardNavbar() {
               className="text-zinc-400 hover:text-white transition"
             >
               Dashboard
+            </Link>
+
+            <Link
+              to="/dashboard/library"
+              className="text-zinc-400 hover:text-white transition"
+            >
+              Library
             </Link>
 
             <Link

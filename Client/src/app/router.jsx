@@ -14,6 +14,7 @@ import Profile from "../features/profile/Profile";
 
 import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
+import Library from "../features/knowledge/Library";
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ export const router = createBrowserRouter([
         path: "/dashboard",
         element: <Dashboard />,
       },
+      {
+  path: "/dashboard/library",
+  element: <Library />,
+},
       {
         path: "/dashboard/analytics",
         element: <Analytics />,
