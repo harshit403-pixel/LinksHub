@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import * as linkController from '../controllers/links.controller.js';
-import { clickRateLimiter } from '../middlewares/clickRateLimiter.js';
+
 
 
 const router = Router();
@@ -48,7 +48,6 @@ router.delete(
 
 router.get(
   "/go/:linkId",
-  clickRateLimiter,
   linkController.redirectToLink
 );
 

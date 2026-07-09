@@ -6,6 +6,7 @@ import cors from "cors";
 
 import path from "path";
 import { fileURLToPath } from "url";
+import { apiLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
+app.use(apiLimiter);
 
 app.use("/api", apiRoutes);
 
