@@ -144,6 +144,6 @@ function DeleteProjectModal({
       </motion.div>
     </AnimatePresence>
   );
-}
+}  
 
 export default DeleteProjectModal;
