@@ -9,14 +9,13 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-// All knowledge routes require authentication
-router.use(authMiddleware);
+
 
 // Import a GitHub project
-router.post("/project/import", importProject);
+router.post("/project/import",authMiddleware, importProject);
 
 // Get all knowledge items of logged-in user
-router.get("/", getKnowledge);
+router.get("/",authMiddleware, getKnowledge);
 
 // Search projects
 router.post("/search", searchProjects);

@@ -1,4 +1,5 @@
 import Knowledge from "../models/knowledge.model.js";
+import User from "../models/user.model.js";
 import { fetchRepository } from "../services/github.service.js";
 import { summarizeProject } from "../services/knowledge.service.js";
 import { searchKnowledge } from "../services/search.service.js";
@@ -89,7 +90,14 @@ export const searchProjects = async (
   next
 ) => {
   try {
-    const { query } = req.body;
+    const { username, query } = req.body;
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: "Username is required.",
+      });
+    }
 
     if (!query?.trim()) {
       return res.status(400).json({
@@ -98,38 +106,62 @@ export const searchProjects = async (
       });
     }
 
-    const projects = await Knowledge.find({
-      owner: req.user.id,
-      type: "project",
+    const user = await User.findOne({
+      username,
     });
 
-    const aiResponse = await searchKnowledge(
-      query,
-      projects
-    );
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found.",
+      });
+    }
 
-    const matchedProjects = projects.filter((project) =>
-      aiResponse.projects.includes(project._id.toString())
-    );
+    const projects = await Knowledge.find({
+      owner: user._id,
+      type: "project",
+      visibility: "public",
+    });
 
-    const formattedProjects = matchedProjects.map((project) => ({
-  _id: project._id,
-  title: project.title,
-  summary: project.summary,
-  githubUrl: project.githubUrl,
-  demoUrl: project.demoUrl,
-  technologies: project.technologies,
-  tags: project.tags,
-  
-}));
+    if (!projects.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No public projects found.",
+      });
+    }
 
-return res.status(200).json({
-  success: true,
-  data: {
-    answer: aiResponse.answer,
-    projects: formattedProjects,
-  },
-});
+    const aiResponse =
+      await searchKnowledge(
+        query,
+        projects
+      );
+
+    const matchedProjects =
+      projects.filter((project) =>
+        aiResponse.projects.includes(
+          project._id.toString()
+        )
+      );
+
+    const formattedProjects =
+      matchedProjects.map((project) => ({
+        _id: project._id,
+        title: project.title,
+        summary: project.summary,
+        githubUrl: project.githubUrl,
+        demoUrl: project.demoUrl,
+        technologies:
+          project.technologies,
+        tags: project.tags,
+      }));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        answer: aiResponse.answer,
+        projects: formattedProjects,
+      },
+    });
   } catch (error) {
     next(error);
   }
