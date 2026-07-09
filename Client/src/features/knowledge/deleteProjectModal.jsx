@@ -123,7 +123,7 @@ function DeleteProjectModal({
               className="
                 flex-1
                 rounded-2xl
-                bg-red-500
+                bg-red-500 
                 py-4
                 text-white
                 font-semibold

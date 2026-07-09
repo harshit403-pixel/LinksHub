@@ -4,7 +4,7 @@ import {
   useKnowledge,
 } from "./knowledge.hooks";
 import { toast } from "sonner";
-import DeleteProjectModal from "./DeleteProjectModal";
+import DeleteProjectModal from "./deleteProjectModal";
 
 
 const Library = () => {
