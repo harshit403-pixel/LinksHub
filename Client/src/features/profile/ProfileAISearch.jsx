@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { FiSearch } from "react-icons/fi";
 import { FaGithub, FaGlobe } from "react-icons/fa";
-import { useProfileAISearch } from "./useProfileAISearch";
+import { useProfileAISearch } from "./useProfileAIsearch";
 
 function ProfileAISearch({
   username,
