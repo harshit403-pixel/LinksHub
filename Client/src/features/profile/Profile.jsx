@@ -7,6 +7,10 @@ import ProfileShareModal from "./ProfileShareModal";
 import { getLinkColor } from "./getLinkColor";
 import { themes } from "./themes";
 import { useState } from "react";
+import FeaturedProjects from "./FeaturedProjects";
+import ProfileAISearch from "./ProfileAISearch";
+
+
 function Profile() {
   const { username } = useParams();
 
@@ -37,6 +41,17 @@ const [shareOpen, setShareOpen] =
   }
 
   const links = data?.links || [];
+  const projects = data?.projects || [];
+const aiSuggestions = [
+  ...new Set(
+    projects.flatMap(
+      (project) => project.questions || []
+    )
+  ),
+]
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 2);
+
   const profile = data?.profile;
   const currentTheme =
   profile?.theme || "lime";
@@ -128,6 +143,7 @@ const [shareOpen, setShareOpen] =
           {profile.bio}
         </p>
       )}
+
     </div>
   </div>
 
@@ -159,6 +175,22 @@ const [shareOpen, setShareOpen] =
   </button>
 </div>
         </motion.div>
+        <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.15 }}
+  className="mb-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-8"
+>
+  <h2 className="mb-6 text-2xl font-bold text-white">
+    AI Assistant
+  </h2>
+
+  <ProfileAISearch
+    username={profile.username}
+    suggestions={aiSuggestions}
+  />
+</motion.div>
+        
 
         {/* BENTO GRID */}
 
@@ -298,6 +330,8 @@ const [shareOpen, setShareOpen] =
           ))}
         </div>
 
+       
+
         {links.length === 0 && (
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-10 text-center mt-6">
             <p className="text-zinc-500">
@@ -305,6 +339,8 @@ const [shareOpen, setShareOpen] =
             </p>
           </div>
         )}
+
+         <FeaturedProjects projects={projects} />
       </div>
       {shareOpen && (
   <ProfileShareModal
