@@ -10,7 +10,7 @@ import { getLinkCategory } from "../utils/getLinkCategory.js";
 import { detectVisitor } from '../utils/detectVisitor.js';
 import { rankLinks } from '../utils/rankLinks.js';
 import { getLinkRole } from '../utils/getLinkRole.js';
-
+import Knowledge from "../models/knowledge.model.js";
 
 export const createLink = async (
   req,
@@ -111,6 +111,17 @@ export const getLinksByUsername = async (req, res) => {
       isDeleted: false,
     });
 
+    const projects = await Knowledge.find({
+  owner: user._id,
+  type: "project",
+  visibility: "public",
+})
+  .sort({ createdAt: -1 })
+  .limit(3)
+  .select(
+  "title summary githubUrl demoUrl technologies questions"
+);
+
     // Detect visitor type
     const visitorType =
       detectVisitor(req);
@@ -122,7 +133,7 @@ export const getLinksByUsername = async (req, res) => {
         visitorType
       );
 
-    const response = {
+const response = {
   message: "Links retrieved successfully",
 
   profile: {
@@ -132,6 +143,8 @@ export const getLinksByUsername = async (req, res) => {
     theme: user.theme,
     profilePicture: user.profilePicture,
   },
+
+  projects,
 
   links: rankedLinks,
 };
