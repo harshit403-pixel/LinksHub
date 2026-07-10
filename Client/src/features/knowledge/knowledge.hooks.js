@@ -5,11 +5,19 @@ import {
   importProject,
 } from "./knowledge.api";
 import { toast } from "sonner";
+import { useAuth } from "../auth/useAuth";
+
 
 export const useKnowledge = () => {
+  const { data: authData } = useAuth();
+
   return useQuery({
-    queryKey: ["knowledge"],
+    queryKey: [
+      "knowledge",
+      authData?.user?._id,
+    ],
     queryFn: getKnowledge,
+    enabled: !!authData?.user?._id,
   });
 };
 
