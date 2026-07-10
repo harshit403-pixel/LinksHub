@@ -74,10 +74,11 @@ function ProfileShareModal({
             border
             border-zinc-800
             bg-zinc-900
-            p-8
+            p-5
+            sm:p-8
           "
         >
-          <h2 className="text-3xl font-black text-white">
+          <h2 className="text-2xl font-black text-white sm:text-3xl">
             Share Profile
           </h2>
 
@@ -85,10 +86,10 @@ function ProfileShareModal({
             Share your LinksHub profile.
           </p>
 
-          <div className="bg-white p-4 rounded-3xl w-fit mx-auto mt-8">
+          <div className="mx-auto mt-8 w-fit rounded-3xl bg-white p-3 sm:p-4">
             <QRCode
               value={profileUrl}
-              size={220}
+              size={180}
             />
           </div>
 
@@ -96,7 +97,7 @@ function ProfileShareModal({
             {profileUrl}
           </p>
 
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <button
               onClick={handleCopy}
               className="
@@ -104,7 +105,9 @@ function ProfileShareModal({
                 border
                 border-zinc-700
                 py-4
+                text-sm
                 text-white
+                sm:text-base
               "
             >
               Copy Link
@@ -116,8 +119,10 @@ function ProfileShareModal({
                 rounded-2xl
                 bg-lime-400
                 py-4
+                text-sm
                 font-semibold
                 text-black
+                sm:text-base
               "
             >
               Share

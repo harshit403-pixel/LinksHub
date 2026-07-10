@@ -13,12 +13,12 @@ function DashboardNavbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800 bg-black/80 backdrop-blur">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-black text-white">
             LinksHub
           </h1>
 
-          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-sm">
+          <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2 text-sm sm:w-auto sm:gap-6">
             <Link
               to="/dashboard"
               className="text-zinc-400 hover:text-white transition"

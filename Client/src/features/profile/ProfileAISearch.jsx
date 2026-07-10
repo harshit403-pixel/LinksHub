@@ -77,42 +77,51 @@ function ProfileAISearch({
     <div>
       <form
         onSubmit={handleSubmit}
-        className="space-y-5"
+        className="space-y-4 sm:space-y-5"
       >
         <div className="rounded-2xl border border-zinc-800 bg-black/40 backdrop-blur">
-          <div className="flex items-center px-3">
-            <FiSearch
-              size={20}
-              className="text-zinc-500"
-            />
+          <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-1 items-center">
+              <FiSearch
+                size={20}
+                className="shrink-0 text-zinc-500"
+              />
 
-            <input
-              value={query}
-              disabled={isPending}
-              onChange={(e) =>
-                setQuery(e.target.value)
-              }
-              placeholder="Ask anything about my projects, experience or skills..."
-              className="
-                flex-1
-                h-14
-                bg-transparent
-                px-4
-                text-white
-                placeholder:text-zinc-500
-                outline-none
-                disabled:opacity-60
-              "
-            />
+              <input
+                value={query}
+                disabled={isPending}
+                onChange={(e) =>
+                  setQuery(e.target.value)
+                }
+                placeholder="Ask anything about my projects, experience or skills..."
+                className="
+                  min-w-0
+                  flex-1
+                  h-12
+                  bg-transparent
+                  px-3
+                  text-sm
+                  text-white
+                  placeholder:text-zinc-500
+                  outline-none
+                  disabled:opacity-60
+                  sm:h-14
+                  sm:px-4
+                  sm:text-base
+                "
+              />
+            </div>
 
             <button
               type="submit"
               disabled={isPending}
               className="
+                w-full
+                shrink-0
                 rounded-xl
                 bg-white
                 px-5
-                py-2.5
+                py-3
                 text-sm
                 font-semibold
                 text-black
@@ -120,6 +129,8 @@ function ProfileAISearch({
                 hover:scale-105
                 disabled:cursor-not-allowed
                 disabled:opacity-60
+                sm:w-auto
+                sm:py-2.5
               "
             >
               {isPending
@@ -156,6 +167,7 @@ function ProfileAISearch({
                         )
                       }
                       className="
+                        w-full
                         rounded-full
                         border
                         border-zinc-800
@@ -168,6 +180,7 @@ function ProfileAISearch({
                         hover:border-white
                         hover:bg-zinc-800
                         hover:text-white
+                        sm:w-auto
                       "
                     >
                       {question}
@@ -191,7 +204,7 @@ function ProfileAISearch({
             exit={{
               opacity: 0,
             }}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6"
+            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 sm:p-6"
           >
             <h3 className="text-xl font-bold text-white">
               Answer
@@ -224,7 +237,7 @@ function ProfileAISearch({
             exit={{
               opacity: 0,
             }}
-            className="rounded-3xl border border-red-900 bg-zinc-900 p-6"
+            className="rounded-3xl border border-red-900 bg-zinc-900 p-5 sm:p-6"
           >
             <h3 className="text-xl font-bold text-white">
               Something went wrong
@@ -269,14 +282,14 @@ function ProfileAISearch({
             exit={{
               opacity: 0,
             }}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6"
+            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 sm:p-6"
           >
             <div className="mb-8">
               <p className="text-sm uppercase tracking-wider text-zinc-500">
                 Question
               </p>
 
-              <h2 className="mt-2 text-xl font-semibold text-white">
+              <h2 className="mt-2 break-words text-xl font-semibold text-white">
                 {lastQuestion}
               </h2>
             </div>
@@ -286,7 +299,7 @@ function ProfileAISearch({
                 Answer
               </p>
 
-              <p className="mt-4 whitespace-pre-wrap leading-8 text-zinc-300">
+              <p className="mt-4 whitespace-pre-wrap break-words leading-7 text-zinc-300 sm:leading-8">
                 {data.data.answer}
               </p>
             </div>
@@ -328,20 +341,21 @@ function ProfileAISearch({
                       transition={{
                         duration: 0.25,
                       }}
-                      className="
-                        rounded-2xl
-                        border
-                        border-zinc-800
-                        bg-black/30
-                        p-5
-                        transition-all
-                        hover:border-zinc-700
-                        hover:bg-black/50
-                      "
-                    >
-                      <h4 className="text-lg font-bold text-white">
-                        {project.title}
-                      </h4>
+                       className="
+                         rounded-2xl
+                         border
+                         border-zinc-800
+                         bg-black/30
+                         p-4
+                         transition-all
+                         hover:border-zinc-700
+                         hover:bg-black/50
+                         sm:p-5
+                       "
+                     >
+                       <h4 className="break-words text-lg font-bold text-white">
+                         {project.title}
+                       </h4>
 
                       <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">
                         {project.summary}
@@ -367,7 +381,7 @@ function ProfileAISearch({
                           ))}
                       </div>
 
-                      <div className="mt-6 flex items-center gap-5">
+                       <div className="mt-6 flex flex-wrap gap-4 sm:gap-5">
                         <a
                           href={project.githubUrl}
                           target="_blank"
@@ -431,8 +445,9 @@ function ProfileAISearch({
               border
               border-zinc-800
               bg-zinc-900
-              p-10
+              p-6
               text-center
+              sm:p-10
             "
           >
             <h3 className="text-xl font-semibold text-white">

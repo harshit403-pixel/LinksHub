@@ -5,7 +5,7 @@ const FeaturedProjects = ({ projects }) => {
 
   return (
     <section className="mb-8">
-      <div className="flex items-center justify-between mb-5">
+      <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-2xl font-black text-white">
             Featured Projects
@@ -17,13 +17,13 @@ const FeaturedProjects = ({ projects }) => {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {projects.map((project) => (
           <div
             key={project._id}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-zinc-700"
+            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 transition hover:border-zinc-700 sm:p-6"
           >
-            <h3 className="text-xl font-bold text-white">
+            <h3 className="break-words text-xl font-bold text-white">
               {project.title}
             </h3>
 
@@ -44,12 +44,12 @@ const FeaturedProjects = ({ projects }) => {
                 ))}
             </div>
 
-            <div className="flex gap-6 mt-6">
+            <div className="mt-6 flex flex-wrap gap-4 sm:gap-6">
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 text-zinc-300 hover:text-white"
+                className="flex items-center gap-2 text-sm text-zinc-300 hover:text-white sm:text-base"
               >
                 <FaGithub />
                 GitHub
@@ -60,7 +60,7 @@ const FeaturedProjects = ({ projects }) => {
                   href={project.demoUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-2 text-zinc-300 hover:text-white"
+                  className="flex items-center gap-2 text-sm text-zinc-300 hover:text-white sm:text-base"
                 >
                   <FaGlobe />
                   Live

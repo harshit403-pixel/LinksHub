@@ -5,9 +5,24 @@ import {
 } from "./knowledge.hooks";
 import { toast } from "sonner";
 import DeleteProjectModal from "./deleteProjectModal";
+import GithubConnect from "../github/GithubConnect";
+import GithubRepositories from "../github/GithubRepositories";
+import { useGithubConnection } from "../github/useGithub";
 
+import GithubRepositoriesModal from "../github/GithubRepositoriesModal";
 
 const Library = () => {
+
+  const [repositoriesOpen, setRepositoriesOpen] =
+  useState(false);
+
+
+  const { data: github } =
+  useGithubConnection();
+
+const githubConnected =
+  !!github?.data;
+
     const [projectToDelete, setProjectToDelete] =
       useState(null);
   const [githubUrl, setGithubUrl] = useState("");
@@ -39,24 +54,54 @@ if (!githubUrl.trim()) {
 
   
   return (
-    <div className="space-y-8 text-white">
-      {/* Header */}
-      <div>
-        <h1 className="text-4xl font-black">Library</h1>
-        <p className="text-zinc-400 mt-2">
-          Import your GitHub repositories and build your AI knowledge base.
-        </p>
-      </div>
+    <div className="space-y-6 text-white sm:space-y-8">
 
+<GithubConnect
+  onOpenRepositories={() =>
+    setRepositoriesOpen(true)
+  }
+/>
+
+        
+      {/* Header */}
+{githubConnected && (
+  <div className="relative my-10">
+    <div className="border-t border-zinc-800" />
+
+    <span
+      className="
+        absolute
+        left-1/2
+        top-0
+        -translate-x-1/2
+        -translate-y-1/2
+        bg-black
+        px-4
+        text-sm
+        text-zinc-500
+      "
+    >
+      OR
+    </span>
+  </div>
+)}
       {/* Import Card */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-        <h2 className="text-xl font-semibold mb-5">
-          Import GitHub Repository
-        </h2>
+      <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
+       <div className="mb-5 flex flex-wrap items-center gap-3">
+  <h2 className="text-xl font-semibold">
+    Import GitHub Repository
+  </h2>
+
+  {githubConnected && (
+    <span className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-400">
+      Manual
+    </span>
+  )}
+</div>
 
         <form
           onSubmit={handleImport}
-          className="flex flex-col md:flex-row gap-4"
+          className="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-4"
         >
           <input
           disabled={importMutation.isPending}
@@ -67,6 +112,8 @@ if (!githubUrl.trim()) {
               setGithubUrl(e.target.value)
             }
             className="
+              min-w-0
+              w-full
               flex-1
               bg-zinc-950
               border
@@ -84,6 +131,7 @@ if (!githubUrl.trim()) {
             type="submit"
             disabled={importMutation.isPending}
             className="
+              w-full
               bg-white
               text-black
               font-semibold
@@ -93,6 +141,7 @@ if (!githubUrl.trim()) {
               hover:bg-zinc-200
               disabled:opacity-60
               transition
+              sm:w-auto
             "
           >
             {importMutation.isPending
@@ -104,32 +153,50 @@ if (!githubUrl.trim()) {
 
       {/* Projects */}
       <div>
-        <h2 className="text-2xl font-bold mb-5">
-          Imported Projects
-        </h2>
+       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <h2 className="text-2xl font-bold">
+    Imported Projects
+  </h2>
+
+  <span className="self-start rounded-full bg-zinc-900 px-4 py-2 text-sm text-zinc-400 sm:self-auto">
+    {projects.length} Project{projects.length !== 1 && "s"}
+  </span>
+</div>
 
         {isLoading ? (
-          <div className="text-zinc-400">
-            Loading...
-          </div>
+         <div className="grid gap-5">
+  {[...Array(3)].map((_, i) => (
+    <div
+      key={i}
+      className="h-48 animate-pulse rounded-3xl bg-zinc-900"
+    />
+  ))}
+</div>
         ) : projects.length === 0 ? (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-10 text-center text-zinc-500">
-            No projects imported yet.
-          </div>
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 text-center sm:p-16">
+  <h3 className="text-xl font-bold text-white sm:text-2xl">
+    No imported projects
+  </h3>
+
+  <p className="mt-3 text-zinc-500">
+    Import a GitHub repository to start building
+    your AI knowledge base.
+  </p>
+</div>
         ) : (
           <div className="grid gap-5">
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
+                className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6"
               >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-2xl font-bold">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h3 className="break-words text-xl font-bold sm:text-2xl">
                       {project.title}
                     </h3>
 
-                    <p className="text-zinc-400 mt-3">
+                    <p className="mt-3 break-words text-zinc-400">
                       {project.summary}
                     </p>
                   </div>
@@ -146,11 +213,11 @@ if (!githubUrl.trim()) {
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between mt-6">
-<div className="flex gap-6 mt-6">
-                      <a
-                    href={project.githubUrl}
-                    target="_blank"
+                <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+<div className="flex flex-wrap gap-4 sm:gap-6">
+                       <a
+                     href={project.githubUrl}
+                     target="_blank"
                     rel="noreferrer"
                     className="text-blue-400 hover:text-blue-300"
                   >
@@ -174,10 +241,12 @@ if (!githubUrl.trim()) {
     setProjectToDelete(project)
   }
   className="
+    self-start
     text-red-400
     hover:text-red-300
     transition
     text-sm
+    sm:self-auto
   "
 >
   Delete
@@ -196,6 +265,12 @@ if (!githubUrl.trim()) {
     }
   />
 )}
+<GithubRepositoriesModal
+  open={repositoriesOpen}
+  onClose={() =>
+    setRepositoriesOpen(false)
+  }
+/>
     </div>
   );
 };

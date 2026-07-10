@@ -65,17 +65,17 @@ const aiSuggestions = [
     : "text-lime-400";
 
   return (
-    <div className="min-h-screen bg-black px-4 py-10">
+    <div className="min-h-screen bg-black px-3 py-6 sm:px-4 sm:py-10">
       <div className="max-w-6xl mx-auto">
         {/* HEADER */}
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 mb-6"
+          className="mb-4 rounded-3xl border border-zinc-800 bg-zinc-900 p-5 sm:mb-6 sm:p-8"
         >
-<div className="flex items-start justify-between gap-4">
-  <div className="flex items-center gap-4 flex-1 min-w-0">
+<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+  <div className="flex min-w-0 flex-col items-start gap-4 sm:flex-row sm:items-center">
     {profile?.profilePicture ? (
       <img
         src={profile.profilePicture}
@@ -133,7 +133,7 @@ const aiSuggestions = [
       </h1>
 
       <p
-        className={`${themeText} mt-1 text-sm sm:text-base truncate`}
+        className={`${themeText} mt-1 break-all text-sm sm:text-base`}
       >
         @{profile?.username}
       </p>
@@ -164,11 +164,13 @@ const aiSuggestions = [
       items-center
       justify-center
       text-white
+      self-start
       shrink-0
       hover:border-lime-400
       hover:bg-zinc-800
       transition-all
       duration-300
+      sm:self-auto
     "
   >
     <FaShareAlt className="text-sm sm:text-base" />
@@ -179,9 +181,9 @@ const aiSuggestions = [
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ delay: 0.15 }}
-  className="mb-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-8"
+  className="mb-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-5 sm:p-8"
 >
-  <h2 className="mb-6 text-2xl font-bold text-white">
+  <h2 className="mb-5 text-xl font-bold text-white sm:mb-6 sm:text-2xl">
     AI Assistant
   </h2>
 
@@ -194,7 +196,7 @@ const aiSuggestions = [
 
         {/* BENTO GRID */}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {links.map((link, index) => (
 <motion.a
   key={link._id}
@@ -214,12 +216,13 @@ const aiSuggestions = [
     border
     border-zinc-800
     bg-zinc-900
-    p-6
+    p-5
     transition-all
+    sm:p-6
 
     ${
       index === 0
-        ? "md:col-span-2 min-h-[220px]"
+        ? "md:col-span-2 md:min-h-[220px]"
         : ""
     }
   `}
@@ -270,13 +273,14 @@ const aiSuggestions = [
         absolute
         inset-0
         bg-black/70
-        p-6
+        p-5
         flex
         flex-col
         justify-end
+        sm:p-6
       "
     >
-      <h3 className="text-white font-bold text-xl">
+      <h3 className="text-lg font-bold text-white sm:text-xl">
         {link.previewTitle}
       </h3>
 
@@ -288,12 +292,12 @@ const aiSuggestions = [
 )}
 
   {/* Content */}
-  <div className="relative z-10 h-full flex flex-col  justify-between">
+  <div className="relative z-10 flex h-full flex-col justify-between">
     <div>
       <div
   className={`
-    w-12
-    h-12
+    w-11
+    h-11
     rounded-full
     border
     border-white/10
@@ -310,6 +314,9 @@ const aiSuggestions = [
 
     group-hover:text-white
     group-hover:scale-110
+
+    sm:h-12
+    sm:w-12
   `}
 >
   {getLinkIcon(link.url)}
@@ -317,11 +324,11 @@ const aiSuggestions = [
     </div>
 
     <div>
-      <h2 className="text-white text-2xl font-bold">
+      <h2 className="break-words text-xl font-bold text-white sm:text-2xl">
         {link.title}
       </h2>
 
-      <p className="text-zinc-400 mt-3 font-medium transition-colors duration-300 group-hover:text-white">
+      <p className="mt-3 text-sm font-medium text-zinc-400 transition-colors duration-300 group-hover:text-white sm:text-base">
         Open Link →
       </p>
     </div>
@@ -333,7 +340,7 @@ const aiSuggestions = [
        
 
         {links.length === 0 && (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-10 text-center mt-6">
+          <div className="mt-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-6 text-center sm:p-10">
             <p className="text-zinc-500">
               No links available
             </p>
