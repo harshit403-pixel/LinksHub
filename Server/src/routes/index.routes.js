@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import authRoutes from './auth.routes.js';
-import linkRoutes from './link.routes.js';
-import aiRoutes from './ai.route.js'
-import knowledgeRoutes from './knowledge.routes.js'
-import githubRoutes from './github.routes.js'
+import authRoutes from '../modules/auth/auth.routes.js';
+import linkRoutes from '../modules/links/links.routes.js';
+import aiRoutes from '../modules/ai/ai.routes.js'
+import knowledgeRoutes from '../modules/knowledge/knowledge.routes.js'
+import githubRoutes from '../modules/github/github.routes.js'
 
 const router = Router();
 

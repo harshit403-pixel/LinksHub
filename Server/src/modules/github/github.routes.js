@@ -1,15 +1,13 @@
 import express from "express";
-
-import authMiddleware from "../middlewares/auth.middleware.js";
-
+import authMiddleware from "../../middlewares/auth.middleware.js";
 import {
   connectGithub,
-  githubCallback,
-  getGithubConnection,
   disconnectGithub,
+  getGithubConnection,
   getGithubRepositories,
+  githubCallback,
   importGithubRepositories,
-} from "../controllers/github.controller.js";
+} from "./github.controller.js";
 
 const router = express.Router();
 
