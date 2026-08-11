@@ -71,7 +71,9 @@ questions: ai.questions,
 
 export const getKnowledge = async (req, res, next) => {
   try {
-    const knowledge = await Knowledge.find().sort({
+    const knowledge = await Knowledge.find({
+      owner: req.user.id,
+    }).sort({
       createdAt: -1,
     });
 

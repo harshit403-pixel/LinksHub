@@ -14,12 +14,21 @@ import {
 
 import { toast } from "sonner";
 
+import {useAuth} from '../auth/useAuth'
 
-export const useGithubConnection = () =>
-  useQuery({
-    queryKey: ["github-connection"],
+
+export const useGithubConnection = () => {
+  const { data: authData } = useAuth();
+
+  return useQuery({
+    queryKey: [
+      "github-connection",
+      authData?.user?._id,
+    ],
     queryFn: getGithubConnection,
+    enabled: !!authData?.user?._id,
   });
+};
 
 export const useGithubRepositories = () =>
     useQuery({
