@@ -1,24 +1,26 @@
-import { Router } from 'express';
-import authMiddleware from '../middlewares/auth.middleware.js';
-import * as linkController from '../controllers/links.controller.js';
-
-
+import { Router } from "express";
+import authMiddleware from "../../middlewares/auth.middleware.js";
+import * as linkController from "./links.controller.js";
 
 const router = Router();
 
-router.post("/", authMiddleware, linkController.createLink)
+router.post(
+  "/",
+  authMiddleware,
+  linkController.createLink
+);
 
 router.patch(
   "/reorder",
   authMiddleware,
   linkController.reorderLinks
 );
+
 router.patch(
   "/:id",
   authMiddleware,
   linkController.updateLink
 );
-
 
 router.delete(
   "/:id",
@@ -38,13 +40,11 @@ router.patch(
   linkController.restoreDeletedLink
 );
 
-
 router.delete(
   "/deleted/:id",
   authMiddleware,
   linkController.purgeDeletedLink
 );
-
 
 router.get(
   "/go/:linkId",
@@ -56,6 +56,7 @@ router.get(
   authMiddleware,
   linkController.getLinkAnalytics
 );
+
 router.get(
   "/me",
   authMiddleware,
@@ -74,9 +75,9 @@ router.post(
   linkController.bulkCreateLinks
 );
 
-
-router.get("/:username", linkController.getLinksByUsername)
-
-
+router.get(
+  "/:username",
+  linkController.getLinksByUsername
+);
 
 export default router;
