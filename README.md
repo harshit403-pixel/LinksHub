@@ -7,7 +7,7 @@ A modern, production-ready Link-in-Bio platform inspired by Linktree and Bento, 
 ![Node.js](https://img.shields.io/badge/Node.js-Backend-green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Database-success)
 ![Vite](https://img.shields.io/badge/Vite-Build-purple)
-
+ 
 ---
 
 ## ✨ Features
