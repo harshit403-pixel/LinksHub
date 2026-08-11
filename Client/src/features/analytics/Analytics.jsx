@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FaLink,
   FaMousePointer,
-  FaTrophy,
+  FaChartLine,
 } from "react-icons/fa";
 
 import {
@@ -13,383 +13,712 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-} from "recharts";
-import {
-  Area,
-  AreaChart,
 } from "recharts";
 
 import { useMyLinks } from "../links/useMyLinks";
 import { useLinkAnalytics } from "../analytics/useLinkAnalytics";
+import { FaChevronDown, FaCheck } from "react-icons/fa";
+import { AnimatePresence, motion } from "motion/react";
+
 
 function Analytics() {
-  const { data, isLoading } =
-    useMyLinks();
+  const { data, isLoading } = useMyLinks();
 
   const links = data?.links || [];
 
-  const [selectedLink, setSelectedLink] =
-    useState("");
+const [selectedLink, setSelectedLink] =
+  useState("all");
 
-  useEffect(() => {
-    if (
-      links.length > 0 &&
-      !selectedLink
-    ) {
-      setSelectedLink(links[0]._id);
-    }
-  }, [links, selectedLink]);
+
+  const [linkDropdownOpen, setLinkDropdownOpen] =
+  useState(false);
+
+const selectedLinkData =
+  selectedLink === "all"
+    ? null
+    : links.find(
+        (link) => link._id === selectedLink
+      );
+
 
   const {
     data: analyticsData,
-  } = useLinkAnalytics(
-    selectedLink
-  );
+    isLoading: analyticsLoading,
+  } = useLinkAnalytics(selectedLink);
 
   const analytics =
     analyticsData?.analytics || [];
 
+  /* ---------------------------------- */
+  /* Statistics                         */
+  /* ---------------------------------- */
+
   const totalLinks = links.length;
 
   const totalClicks = links.reduce(
-    (sum, link) => sum + link.clicks,
+    (sum, link) =>
+      sum + (link.clicks || 0),
     0
   );
 
   const averageClicks =
-    links.length > 0
+    totalLinks > 0
       ? (
-          totalClicks / links.length
+          totalClicks / totalLinks
         ).toFixed(1)
-      : 0;
+      : "0.0";
 
-  const rankedLinks = [...links].sort(
-    (a, b) => b.clicks - a.clicks
-  );
+  /* ---------------------------------- */
+  /* Ranked Links                       */
+  /* ---------------------------------- */
+
+  const rankedLinks = useMemo(() => {
+    return [...links].sort(
+      (a, b) =>
+        (b.clicks || 0) -
+        (a.clicks || 0)
+    );
+  }, [links]);
 
   const mostClicked =
     rankedLinks[0] || null;
 
-    const topLinkPercentage =
-  totalClicks > 0
-    ? (
-        ((mostClicked?.clicks || 0) /
-          totalClicks) *
-        100
-      ).toFixed(1)
-    : 0;
+  const bestLinkShare =
+    totalClicks > 0 &&
+    mostClicked
+      ? (
+          ((mostClicked.clicks || 0) /
+            totalClicks) *
+          100
+        ).toFixed(1)
+      : "0.0";
 
-const pieData = links.map(
-  (link) => ({
-    name: link.title,
-    value: link.clicks,
-  })
-);
+  /* ---------------------------------- */
+  /* Chart Data                         */
+  /* ---------------------------------- */
 
-const COLORS = [
-  "#a3e635",
-  "#3b82f6",
-  "#8b5cf6",
-  "#f43f5e",
-  "#f59e0b",
-];
+  const chartData = useMemo(() => {
+    return analytics.map((item) => ({
+      date:
+        item.date ||
+        item._id ||
+        item.createdAt ||
+        "",
+      clicks:
+        item.clicks ||
+        item.count ||
+        0,
+    }));
+  }, [analytics]);
+
+  /* ---------------------------------- */
+  /* Loading                            */
+  /* ---------------------------------- */
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-zinc-500">
-          Loading analytics...
-        </p>
+      <div className="space-y-8 text-white">
+        <div>
+          <div className="h-10 w-48 animate-pulse rounded-xl bg-zinc-900" />
+
+          <div className="mt-3 h-5 w-72 animate-pulse rounded-lg bg-zinc-900" />
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {[...Array(3)].map(
+            (_, index) => (
+              <div
+                key={index}
+                className="h-40 animate-pulse rounded-3xl bg-zinc-900"
+              />
+            )
+          )}
+        </div>
+
+        <div className="h-[450px] animate-pulse rounded-3xl bg-zinc-900" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-5xl font-black text-white">
-            Analytics
-          </h1>
+    <div className="space-y-8 text-white">
 
-          <p className="text-zinc-500 mt-2">
-            Insights about your links
-            and profile performance.
+      {/* -------------------------------- */}
+      {/* Header                           */}
+      {/* -------------------------------- */}
+
+      <div>
+        <h1 className="text-4xl font-black tracking-tight">
+          Analytics
+        </h1>
+
+        <p className="mt-2 text-zinc-500">
+          Insights about your links
+          and profile performance.
+        </p>
+      </div>
+
+      {/* -------------------------------- */}
+      {/* Stats                            */}
+      {/* -------------------------------- */}
+
+      <div className="grid gap-4 md:grid-cols-3">
+
+        {/* Total Links */}
+
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-500">
+              Total Links
+            </span>
+
+            <FaLink className="text-lime-400" />
+          </div>
+
+          <h2 className="mt-4 text-5xl font-black text-white">
+            {totalLinks}
+          </h2>
+
+          <p className="mt-2 text-sm text-zinc-600">
+            Links on your profile
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-            <div className="flex justify-between">
-              <span className="text-zinc-500">
-                Total Links
-              </span>
+        {/* Total Clicks */}
 
-              <FaLink className="text-lime-400" />
-            </div>
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-500">
+              Total Clicks
+            </span>
 
-            <h2 className="text-white text-5xl font-black mt-4">
-              {totalLinks}
-            </h2>
+            <FaMousePointer className="text-lime-400" />
           </div>
 
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-            <div className="flex justify-between">
-              <span className="text-zinc-500">
-                Total Clicks
-              </span>
+          <h2 className="mt-4 text-5xl font-black text-white">
+            {totalClicks}
+          </h2>
 
-              <FaMousePointer className="text-lime-400" />
-            </div>
-
-            <h2 className="text-white text-5xl font-black mt-4">
-              {totalClicks}
-            </h2>
-          </div>
-
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-            <div className="flex justify-between">
-              <span className="text-zinc-500">
-                Avg Clicks
-              </span>
-
-              <FaMousePointer className="text-lime-400" />
-            </div>
-
-            <h2 className="text-white text-5xl font-black mt-4">
-              {averageClicks}
-            </h2>
-          </div>
-
-          
+          <p className="mt-2 text-sm text-zinc-600">
+            Across all your links
+          </p>
         </div>
 
-        <div className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-8">
-  <div className="flex items-center gap-3 mb-4">
-    <FaTrophy className="text-lime-400 text-2xl" />
+        {/* Average Clicks */}
 
-    <h2 className="text-white text-2xl font-bold">
-      Champion Link
-    </h2>
-  </div>
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-500">
+              Avg Clicks / Link
+            </span>
 
-  <h3 className="text-white text-4xl font-black">
-    {mostClicked?.title || "None"}
-  </h3>
+            <FaChartLine className="text-lime-400" />
+          </div>
 
-  <p className="text-zinc-400 mt-3">
-    {mostClicked?.clicks || 0} clicks •{" "}
-    {topLinkPercentage}% of total traffic
-  </p>
-</div>
+          <h2 className="mt-4 text-5xl font-black text-white">
+            {averageClicks}
+          </h2>
 
+          <p className="mt-2 text-sm text-zinc-600">
+            Average performance
+          </p>
+        </div>
 
+      </div>
 
-<div className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-  <div className="flex items-center justify-between mb-8">
-    <h2 className="text-white text-2xl font-bold">
-      Traffic Distribution
-    </h2>
+      {/* -------------------------------- */}
+      {/* Overall Performance              */}
+      {/* -------------------------------- */}
 
-    <span className="text-zinc-500">
-      {totalClicks} Total Clicks
+      <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 sm:p-8">
+
+        <div>
+          <h2 className="text-2xl font-bold text-white">
+            Overall Performance
+          </h2>
+
+          <p className="mt-1 text-sm text-zinc-500">
+            A quick overview of your link performance.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-8 sm:grid-cols-3">
+
+          {/* Total Clicks */}
+
+          <div>
+            <p className="text-sm text-zinc-500">
+              Total clicks
+            </p>
+
+            <p className="mt-2 text-3xl font-black text-white">
+              {totalClicks}
+            </p>
+          </div>
+
+          {/* Most Clicked */}
+
+          <div>
+            <p className="text-sm text-zinc-500">
+              Most clicked link
+            </p>
+
+            <p className="mt-2 truncate text-xl font-bold text-white">
+              {mostClicked?.title ||
+                "No links yet"}
+            </p>
+          </div>
+
+          {/* Best Share */}
+
+          <div>
+            <p className="text-sm text-zinc-500">
+              Best link share
+            </p>
+
+            <p className="mt-2 text-3xl font-black text-white">
+              {bestLinkShare}%
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* -------------------------------- */}
+      {/* Performance Over Time            */}
+      {/* -------------------------------- */}
+
+      <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 sm:p-8">
+
+        {/* Chart Header */}
+
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
+          <div>
+            <h2 className="text-2xl font-bold text-white">
+              Performance Over Time
+            </h2>
+
+            <p className="mt-1 text-sm text-zinc-500">
+              Track how your selected link performs over time.
+            </p>
+          </div>
+
+          {/* Link Filter */}
+
+<div className="relative">
+  <button
+    type="button"
+    onClick={() =>
+      setLinkDropdownOpen(
+        (prev) => !prev
+      )
+    }
+    className="
+      flex
+      min-w-[190px]
+      items-center
+      justify-between
+      gap-4
+      rounded-xl
+      border
+      border-zinc-700
+      bg-zinc-950
+      px-4
+      py-2.5
+      text-sm
+      text-white
+      transition
+      hover:border-zinc-500
+      focus:border-zinc-400
+      focus:outline-none
+    "
+  >
+    <span className="truncate">
+      {selectedLink === "all"
+        ? "All Links"
+        : selectedLinkData?.title ||
+          "Untitled Link"}
     </span>
-  </div>
 
-  <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
-    
-    {/* Chart */}
-    <div className="w-full lg:w-auto">
-      <ResponsiveContainer
-        width={300}
-        height={300}
+    <FaChevronDown
+      className={`shrink-0 text-xs text-zinc-500 transition-transform ${
+        linkDropdownOpen
+          ? "rotate-180"
+          : ""
+      }`}
+    />
+  </button>
+
+  <AnimatePresence>
+    {linkDropdownOpen && (
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: -6,
+          scale: 0.98,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          scale: 1,
+        }}
+        exit={{
+          opacity: 0,
+          y: -6,
+          scale: 0.98,
+        }}
+        transition={{
+          duration: 0.15,
+        }}
+        className="
+          absolute
+          right-0
+          top-full
+          z-50
+          mt-2
+          w-[240px]
+          overflow-hidden
+          rounded-2xl
+          border
+          border-zinc-800
+          bg-zinc-950
+          p-1.5
+          shadow-2xl
+          shadow-black/50
+        "
       >
-        <PieChart>
-          <Pie
-            data={pieData}
-            dataKey="value"
-            nameKey="name"
-            innerRadius={80}
-            outerRadius={120}
-            paddingAngle={3}
-          >
-            {pieData.map(
-              (_, index) => (
-                <Cell
-                  key={index}
-                  fill={
-                    COLORS[
-                      index %
-                        COLORS.length
-                    ]
-                  }
-                />
-              )
-            )}
-          </Pie>
+        {/* All Links */}
 
-          <Tooltip />
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedLink("all");
+            setLinkDropdownOpen(false);
+          }}
+          className={`
+            flex
+            w-full
+            items-center
+            justify-between
+            rounded-xl
+            px-3
+            py-3
+            text-left
+            text-sm
+            transition
+            ${
+              selectedLink === "all"
+                ? "bg-zinc-800 text-white"
+                : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+            }
+          `}
+        >
+          <span>All Links</span>
 
-          <text
-            x="50%"
-            y="48%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill="white"
-            fontSize="28"
-            fontWeight="700"
-          >
-            {totalClicks}
-          </text>
+          {selectedLink === "all" && (
+            <FaCheck className="text-xs text-lime-400" />
+          )}
+        </button>
 
-          <text
-            x="50%"
-            y="58%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill="#71717a"
-            fontSize="14"
-          >
-            Clicks
-          </text>
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
+        {/* Individual Links */}
 
-    {/* Legend */}
-    <div className="w-full max-w-md space-y-4">
-      {pieData
-        .sort(
-          (a, b) =>
-            b.value - a.value
-        )
-        .map(
-          (item, index) => {
-            const percentage =
-              totalClicks > 0
-                ? (
-                    (item.value /
-                      totalClicks) *
-                    100
-                  ).toFixed(1)
-                : 0;
+        <div className="my-1 border-t border-zinc-800" />
+
+        <div className="max-h-60 overflow-y-auto">
+          {links.map((link) => {
+            const isSelected =
+              selectedLink === link._id;
 
             return (
-              <div
-                key={`${item.name || "untitled"}-${index}`}
-                className="
+              <button
+                key={link._id}
+                type="button"
+                onClick={() => {
+                  setSelectedLink(
+                    link._id
+                  );
+                  setLinkDropdownOpen(
+                    false
+                  );
+                }}
+                className={`
                   flex
+                  w-full
                   items-center
                   justify-between
-                  rounded-2xl
-                  border
-                  border-zinc-800
-                  p-4
-                "
+                  rounded-xl
+                  px-3
+                  py-3
+                  text-left
+                  text-sm
+                  transition
+                  ${
+                    isSelected
+                      ? "bg-zinc-800 text-white"
+                      : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                  }
+                `}
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{
-                      backgroundColor:
-                        COLORS[
-                          index %
-                            COLORS.length
-                        ],
-                    }}
-                  />
+                <span className="truncate pr-3">
+                  {link.title ||
+                    "Untitled Link"}
+                </span>
 
-                  <span className="text-white font-medium">
-                    {item.name}
-                  </span>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-white font-bold">
-                    {item.value}
-                  </p>
-
-                  <p className="text-zinc-500 text-sm">
-                    {percentage}%
-                  </p>
-                </div>
-              </div>
+                {isSelected && (
+                  <FaCheck className="shrink-0 text-xs text-lime-400" />
+                )}
+              </button>
             );
-          }
-        )}
-    </div>
-  </div>
+          })}
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
 </div>
-       
+        </div>
 
-        {/* 7 Day Analytics */}
-<div className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-  <div className="flex items-center justify-between mb-8">
-    <div>
-      <h2 className="text-white text-2xl font-bold">
-        Link Performance
-      </h2>
+        {/* Chart */}
 
-      <p className="text-zinc-500 mt-1">
-        Ranked by total clicks
-      </p>
-    </div>
+        <div className="mt-8 h-[320px] w-full sm:h-[400px]">
 
-    <div className="text-right">
-      <p className="text-zinc-500 text-sm">
-        Best Performer
-      </p>
+          {analyticsLoading ? (
+            <div className="flex h-full items-center justify-center">
+              <p className="text-zinc-500">
+                Loading analytics...
+              </p>
+            </div>
+          ) : chartData.length === 0 ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
 
-      <p className="text-white font-bold">
-        {mostClicked?.title}
-      </p>
-    </div>
-  </div>
+                <FaChartLine
+                  size={40}
+                  className="mx-auto text-zinc-700"
+                />
 
-  {/* chart here */}
-       <ResponsiveContainer
-  width="100%"
-  height={400}
->
-  <BarChart
-    data={rankedLinks}
-    layout="vertical"
-  >
-    <CartesianGrid
-      stroke="#27272a"
-      horizontal={false}
-    />
+                <p className="mt-4 text-zinc-500">
+                  No analytics data available yet.
+                </p>
 
-    <XAxis
-      type="number"
-      stroke="#71717a"
-    />
+              </div>
+            </div>
+          ) : (
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+            >
+              <LineChart
+                data={chartData}
+                margin={{
+                  top: 10,
+                  right: 10,
+                  left: -20,
+                  bottom: 10,
+                }}
+              >
 
-    <YAxis
-      dataKey="title"
-      type="category"
-      stroke="#71717a"
-      width={100}
-    />
+                <CartesianGrid
+                  stroke="#27272a"
+                  vertical={false}
+                />
 
-    <Tooltip />
+                <XAxis
+                  dataKey="date"
+                  stroke="#71717a"
+                  tick={{
+                    fontSize: 12,
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                />
 
-    <Bar
-      dataKey="clicks"
-      fill="#a3e635"
-      radius={[0, 8, 8, 0]}
-    />
-  </BarChart>
-</ResponsiveContainer>
-</div>
+                <YAxis
+                  stroke="#71717a"
+                  tick={{
+                    fontSize: 12,
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                  allowDecimals={false}
+                />
+
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor:
+                      "#09090b",
+                    border:
+                      "1px solid #27272a",
+                    borderRadius:
+                      "12px",
+                    color: "#fff",
+                  }}
+                />
+
+                <Line
+                  type="monotone"
+                  dataKey="clicks"
+                  stroke="#a3e635"
+                  strokeWidth={3}
+                  dot={{
+                    r: 4,
+                    fill: "#a3e635",
+                  }}
+                  activeDot={{
+                    r: 6,
+                  }}
+                />
+
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+
+        </div>
       </div>
+
+      {/* -------------------------------- */}
+      {/* Top Links                        */}
+      {/* -------------------------------- */}
+
+      <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 sm:p-8">
+
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+
+          <div>
+            <h2 className="text-2xl font-bold text-white">
+              Top Links
+            </h2>
+
+            <p className="mt-1 text-sm text-zinc-500">
+              Ranked by total clicks.
+            </p>
+          </div>
+
+          <p className="text-sm text-zinc-600">
+            {rankedLinks.length} link
+            {rankedLinks.length !== 1 &&
+              "s"}
+          </p>
+
+        </div>
+
+        {/* Table */}
+
+        <div className="mt-6 overflow-x-auto">
+
+          <div className="min-w-[600px]">
+
+            {/* Header */}
+
+            <div className="grid grid-cols-[60px_1fr_120px_120px] gap-4 border-b border-zinc-800 px-4 pb-4 text-sm text-zinc-500">
+
+              <span>#</span>
+
+              <span>Link</span>
+
+              <span className="text-right">
+                Clicks
+              </span>
+
+              <span className="text-right">
+                Share
+              </span>
+
+            </div>
+
+            {/* Rows */}
+
+            <div>
+
+              {rankedLinks.length === 0 ? (
+                <div className="py-12 text-center text-zinc-500">
+                  No links available.
+                </div>
+              ) : (
+                rankedLinks.map(
+                  (link, index) => {
+
+                    const clicks =
+                      link.clicks || 0;
+
+                    const percentage =
+                      totalClicks > 0
+                        ? (
+                            (clicks /
+                              totalClicks) *
+                            100
+                          ).toFixed(1)
+                        : "0.0";
+
+                    return (
+                      <div
+                        key={link._id}
+                        className="
+                          grid
+                          grid-cols-[60px_1fr_120px_120px]
+                          items-center
+                          gap-4
+                          border-b
+                          border-zinc-800
+                          px-4
+                          py-5
+                          last:border-b-0
+                        "
+                      >
+
+                        {/* Rank */}
+
+                        <span className="font-bold text-zinc-500">
+                          {String(
+                            index + 1
+                          ).padStart(
+                            2,
+                            "0"
+                          )}
+                        </span>
+
+                        {/* Link */}
+
+                        <div className="min-w-0">
+
+                          <p className="truncate font-semibold text-white">
+                            {link.title ||
+                              "Untitled Link"}
+                          </p>
+
+                          {link.url && (
+                            <p className="mt-1 truncate text-xs text-zinc-600">
+                              {link.url}
+                            </p>
+                          )}
+
+                        </div>
+
+                        {/* Clicks */}
+
+                        <span className="text-right font-bold text-white">
+                          {clicks}
+                        </span>
+
+                        {/* Share */}
+
+                        <span className="text-right text-zinc-400">
+                          {percentage}%
+                        </span>
+
+                      </div>
+                    );
+                  }
+                )
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
     </div>
   );
 }
