@@ -83,10 +83,8 @@ export const findActiveLinkById = (linkId) =>
 export const createClick = (clickData) =>
   ClickModel.create(clickData);
 
-export const aggregateClicksByLinkSince = (
-  linkId,
-  startDate
-) =>
+export const aggregateClicksByLinkSince = (linkId,
+  startDate) =>
   ClickModel.aggregate([
     {
       $match: {
@@ -117,6 +115,59 @@ export const aggregateClicksByLinkSince = (
       },
     },
   ]);
+
+
+    export const aggregateClicksByUserSince = async (
+  userId,
+  startDate
+) => {
+  const links = await LinkModel.find({
+    user: userId,
+    isDeleted: false,
+  }).select("_id");
+
+  const linkIds = links.map(
+    (link) => link._id
+  );
+
+  if (!linkIds.length) {
+    return [];
+  }
+
+  return ClickModel.aggregate([
+    {
+      $match: {
+        link: {
+          $in: linkIds,
+        },
+        createdAt: {
+          $gte: startDate,
+        },
+      },
+    },
+
+    {
+      $group: {
+        _id: {
+          $dateToString: {
+            format: "%Y-%m-%d",
+            date: "$createdAt",
+          },
+        },
+
+        clicks: {
+          $sum: 1,
+        },
+      },
+    },
+
+    {
+      $sort: {
+        _id: 1,
+      },
+    },
+  ]);
+};
 
 export const findActiveLinksByUserSorted = (
   userId
@@ -154,3 +205,4 @@ export const updateLinkById = (
   update
 ) =>
   LinkModel.findByIdAndUpdate(linkId, update);
+

@@ -432,3 +432,20 @@ export const bulkCreateLinks = async (
     status: 201,
   };
 };
+
+export const getAllLinkAnalytics = async (
+  userId
+) => {
+  const startDate = new Date();
+
+  startDate.setDate(
+    startDate.getDate() - 6
+  );
+
+  startDate.setHours(0, 0, 0, 0);
+
+  return linksDao.aggregateClicksByUserSince(
+    userId,
+    startDate
+  );
+};

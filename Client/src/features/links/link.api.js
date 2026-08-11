@@ -64,10 +64,13 @@ export const updateLink = async (
 export const getLinkAnalytics = async (
   id
 ) => {
+  const endpoint =
+    id === "all"
+      ? "/links/analytics/all"
+      : `/links/analytics/${id}`;
+
   const { data } =
-    await axiosInstance.get(
-      `/links/analytics/${id}`
-    );
+    await axiosInstance.get(endpoint);
 
   return data;
 };

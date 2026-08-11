@@ -2,6 +2,7 @@ import {
   bulkCreateLinks as bulkCreateLinksService,
   createLink as createLinkService,
   deleteLink as deleteLinkService,
+  getAllLinkAnalytics,
   getDeletedLinks as getDeletedLinksService,
   getLinkAnalytics as getLinkAnalyticsService,
   getLinksByUsername as getLinksByUsernameService,
@@ -217,6 +218,26 @@ export const getLinkAnalytics = async (
   }
 };
 
+export const getAllLinkAnalyticsController = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const analytics =
+      await getAllLinkAnalytics(
+        req.user.id
+      );
+
+    return res.status(200).json({
+      success: true,
+      analytics,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateLink = async (
   req,
   res
@@ -263,6 +284,7 @@ export const getMyLinks = async (
     });
   }
 };
+
 
 export const reorderLinks = async (
   req,

@@ -50,6 +50,11 @@ router.get(
   "/go/:linkId",
   linkController.redirectToLink
 );
+router.get(
+  "/analytics/all",
+  authMiddleware,
+  linkController.getAllLinkAnalyticsController
+);
 
 router.get(
   "/analytics/:id",
@@ -62,6 +67,7 @@ router.get(
   authMiddleware,
   linkController.getMyLinks
 );
+
 
 router.post(
   "/import-linktree",
@@ -79,5 +85,7 @@ router.get(
   "/:username",
   linkController.getLinksByUsername
 );
+
+
 
 export default router;
