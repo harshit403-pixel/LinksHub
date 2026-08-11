@@ -18,18 +18,19 @@ export const parseGithubUrl = (url) => {
 };
 
 export const fetchRepository = async (
-  githubUrl
+  githubUrl,
+  accessToken
 ) => {
   const { owner, repo } =
     parseGithubUrl(githubUrl);
 
-  const headers = process.env.GITHUB_TOKEN
-    ? {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-        Accept:
-          "application/vnd.github+json",
-      }
-    : {};
+const headers = {
+  Accept: "application/vnd.github+json",
+};
+
+if (accessToken) {
+  headers.Authorization = `Bearer ${accessToken}`;
+}
 
   const repoResponse = await axios.get(
     `https://api.github.com/repos/${owner}/${repo}`,

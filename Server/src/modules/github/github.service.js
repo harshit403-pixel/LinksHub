@@ -167,6 +167,15 @@ export const disconnectGithub = async (
 
 export const importGithubRepositories =
   async (userId, repositories) => {
+    const connection =
+  await githubDao.findConnectionByUser(userId);
+
+if (!connection) {
+  throw createStatusError(
+    404,
+    "GitHub account not connected."
+  );
+}
     if (
       !repositories ||
       !repositories.length
@@ -182,14 +191,16 @@ export const importGithubRepositories =
 
     for (const githubUrl of repositories) {
       try {
-        const project =
-          await importProjectForUser(
-            userId,
-            githubUrl,
-            {
-              fallbackQuestionsToEmpty: true,
-            }
-          );
+     const project =
+  await importProjectForUser(
+    userId,
+    githubUrl,
+    {
+      fallbackQuestionsToEmpty: true,
+      githubAccessToken:
+        connection.accessToken,
+    }
+  );
 
         imported.push(project);
       } catch (error) {
