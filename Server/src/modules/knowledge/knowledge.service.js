@@ -151,6 +151,7 @@ export const importProjectForUser = async (
   githubUrl,
   {
     fallbackQuestionsToEmpty = false,
+    githubAccessToken,
   } = {}
 ) => {
   if (!githubUrl) {
@@ -173,7 +174,11 @@ export const importProjectForUser = async (
     );
   }
 
-  const repo = await fetchRepository(githubUrl);
+const repo =
+  await fetchRepository(
+    githubUrl,
+    githubAccessToken
+  );
   const ai = await summarizeProject(repo);
 
   return knowledgeDao.createProject({
