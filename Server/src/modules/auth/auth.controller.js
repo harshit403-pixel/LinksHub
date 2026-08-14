@@ -1,10 +1,13 @@
 import {
+  generateToken,
   getCurrentUser as getCurrentUserService,
   loginUser as loginUserService,
   registerUser as registerUserService,
   updateProfile as updateProfileService,
   uploadProfilePicture as uploadProfilePictureService,
 } from "./auth.service.js";
+import passport from "./passport.js";
+
 
 const handleStatusError = (res, error) => {
   if (!error.status) {
@@ -211,4 +214,66 @@ export const logoutUser = (req, res) => {
   return res.status(200).json({
     message: "Logged out successfully",
   });
+};
+
+
+
+export const googleAuth = passport.authenticate(
+  "google",
+  {
+    scope: [
+      "openid",
+      "email",
+      "profile",
+    ],
+  }
+);
+
+export const googleAuthCallback = (
+  req,
+  res,
+  next
+) => {
+  passport.authenticate(
+    "google",
+    {
+      session: false,
+    },
+    (error, user) => {
+      if (error) {
+        return next(error);
+      }
+
+      if (!user) {
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/login?error=google-auth-failed`
+        );
+      }
+
+      const token =
+        generateToken(user._id);
+
+      res.cookie(
+        "token",
+        token,
+        {
+          httpOnly: true,
+          secure:
+            process.env.NODE_ENV ===
+            "production",
+          sameSite: "lax",
+          maxAge:
+            7 *
+            24 *
+            60 *
+            60 *
+            1000,
+        }
+      );
+
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/dashboard`
+      );
+    }
+  )(req, res, next);
 };

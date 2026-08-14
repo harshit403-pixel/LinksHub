@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import config from "../../config/config.js";
 import * as authDao from "./auth.dao.js";
 import cloudinary from "../../config/cloudinary.js";
+import crypto from "crypto";
 
 const createStatusError = (
   status,
@@ -175,4 +176,72 @@ export const uploadProfilePicture = async (
 
 
   return result.secure_url;
+};
+
+
+export const findOrCreateGoogleUser = async ({
+  googleId,
+  email,
+  displayName,
+  profilePicture,
+}) => {
+  // 1. Check if Google account is already connected
+  let user = await authDao.findUserByGoogleId(
+    googleId
+  );
+
+  if (user) {
+    return user;
+  }
+
+  // 2. Check if an account already exists
+  // with the same email
+  user = await authDao.findUserByEmail(email);
+
+  if (user) {
+    user.googleId = googleId;
+
+    if (
+      !user.profilePicture &&
+      profilePicture
+    ) {
+      user.profilePicture = profilePicture;
+    }
+
+    await user.save();
+
+    return user;
+  }
+
+  // 3. Generate a unique username
+  const baseUsername =
+    email
+      .split("@")[0]
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+
+  let username = baseUsername;
+  let counter = 1;
+
+  while (
+    await authDao.findUserByUsername(username)
+  ) {
+    username = `${baseUsername}${counter}`;
+    counter++;
+  }
+
+  // 4. Generate an internal random password
+  // Google users never see or use this password.
+  const password =
+    crypto.randomBytes(32).toString("hex");
+
+  // 5. Create the user
+  return authDao.createGoogleUser({
+    googleId,
+    email,
+    username,
+    displayName,
+    profilePicture,
+    password,
+  });
 };

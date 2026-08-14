@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
   getCurrentUser,
+  googleAuth,
+  googleAuthCallback,
   loginUser,
   logoutUser,
   registerUser,
@@ -32,6 +34,16 @@ router.post(
 );
 
 router.get(
+  "/google",
+  googleAuth
+);
+
+router.get(
+  "/google/callback",
+  googleAuthCallback
+);
+
+router.get(
   "/me",
   authMiddleware,
   getCurrentUser
@@ -49,6 +61,9 @@ router.patch(
   upload.single("image"),
   uploadProfilePicture
 );
+
+
+
 
 router.post("/logout", logoutUser);
 

@@ -27,3 +27,47 @@ export const findUserById = (userId) =>
 export const findUserByIdWithoutPassword = (
   userId
 ) => User.findById(userId).select("-password");
+
+
+
+export const findUserByGoogleId = async (
+  googleId
+) => {
+  return User.findOne({
+    googleId,
+  });
+};
+
+export const findUserByEmail = async (
+  email
+) => {
+  return User.findOne({
+    email,
+  });
+};
+
+export const createGoogleUser = async ({
+  googleId,
+  email,
+  username,
+  displayName,
+  profilePicture,
+  password,
+}) => {
+  return User.create({
+    googleId,
+    email,
+    username,
+    displayName,
+    profilePicture,
+    password,
+  });
+};
+
+export const findUserByUsername = async (
+  username
+) => {
+  return User.findOne({
+    username,
+  });
+};
