@@ -27,17 +27,17 @@ const Input = forwardRef(
                   w-full
                   rounded-2xl
                   border
-                  border-zinc-700
-                  bg-transparent
+                  theme-border
+                  theme-surface
                   p-4
-                  text-white
+                  theme-text
+
                   file:mr-4
                   file:rounded-xl
                   file:border-0
-                  file:bg-lime-400
+                  file:theme-accent-bg
                   file:px-4
                   file:py-2
-                  file:text-black
                   file:font-semibold
                 `
                 : `
@@ -45,12 +45,14 @@ const Input = forwardRef(
                   w-full
                   bg-transparent
                   border-b
-                  border-zinc-700
+                  theme-border
                   py-4
-                  text-white
+                  theme-text
                   outline-none
                   transition-all
-                  focus:border-lime-400
+                  duration-200
+
+                  focus:border-[var(--accent)]
                 `
             }
 
@@ -62,17 +64,17 @@ const Input = forwardRef(
         {!isFile && (
           <label
             className="
+              pointer-events-none
               absolute
               left-0
               top-4
-              text-zinc-500
-              pointer-events-none
+              theme-muted
               transition-all
               duration-200
 
               peer-focus:-top-2
               peer-focus:text-xs
-              peer-focus:text-lime-400
+              peer-focus:text-[var(--accent)]
 
               peer-not-placeholder-shown:-top-2
               peer-not-placeholder-shown:text-xs

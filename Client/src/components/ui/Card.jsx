@@ -7,8 +7,12 @@ export default function Card({
       className={`
         rounded-3xl
         border
-        border-zinc-800
-        bg-zinc-900
+        theme-border
+        theme-surface
+
+        transition-colors
+        duration-250
+
         ${className}
       `}
     >
