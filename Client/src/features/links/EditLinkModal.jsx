@@ -48,7 +48,20 @@ function EditLinkModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+        className="
+          fixed
+          inset-0
+          z-[999]
+          flex
+          items-center
+          justify-center
+
+          bg-black/30
+          p-4
+          backdrop-blur-sm
+
+          dark:bg-black/70
+        "
         onClick={onClose}
       >
         <motion.div
@@ -73,15 +86,50 @@ function EditLinkModal({
           onClick={(e) =>
             e.stopPropagation()
           }
-          className="w-full max-w-lg rounded-3xl border border-zinc-800 bg-zinc-900 p-8"
-        >
-          <h2 className="text-3xl font-black text-white mb-2">
-            Edit Link
-          </h2>
+          className="
+            w-full
+            max-w-lg
+            rounded-3xl
 
-          <p className="text-zinc-500 mb-8">
-            Update your link details.
-          </p>
+            border
+            theme-border
+            theme-surface
+
+            p-8
+
+            shadow-2xl
+            shadow-black/10
+
+            transition-colors
+            duration-250
+
+            dark:shadow-black/40
+          "
+        >
+          {/* HEADER */}
+
+          <div className="mb-8">
+            <h2
+              className="
+                mb-2
+                text-3xl
+                font-black
+                theme-text
+              "
+            >
+              Edit Link
+            </h2>
+
+            <p
+              className="
+                theme-muted
+              "
+            >
+              Update your link details.
+            </p>
+          </div>
+
+          {/* FORM */}
 
           <form
             onSubmit={handleSubmit}
@@ -103,40 +151,54 @@ function EditLinkModal({
               }
             />
 
+            {/* ACTIONS */}
+
             <div className="flex gap-3">
-             <button
-  type="button"
-  onClick={onClose}
-  className="
-    flex-1
-    rounded-2xl
-    border
-    border-zinc-700
-    py-4
-    
-    text-white
-    font-semibold
-    hover:border-zinc-500
-    transition-all
-  "
->
-  Cancel
-</button>
+              {/* CANCEL */}
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="
+                  flex-1
+                  cursor-pointer
+                  rounded-2xl
+
+                  border
+                  theme-border
+
+                  py-4
+
+                  font-semibold
+                  theme-text
+
+                  transition-all
+                  duration-200
+
+                  hover:border-[var(--border-hover)]
+                  hover:theme-surface-secondary
+
+                  active:scale-[0.98]
+                "
+              >
+                Cancel
+              </button>
+
+              {/* SAVE */}
 
               <Button
-              className="flex-4"
-              
-  type="submit"
-  disabled={
-    isPending ||
-    !title.trim() ||
-    !url.trim()
-  }
->
-  {isPending
-    ? "Saving..."
-    : "Save Changes"}
-</Button>
+                className="flex-4"
+                type="submit"
+                disabled={
+                  isPending ||
+                  !title.trim() ||
+                  !url.trim()
+                }
+              >
+                {isPending
+                  ? "Saving..."
+                  : "Save Changes"}
+              </Button>
             </div>
           </form>
         </motion.div>

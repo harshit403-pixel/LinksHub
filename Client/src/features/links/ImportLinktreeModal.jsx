@@ -1,10 +1,12 @@
 import {
   useState,
 } from "react";
+
 import {
   motion,
   AnimatePresence,
 } from "motion/react";
+
 import { toast } from "sonner";
 
 import {
@@ -29,17 +31,13 @@ function ImportLinktreeModal({
 
   const {
     mutate: fetchLinks,
-    isPending:
-      isFetching,
-  } =
-    useImportLinktree();
+    isPending: isFetching,
+  } = useImportLinktree();
 
   const {
     mutate: importLinks,
-    isPending:
-      isImporting,
-  } =
-    useBulkCreateLinks();
+    isPending: isImporting,
+  } = useBulkCreateLinks();
 
   const handleFetch = () => {
     fetchLinks(url, {
@@ -55,16 +53,11 @@ function ImportLinktreeModal({
     });
   };
 
-  const toggleLink = (
-    index
-  ) => {
-    if (
-      selected.includes(index)
-    ) {
+  const toggleLink = (index) => {
+    if (selected.includes(index)) {
       setSelected(
         selected.filter(
-          (i) =>
-            i !== index
+          (i) => i !== index
         )
       );
     } else {
@@ -75,65 +68,65 @@ function ImportLinktreeModal({
     }
   };
 
-const handleImport = () => {
-  const selectedLinks =
-    links.filter((_, index) =>
-      selected.includes(index)
-    );
-
-  if (
-    selectedLinks.length === 0
-  ) {
-    toast.error(
-      "Please select at least one link."
-    );
-    return;
-  }
-
-      importLinks(
-        selectedLinks,
-        {
-        onSuccess: (data) => {
-  const {
-    imported,
-    skipped,
-  } = data;
-
-  if (
-    imported === 0 &&
-    skipped > 0
-  ) {
-    toast.info(
-  "Nothing to import. All selected links already exist."
-);
-
-    return;
-  }
-
-  if (
-    imported > 0 &&
-    skipped > 0
-  ) {
-    toast.success(
-      `Imported ${imported} links • Skipped ${skipped} duplicates`
-    );
-
-    onClose();
-    return;
-  }
-
-  if (imported > 0) {
-    toast.success(
-      `Imported ${imported} links successfully`
-    );
-
-    onClose();
-  }
-},
-           
-        }
+  const handleImport = () => {
+    const selectedLinks =
+      links.filter((_, index) =>
+        selected.includes(index)
       );
-    };
+
+    if (
+      selectedLinks.length === 0
+    ) {
+      toast.error(
+        "Please select at least one link."
+      );
+
+      return;
+    }
+
+    importLinks(
+      selectedLinks,
+      {
+        onSuccess: (data) => {
+          const {
+            imported,
+            skipped,
+          } = data;
+
+          if (
+            imported === 0 &&
+            skipped > 0
+          ) {
+            toast.info(
+              "Nothing to import. All selected links already exist."
+            );
+
+            return;
+          }
+
+          if (
+            imported > 0 &&
+            skipped > 0
+          ) {
+            toast.success(
+              `Imported ${imported} links • Skipped ${skipped} duplicates`
+            );
+
+            onClose();
+            return;
+          }
+
+          if (imported > 0) {
+            toast.success(
+              `Imported ${imported} links successfully`
+            );
+
+            onClose();
+          }
+        },
+      }
+    );
+  };
 
   return (
     <AnimatePresence>
@@ -152,26 +145,36 @@ const handleImport = () => {
           fixed
           inset-0
           z-[1000]
-          bg-black/70
-          backdrop-blur-sm
+
           flex
           items-center
           justify-center
+
+          bg-black/30
           p-4
+          backdrop-blur-sm
+
+          dark:bg-black/70
         "
       >
         <motion.div
           initial={{
             opacity: 0,
             scale: 0.95,
+            y: 20,
           }}
           animate={{
             opacity: 1,
             scale: 1,
+            y: 0,
           }}
           exit={{
             opacity: 0,
             scale: 0.95,
+            y: 20,
+          }}
+          transition={{
+            duration: 0.2,
           }}
           onClick={(e) =>
             e.stopPropagation()
@@ -180,20 +183,45 @@ const handleImport = () => {
             w-full
             max-w-2xl
             rounded-3xl
+
             border
-            border-zinc-800
-            bg-zinc-900
+            theme-border
+            theme-surface
+
             p-8
+
+            shadow-2xl
+            shadow-black/10
+
+            transition-colors
+            duration-250
+
+            dark:shadow-black/40
           "
         >
-          <h2 className="text-3xl font-black text-white">
+          {/* HEADER */}
+
+          <h2
+            className="
+              text-3xl
+              font-black
+              theme-text
+            "
+          >
             Import From Linktree
           </h2>
 
-          <p className="text-zinc-500 mt-2">
+          <p
+            className="
+              mt-2
+              theme-muted
+            "
+          >
             Migrate your links
             instantly.
           </p>
+
+          {/* URL INPUT */}
 
           <div className="mt-8 flex gap-3">
             <input
@@ -205,30 +233,54 @@ const handleImport = () => {
               }
               placeholder="https://linktr.ee/username"
               className="
+                min-w-0
                 flex-1
+
                 rounded-2xl
                 border
-                border-zinc-700
-                bg-transparent
+                theme-border
+                theme-surface-secondary
+
                 p-4
-                text-white
+
+                theme-text
                 outline-none
+
+                transition-all
+
+                placeholder:opacity-50
+
+                focus:border-[var(--accent)]
               "
             />
 
             <button
-              onClick={
-                handleFetch
-              }
+              type="button"
+              onClick={handleFetch}
               disabled={
-                isFetching
+                isFetching ||
+                !url.trim()
               }
               className="
+                shrink-0
+                cursor-pointer
+
                 rounded-2xl
-                bg-lime-400
+                theme-accent-bg
+
                 px-6
-                text-black
+
                 font-semibold
+
+                transition-all
+
+                hover:opacity-90
+                hover:scale-[1.01]
+
+                active:scale-[0.98]
+
+                disabled:cursor-not-allowed
+                disabled:opacity-50
               "
             >
               {isFetching
@@ -237,81 +289,159 @@ const handleImport = () => {
             </button>
           </div>
 
-          {links.length >
-            0 && (
-            <div className="mt-8 space-y-3 max-h-80 overflow-y-auto">
+          {/* LINKS */}
+
+          {links.length > 0 && (
+            <div
+              className="
+                mt-8
+                max-h-80
+                space-y-3
+                overflow-y-auto
+                pr-1
+              "
+            >
               {links.map(
                 (
                   link,
                   index
-                ) => (
-                  <button
-                    key={index}
-                    onClick={() =>
-                      toggleLink(
-                        index
-                      )
-                    }
-                    className="
-                      w-full
-                      rounded-2xl
-                      border
-                      border-zinc-800
-                      p-4
-                      flex
-                      items-center
-                      gap-4
-                    "
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(
-                        index
-                      )}
-                      readOnly
-                    />
+                ) => {
+                  const isSelected =
+                    selected.includes(
+                      index
+                    );
 
-                    <img
-                      src={`https://www.google.com/s2/favicons?domain=${link.url}&sz=64`}
-                      className="w-6 h-6"
-                    />
+                  return (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() =>
+                        toggleLink(
+                          index
+                        )
+                      }
+                      className={`
+                        flex
+                        w-full
+                        cursor-pointer
+                        items-center
+                        gap-4
 
-                    <div className="text-left overflow-hidden">
-                      <p className="text-white  ">
-                        {
-                          link.title
+                        rounded-2xl
+                        border
+
+                        p-4
+
+                        text-left
+                        transition-all
+
+                        ${
+                          isSelected
+                            ? `
+                              border-[var(--accent)]
+                              bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]
+                            `
+                            : `
+                              theme-border
+                              theme-surface-secondary
+
+                              hover:border-[var(--border-hover)]
+                            `
                         }
-                      </p>
+                      `}
+                    >
+                      {/* CHECKBOX */}
 
-                      <p className="text-zinc-500 text-sm truncate">
-                        {
-                          link.url
+                      <input
+                        type="checkbox"
+                        checked={
+                          isSelected
                         }
-                      </p>
-                    </div>
-                  </button>
-                )
+                        readOnly
+                        className="
+                          h-4
+                          w-4
+                          shrink-0
+
+                          accent-[var(--accent)]
+                        "
+                      />
+
+                      {/* FAVICON */}
+
+                      <img
+                        src={`https://www.google.com/s2/favicons?domain=${link.url}&sz=64`}
+                        alt=""
+                        className="
+                          h-6
+                          w-6
+                          shrink-0
+                          rounded-md
+                        "
+                      />
+
+                      {/* LINK INFO */}
+
+                      <div className="min-w-0">
+                        <p
+                          className="
+                            truncate
+                            font-semibold
+                            theme-text
+                          "
+                        >
+                          {link.title}
+                        </p>
+
+                        <p
+                          className="
+                            mt-1
+                            truncate
+                            text-sm
+                            theme-muted
+                          "
+                        >
+                          {link.url}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                }
               )}
             </div>
           )}
 
-          {links.length >
-            0 && (
+          {/* IMPORT BUTTON */}
+
+          {links.length > 0 && (
             <button
-              onClick={
-                handleImport
-              }
+              type="button"
+              onClick={handleImport}
               disabled={
-                isImporting
+                isImporting ||
+                selected.length === 0
               }
               className="
                 mt-8
                 w-full
+                cursor-pointer
+
                 rounded-2xl
-                bg-lime-400
+                theme-accent-bg
+
                 py-4
+
                 font-semibold
-                text-black
+
+                transition-all
+
+                hover:opacity-90
+                hover:scale-[1.01]
+
+                active:scale-[0.98]
+
+                disabled:cursor-not-allowed
+                disabled:opacity-50
               "
             >
               {isImporting
@@ -325,5 +455,4 @@ const handleImport = () => {
   );
 }
 
-export default
-  ImportLinktreeModal;
+export default ImportLinktreeModal;

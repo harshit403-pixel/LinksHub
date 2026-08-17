@@ -37,12 +37,14 @@ function DeleteLinkModal({
           fixed
           inset-0
           z-[999]
-          bg-black/70
-          backdrop-blur-sm
           flex
           items-center
           justify-center
+          bg-black/30
           p-4
+          backdrop-blur-sm
+
+          dark:bg-black/70
         "
         onClick={onClose}
       >
@@ -72,68 +74,165 @@ function DeleteLinkModal({
             w-full
             max-w-md
             rounded-3xl
+
             border
-            border-zinc-800
-            bg-zinc-900
+            theme-border
+            theme-surface
+
             p-8
+
+            shadow-2xl
+            shadow-black/10
+
+            dark:shadow-black/40
+
+            transition-colors
+            duration-250
           "
         >
-          <div className="mb-8">
-            <h2 className="text-3xl font-black text-white">
-              {title}
-            </h2>
+          {/* HEADER */}
 
-            <p className="mt-3 text-zinc-500">
+          <div className="mb-8">
+            <div className="mb-5 flex items-center gap-3">
+              {/* DELETE ICON */}
+
+              <div
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+
+                  bg-[color-mix(in_srgb,var(--danger)_10%,transparent)]
+                  text-[var(--danger)]
+                "
+              >
+                <FaTimesCircle size={20} />
+              </div>
+
+              <h2
+                className="
+                  text-3xl
+                  font-black
+                  theme-text
+                "
+              >
+                {title}
+              </h2>
+            </div>
+
+            <p
+              className="
+                mt-3
+                theme-muted
+              "
+            >
               {description}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-zinc-800 bg-black/30 p-4 mb-8">
-            <h3 className="text-white font-semibold">
+          {/* LINK PREVIEW */}
+
+          <div
+            className="
+              mb-8
+              rounded-2xl
+
+              border
+              theme-border
+              theme-surface-secondary
+
+              p-4
+
+              transition-colors
+              duration-250
+            "
+          >
+            <h3
+              className="
+                font-semibold
+                theme-text
+              "
+            >
               {link.title}
             </h3>
 
-            <p className="text-zinc-500 text-sm break-all mt-2">
+            <p
+              className="
+                mt-2
+                break-all
+                text-sm
+                theme-muted
+              "
+            >
               {link.url}
             </p>
           </div>
 
+          {/* ACTIONS */}
+
           <div className="flex gap-3">
+            {/* CANCEL */}
+
             <button
               type="button"
               onClick={onClose}
               className="
                 flex-1
-                rounded-2xl
-                border
-                border-zinc-700
-                py-4 
-                text-white
-                font-semibold
-                hover:border-zinc-500
-                transition-all
                 cursor-pointer
+                rounded-2xl
+
+                border
+                theme-border
+
+                py-4
+
+                font-semibold
+                theme-text
+
+                transition-all
+                duration-200
+
+                hover:border-[var(--border-hover)]
+                hover:bg-[var(--surface-secondary)]
+
+                active:scale-[0.98]
               "
             >
               Cancel
             </button>
 
+            {/* DELETE */}
+
             <button
+              type="button"
               disabled={isPending}
               onClick={handleDelete}
               className="
                 flex-4
-                rounded-2xl
-                bg-red-500
-                py-4
-                text-white
-                font-semibold
-                transition-all
-                hover:bg-red-400
-                hover:scale-[1.01]
-                active:scale-[0.98]
-                disabled:opacity-50
                 cursor-pointer
+                rounded-2xl
+
+                bg-[var(--danger)]
+
+                py-4
+
+                font-semibold
+                text-white
+
+                transition-all
+                duration-200
+
+                hover:opacity-90
+                hover:scale-[1.01]
+
+                active:scale-[0.98]
+
+                disabled:cursor-not-allowed
+                disabled:opacity-50
               "
             >
               {isPending

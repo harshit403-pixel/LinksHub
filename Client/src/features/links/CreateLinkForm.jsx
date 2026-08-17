@@ -11,7 +11,8 @@ function CreateLinkForm() {
     url: "",
   });
 
-  const { mutate, isPending } = useCreateLink();
+  const { mutate, isPending } =
+    useCreateLink();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,8 +28,26 @@ function CreateLinkForm() {
   };
 
   return (
-    <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-      <h2 className="text-white text-xl font-bold mb-8">
+    <div
+      className="
+        rounded-3xl
+        border
+        theme-border
+        theme-surface
+        p-6
+
+        transition-colors
+        duration-250
+      "
+    >
+      <h2
+        className="
+          mb-8
+          text-xl
+          font-bold
+          theme-text
+        "
+      >
         Create Link
       </h2>
 

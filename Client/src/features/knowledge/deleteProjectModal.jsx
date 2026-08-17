@@ -72,67 +72,116 @@ function DeleteProjectModal({
             max-w-md
             rounded-3xl
             border
-            border-zinc-800
-            bg-zinc-900
+            theme-border
+            theme-surface
             p-8
+            transition-colors
+            duration-250
           "
         >
           <div className="mb-8">
-            <h2 className="text-3xl font-black text-white">
+            <h2
+              className="
+                text-3xl
+                font-black
+                theme-text
+              "
+            >
               {title}
             </h2>
 
-            <p className="mt-3 text-zinc-500">
+            <p
+              className="
+                mt-3
+                theme-muted
+              "
+            >
               {description}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-zinc-800 bg-black/30 p-4 mb-8">
-            <h3 className="text-white font-semibold">
+          <div
+            className="
+              mb-8
+              rounded-2xl
+              border
+              theme-border
+              theme-surface-secondary
+              p-4
+              transition-colors
+              duration-250
+            "
+          >
+            <h3
+              className="
+                font-semibold
+                theme-text
+              "
+            >
               {project.title}
             </h3>
 
-            <p className="text-zinc-500 text-sm mt-2">
+            <p
+              className="
+                mt-2
+                text-sm
+                theme-muted
+              "
+            >
               {project.summary}
             </p>
           </div>
 
           <div className="flex gap-3">
+            {/* CANCEL */}
+
             <button
               type="button"
               onClick={onClose}
               className="
                 flex-1
+                cursor-pointer
                 rounded-2xl
                 border
-                border-zinc-700
+                theme-border
                 py-4
-                text-white
                 font-semibold
-                hover:border-zinc-500
+                theme-text
                 transition-all
-                cursor-pointer
+                duration-200
+
+                hover:border-[var(--border-hover)]
+
+                active:scale-[0.98]
               "
             >
               Cancel
             </button>
 
+            {/* DELETE */}
+
             <button
+              type="button"
               disabled={isPending}
               onClick={handleDelete}
               className="
                 flex-1
-                rounded-2xl
-                bg-red-500 
-                py-4
-                text-white
-                font-semibold
-                transition-all
-                hover:bg-red-400
-                hover:scale-[1.01]
-                active:scale-[0.98]
-                disabled:opacity-50
                 cursor-pointer
+                rounded-2xl
+                bg-[var(--danger)]
+                py-4
+                font-semibold
+                text-white
+                transition-all
+                duration-200
+
+                hover:opacity-90
+                hover:scale-[1.01]
+
+                active:scale-[0.98]
+
+                disabled:cursor-not-allowed
+                disabled:opacity-50
               "
             >
               {isPending
@@ -144,6 +193,6 @@ function DeleteProjectModal({
       </motion.div>
     </AnimatePresence>
   );
-}  
+}
 
 export default DeleteProjectModal;

@@ -56,208 +56,468 @@ function GithubRepositories() {
     });
   };
 
-return (
-  <div className="flex h-full flex-col">
-    {/* Header */}
-    <div className="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="min-w-0">
-        <h2 className="text-xl sm:text-2xl font-bold">
-          GitHub Repositories
-        </h2>
+  return (
+    <div
+      className="
+        flex
+        h-full
+        flex-col
+        theme-text
+        transition-colors
+        duration-250
+      "
+    >
+      {/* ================================= */}
+      {/* HEADER */}
+      {/* ================================= */}
 
-        <p className="mt-2 text-sm text-zinc-500 sm:text-base">
-          Import repositories into your AI knowledge base.
-        </p>
+      <div
+        className="
+          flex
+          shrink-0
+          flex-col
+          gap-4
+          sm:flex-row
+          sm:items-start
+          sm:justify-between
+        "
+      >
+        <div className="min-w-0">
+          <h2
+            className="
+              text-xl
+              font-bold
+              theme-text
+              sm:text-2xl
+            "
+          >
+            GitHub Repositories
+          </h2>
+
+          <p
+            className="
+              mt-2
+              text-sm
+              theme-muted
+              sm:text-base
+            "
+          >
+            Import repositories into your AI
+            knowledge base.
+          </p>
+        </div>
+
+        {/* REFRESH */}
+
+        <button
+          type="button"
+          onClick={refetch}
+          className="
+            w-full
+            cursor-pointer
+            rounded-xl
+            border
+            theme-border
+            px-4
+            py-2
+            text-sm
+            font-medium
+            theme-text
+            transition-all
+            duration-200
+
+            hover:border-[var(--accent)]
+            hover:text-[var(--accent)]
+
+            sm:w-auto
+            sm:text-base
+          "
+        >
+          Refresh
+        </button>
       </div>
 
-      <button
-        onClick={refetch}
+      {/* ================================= */}
+      {/* SEARCH */}
+      {/* ================================= */}
+
+      <div
         className="
-          w-full
-          rounded-xl
-          border
-          border-zinc-700
-          px-4
-          py-2
-          text-sm
-          text-white
-          hover:border-white
-          transition
-          sm:w-auto
-          sm:text-base
+          relative
+          mt-5
+          shrink-0
         "
       >
-        Refresh
-      </button>
-    </div>
+        <FiSearch
+          className="
+            absolute
+            left-3.5
+            top-1/2
+            -translate-y-1/2
+            theme-muted
+            sm:left-4
+          "
+        />
 
-    {/* Search */}
-    <div className="relative mt-5 shrink-0">
-      <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 sm:left-4" />
+        <input
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+          placeholder="Search repositories..."
+          className="
+            w-full
+            rounded-2xl
+            border
+            theme-border
+            theme-surface-secondary
+            py-3.5
+            pl-11
+            pr-4
+            text-sm
+            theme-text
+            outline-none
+            transition-all
+            duration-200
 
-      <input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search repositories..."
+            placeholder:opacity-50
+
+            focus:border-[var(--accent)]
+            focus:ring-1
+            focus:ring-[var(--accent)]
+
+            sm:py-4
+            sm:pl-12
+            sm:text-base
+          "
+        />
+      </div>
+
+      {/* ================================= */}
+      {/* SCROLLABLE CONTENT */}
+      {/* ================================= */}
+
+      <div
         className="
-          w-full
-          rounded-2xl
-          border
-          border-zinc-800
-          bg-black
-          py-3.5
-          pl-11
-          pr-4
-          text-sm
-          text-white
-          outline-none
-          sm:py-4
-          sm:pl-12
-          sm:text-base
+          mt-6
+          flex-1
+          overflow-y-auto
+          pr-0
+          sm:pr-2
         "
-      />
-    </div>
+      >
+        {/* LOADING */}
 
-    {/* Scrollable Content */}
-    <div className="mt-6 flex-1 overflow-y-auto pr-0 sm:pr-2">
-      {isLoading ? (
-        <div className="space-y-3">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="h-24 animate-pulse rounded-2xl bg-zinc-900"
-            />
-          ))}
-        </div>
-      ) : filteredRepositories.length === 0 ? (
-        <div className="flex h-full items-center justify-center py-10">
-          <div className="text-center">
-            <FaGithub
-              size={48}
-              className="mx-auto text-zinc-700"
-            />
-
-            <h3 className="mt-6 text-xl font-bold text-white">
-              No repositories found
-            </h3>
-
-            <p className="mt-2 text-zinc-500">
-              Try another search.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredRepositories.map((repo) => {
-            const url = `https://github.com/${repo.fullName}`;
-            const checked = selected.includes(url);
-
-            return (
-              <button
-                key={repo.id}
-                onClick={() =>
-                  toggleRepository(url)
-                }
-                className={`
-                  w-full
+        {isLoading ? (
+          <div className="space-y-3">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="
+                  h-24
+                  animate-pulse
                   rounded-2xl
-                  border
-                  p-4
-                  text-left
-                  transition
-                  sm:p-5
+                  theme-surface
+                "
+              />
+            ))}
+          </div>
+        ) : filteredRepositories.length === 0 ? (
 
-                  ${
-                    checked
-                      ? "border-white bg-zinc-800"
-                      : "border-zinc-800 hover:border-zinc-600"
-                  }
-                `}
+          /* EMPTY */
+
+          <div
+            className="
+              flex
+              h-full
+              items-center
+              justify-center
+              py-10
+            "
+          >
+            <div className="text-center">
+              <FaGithub
+                size={48}
+                className="
+                  mx-auto
+                  opacity-20
+                  theme-text
+                "
+              />
+
+              <h3
+                className="
+                  mt-6
+                  text-xl
+                  font-bold
+                  theme-text
+                "
               >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                 <div className="flex min-w-0 items-start gap-3">
-                    <FaGithub className="mt-1 shrink-0 text-xl text-white" />
+                No repositories found
+              </h3>
 
-                    <div className="min-w-0">
-                      <h3 className="break-words font-semibold text-white">
-                        {repo.name}
-                      </h3>
+              <p
+                className="
+                  mt-2
+                  theme-muted
+                "
+              >
+                Try another search.
+              </p>
+            </div>
+          </div>
 
-                      <p className="mt-1 line-clamp-2 text-sm text-zinc-500">
-                        {repo.description ||
-                          "No description"}
-                      </p>
+        ) : (
 
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {repo.language && (
-                          <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-                            {repo.language}
-                          </span>
-                        )}
+          /* REPOSITORIES */
 
-                        <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-                          ★ {repo.stars}
-                        </span>
+          <div className="space-y-3">
+            {filteredRepositories.map(
+              (repo) => {
+                const url =
+                  `https://github.com/${repo.fullName}`;
 
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs ${
-                            repo.private
-                              ? "bg-yellow-500/10 text-yellow-400"
-                              : "bg-green-500/10 text-green-400"
-                          }`}
-                        >
-                          {repo.private
-                            ? "Private"
-                            : "Public"}
-                        </span>
+                const checked =
+                  selected.includes(url);
+
+                return (
+                  <button
+                    key={repo.id}
+                    type="button"
+                    onClick={() =>
+                      toggleRepository(url)
+                    }
+                    className={`
+                      w-full
+                      cursor-pointer
+                      rounded-2xl
+                      border
+                      p-4
+                      text-left
+                      transition-all
+                      duration-200
+
+                      hover:-translate-y-[1px]
+
+                      sm:p-5
+
+                      ${
+                        checked
+                          ? `
+                            border-[var(--accent)]
+                            bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]
+                          `
+                          : `
+                            theme-border
+                            theme-surface
+                            hover:border-[var(--border-hover)]
+                          `
+                      }
+                    `}
+                  >
+                    <div
+                      className="
+                        flex
+                        flex-col
+                        gap-4
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                      "
+                    >
+                      <div
+                        className="
+                          flex
+                          min-w-0
+                          items-start
+                          gap-3
+                        "
+                      >
+                        <FaGithub
+                          className="
+                            mt-1
+                            shrink-0
+                            text-xl
+                            theme-text
+                          "
+                        />
+
+                        <div className="min-w-0">
+
+                          {/* NAME */}
+
+                          <h3
+                            className="
+                              break-words
+                              font-semibold
+                              theme-text
+                            "
+                          >
+                            {repo.name}
+                          </h3>
+
+                          {/* DESCRIPTION */}
+
+                          <p
+                            className="
+                              mt-1
+                              line-clamp-2
+                              text-sm
+                              theme-muted
+                            "
+                          >
+                            {repo.description ||
+                              "No description"}
+                          </p>
+
+                          {/* TAGS */}
+
+                          <div
+                            className="
+                              mt-3
+                              flex
+                              flex-wrap
+                              gap-2
+                            "
+                          >
+                            {/* LANGUAGE */}
+
+                            {repo.language && (
+                              <span
+                                className="
+                                  rounded-full
+                                  theme-surface-secondary
+                                  px-3
+                                  py-1
+                                  text-xs
+                                  theme-muted
+                                "
+                              >
+                                {repo.language}
+                              </span>
+                            )}
+
+                            {/* STARS */}
+
+                            <span
+                              className="
+                                rounded-full
+                                theme-surface-secondary
+                                px-3
+                                py-1
+                                text-xs
+                                theme-muted
+                              "
+                            >
+                              ★ {repo.stars}
+                            </span>
+
+                            {/* VISIBILITY */}
+
+                            <span
+                              className={`
+                                rounded-full
+                                px-3
+                                py-1
+                                text-xs
+
+                                ${
+                                  repo.private
+                                    ? `
+                                      bg-yellow-500/10
+                                      text-yellow-600
+                                      dark:text-yellow-400
+                                    `
+                                    : `
+                                      bg-green-500/10
+                                      text-green-600
+                                      dark:text-green-400
+                                    `
+                                }
+                              `}
+                            >
+                              {repo.private
+                                ? "Private"
+                                : "Public"}
+                            </span>
+                          </div>
+                        </div>
                       </div>
+
+                      {/* CHECK */}
+
+                      {checked && (
+                        <FaCheck
+                          className="
+                            shrink-0
+                            self-start
+                            theme-accent
+                            sm:self-center
+                          "
+                        />
+                      )}
                     </div>
-                  </div>
+                  </button>
+                );
+              }
+            )}
+          </div>
+        )}
+      </div>
 
-                  {checked && (
-                    <FaCheck className="shrink-0 self-start text-white sm:self-center" />
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
+      {/* ================================= */}
+      {/* FOOTER */}
+      {/* ================================= */}
 
-    {/* Sticky Footer */}
-    <div className="mt-4 shrink-0 border-t border-zinc-800 pt-4 sm:mt-6 sm:pt-6">
-      <button
-        disabled={
-          !selected.length ||
-          isPending
-        }
-        onClick={handleImport}
+      <div
         className="
-          w-full
-          rounded-2xl
-          bg-white
-          px-4
-          py-4
-          text-sm
-          font-semibold
-          text-black
-          leading-snug
-          transition
-          hover:scale-[1.01]
-          active:scale-[0.99]
-          disabled:cursor-not-allowed
-          disabled:opacity-50
-          sm:text-base
+          mt-4
+          shrink-0
+          border-t
+          theme-border
+          pt-4
+          sm:mt-6
+          sm:pt-6
         "
       >
-        {isPending
-          ? "Importing..."
-          : `Import Selected (${selected.length})`}
-      </button>
+        <button
+          type="button"
+          disabled={
+            !selected.length ||
+            isPending
+          }
+          onClick={handleImport}
+          className="
+            w-full
+            cursor-pointer
+            rounded-2xl
+            theme-accent-bg
+            px-4
+            py-4
+            text-sm
+            font-semibold
+            leading-snug
+            transition-all
+            duration-200
+
+            hover:scale-[1.01]
+            hover:opacity-90
+
+            active:scale-[0.99]
+
+            disabled:cursor-not-allowed
+            disabled:opacity-50
+
+            sm:text-base
+          "
+        >
+          {isPending
+            ? "Importing..."
+            : `Import Selected (${selected.length})`}
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
 }
 
 export default GithubRepositories;

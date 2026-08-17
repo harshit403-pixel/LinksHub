@@ -13,67 +13,139 @@ function ProfileQrModal({
         exit={{ opacity: 0 }}
         onClick={onClose}
         className="
-          fixed inset-0 z-[999]
+          fixed
+          inset-0
+          z-[999]
+          flex
+          items-center
+          justify-center
           bg-black/70
-          backdrop-blur-sm
-          flex items-center justify-center
           p-4
+          backdrop-blur-sm
         "
       >
         <motion.div
           initial={{
             opacity: 0,
             scale: 0.95,
+            y: 20,
           }}
           animate={{
             opacity: 1,
             scale: 1,
+            y: 0,
           }}
           exit={{
             opacity: 0,
             scale: 0.95,
+            y: 20,
+          }}
+          transition={{
+            duration: 0.2,
           }}
           onClick={(e) =>
             e.stopPropagation()
           }
           className="
-            bg-zinc-900
-            border
-            border-zinc-800
+            w-full
+            max-w-md
             rounded-3xl
+            border
+            border-zinc-200
+            bg-white
             p-8
             text-center
+            text-zinc-900
+            transition-colors
+            duration-250
+
+            dark:border-zinc-800
+            dark:bg-zinc-900
+            dark:text-white
           "
         >
-          <h2 className="text-3xl font-black text-white mb-2">
+          {/* TITLE */}
+
+          <h2
+            className="
+              mb-2
+              text-3xl
+              font-black
+              text-zinc-900
+
+              dark:text-white
+            "
+          >
             Profile QR
           </h2>
 
-          <p className="text-zinc-500 mb-6">
+          {/* DESCRIPTION */}
+
+          <p
+            className="
+              mb-6
+              text-zinc-500
+            "
+          >
             Scan to open profile
           </p>
 
-          <div className="bg-white rounded-2xl p-4 inline-block">
+          {/* QR CODE */}
+
+          <div
+            className="
+              inline-block
+              rounded-2xl
+              bg-white
+              p-4
+              shadow-sm
+            "
+          >
             <QRCodeCanvas
               value={profileUrl}
               size={240}
+              bgColor="#ffffff"
+              fgColor="#000000"
             />
           </div>
 
-          <p className="text-zinc-500 mt-6 text-sm break-all">
+          {/* PROFILE URL */}
+
+          <p
+            className="
+              mt-6
+              break-all
+              text-sm
+              text-zinc-500
+            "
+          >
             {profileUrl}
           </p>
 
+          {/* CLOSE */}
+
           <button
+            type="button"
             onClick={onClose}
             className="
               mt-6
               w-full
+              cursor-pointer
               rounded-2xl
-              bg-lime-400
+              bg-red-500
               py-3
-              text-black
               font-semibold
+              text-white
+              transition-all
+
+              hover:bg-red-600
+              hover:scale-[1.01]
+
+              active:scale-[0.98]
+
+              dark:bg-lime-400
+              dark:text-black
+              dark:hover:bg-lime-300
             "
           >
             Close

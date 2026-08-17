@@ -36,7 +36,7 @@ function AIBioModal({
 
   const [bios, setBios] =
     useState([]);
-
+const [toneOpen, setToneOpen] = useState(false);
   const {
     mutate,
     isPending,
@@ -138,59 +138,175 @@ function AIBioModal({
              
             />
 
-            <div>
-              <label className="text-zinc-500 text-sm">
-                Tone
-              </label>
+ <div className="relative">
+  <label className="text-sm theme-muted">
+    Tone
+  </label>
 
-              <select
-                value={tone}
-                onChange={(e) =>
-                  setTone(
-                    e.target.value
-                  )
-                }
-                className="
-                  mt-2
+  <div className="relative mt-2">
+    <button
+      type="button"
+      onClick={() =>
+        setToneOpen((prev) => !prev)
+      }
+      className="
+        flex
+        w-full
+        items-center
+        justify-between
+        gap-4
+        rounded-2xl
+        border
+        theme-border
+        theme-surface-secondary
+        px-4
+        py-4
+        text-left
+        text-sm
+        theme-text
+        transition
+        hover:border-[var(--border-hover)]
+        focus:border-[var(--accent)]
+        focus:outline-none
+      "
+    >
+      <span>{tone}</span>
+
+      <svg
+        className={`
+          h-4
+          w-4
+          shrink-0
+          theme-muted
+          transition-transform
+          duration-200
+          ${toneOpen ? "rotate-180" : ""}
+        `}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
+        <path
+          d="m6 9 6 6 6-6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+
+    <AnimatePresence>
+      {toneOpen && (
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: -6,
+            scale: 0.98,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: 1,
+          }}
+          exit={{
+            opacity: 0,
+            y: -6,
+            scale: 0.98,
+          }}
+          transition={{
+            duration: 0.15,
+          }}
+          className="
+            absolute
+            left-0
+            right-0
+            top-full
+            z-50
+            mt-2
+            overflow-hidden
+            rounded-2xl
+            border
+            theme-border
+            theme-surface
+            p-1.5
+            shadow-2xl
+            shadow-black/10
+            dark:shadow-black/50
+          "
+        >
+          {[
+            "Professional",
+            "Creative",
+            "Minimal",
+            "Funny",
+          ].map((option) => {
+            const isSelected =
+              tone === option;
+
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  setTone(option);
+                  setToneOpen(false);
+                }}
+                className={`
+                  flex
                   w-full
-                  rounded-2xl
-                  border
-                  border-zinc-700
-                  bg-transparent
-                  p-4
-                  text-white
-                  outline-none
-                "
+                  items-center
+                  justify-between
+                  rounded-xl
+                  px-3
+                  py-3
+                  text-left
+                  text-sm
+                  transition
+
+                  ${
+                    isSelected
+                      ? `
+                        bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]
+                        text-[var(--accent)]
+                      `
+                      : `
+                        theme-muted
+                        hover:bg-[var(--surface-secondary)]
+                        hover:text-[var(--foreground)]
+                      `
+                  }
+                `}
               >
-                <option
-                  value="Professional"
-                  className="bg-zinc-900"
-                >
-                  Professional
-                </option>
+                <span>{option}</span>
 
-                <option
-                  value="Creative"
-                  className="bg-zinc-900"
-                >
-                  Creative
-                </option>
-
-                <option
-                  value="Minimal"
-                  className="bg-zinc-900"
-                >
-                  Minimal
-                </option>
-
-                <option
-                  value="Funny"
-                  className="bg-zinc-900"
-                >
-                  Funny
-                </option>
-              </select>
-            </div>
+                {isSelected && (
+                  <svg
+                    className="
+                      h-4
+                      w-4
+                      shrink-0
+                      theme-accent
+                    "
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      d="m5 12 4 4L19 6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </button>
+            );
+          })}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
+</div>
 
             <Button
               type="button"
