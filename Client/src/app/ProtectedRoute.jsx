@@ -7,8 +7,19 @@ function ProtectedRoute({ children }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-zinc-500">
+      <div
+        className="
+          flex
+          min-h-screen
+          items-center
+          justify-center
+          theme-bg
+          theme-text
+          transition-colors
+          duration-250
+        "
+      >
+        <p className="theme-muted">
           Loading...
         </p>
       </div>
