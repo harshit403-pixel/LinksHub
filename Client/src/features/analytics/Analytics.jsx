@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+
 import {
   FaLink,
   FaMousePointer,
   FaChartLine,
+  FaChevronDown,
+  FaCheck,
 } from "react-icons/fa";
 
 import {
@@ -17,29 +20,33 @@ import {
 
 import { useMyLinks } from "../links/useMyLinks";
 import { useLinkAnalytics } from "../analytics/useLinkAnalytics";
-import { FaChevronDown, FaCheck } from "react-icons/fa";
-import { AnimatePresence, motion } from "motion/react";
 
+import {
+  AnimatePresence,
+  motion,
+} from "motion/react";
 
 function Analytics() {
-  const { data, isLoading } = useMyLinks();
+  const { data, isLoading } =
+    useMyLinks();
 
   const links = data?.links || [];
 
-const [selectedLink, setSelectedLink] =
-  useState("all");
+  const [selectedLink, setSelectedLink] =
+    useState("all");
 
+  const [
+    linkDropdownOpen,
+    setLinkDropdownOpen,
+  ] = useState(false);
 
-  const [linkDropdownOpen, setLinkDropdownOpen] =
-  useState(false);
-
-const selectedLinkData =
-  selectedLink === "all"
-    ? null
-    : links.find(
-        (link) => link._id === selectedLink
-      );
-
+  const selectedLinkData =
+    selectedLink === "all"
+      ? null
+      : links.find(
+          (link) =>
+            link._id === selectedLink
+        );
 
   const {
     data: analyticsData,
@@ -104,6 +111,7 @@ const selectedLinkData =
         item._id ||
         item.createdAt ||
         "",
+
       clicks:
         item.clicks ||
         item.count ||
@@ -117,11 +125,33 @@ const selectedLinkData =
 
   if (isLoading) {
     return (
-      <div className="space-y-8 text-white">
+      <div
+        className="
+          space-y-8
+          theme-text
+        "
+      >
         <div>
-          <div className="h-10 w-48 animate-pulse rounded-xl bg-zinc-900" />
+          <div
+            className="
+              h-10
+              w-48
+              animate-pulse
+              rounded-xl
+              theme-surface
+            "
+          />
 
-          <div className="mt-3 h-5 w-72 animate-pulse rounded-lg bg-zinc-900" />
+          <div
+            className="
+              mt-3
+              h-5
+              w-72
+              animate-pulse
+              rounded-lg
+              theme-surface
+            "
+          />
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -129,34 +159,37 @@ const selectedLinkData =
             (_, index) => (
               <div
                 key={index}
-                className="h-40 animate-pulse rounded-3xl bg-zinc-900"
+                className="
+                  h-40
+                  animate-pulse
+                  rounded-3xl
+                  theme-surface
+                "
               />
             )
           )}
         </div>
 
-        <div className="h-[450px] animate-pulse rounded-3xl bg-zinc-900" />
+        <div
+          className="
+            h-[450px]
+            animate-pulse
+            rounded-3xl
+            theme-surface
+          "
+        />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 text-white">
-
-      {/* -------------------------------- */}
-      {/* Header                           */}
-      {/* -------------------------------- */}
-
-      <div>
-        <h1 className="text-4xl font-black tracking-tight">
-          Analytics
-        </h1>
-
-        <p className="mt-2 text-zinc-500">
-          Insights about your links
-          and profile performance.
-        </p>
-      </div>
+    <div
+      className="
+      mt-8
+        space-y-8
+        theme-text
+      "
+    >
 
       {/* -------------------------------- */}
       {/* Stats                            */}
@@ -164,119 +197,238 @@ const selectedLinkData =
 
       <div className="grid gap-4 md:grid-cols-3">
 
-        {/* Total Links */}
+        {/* TOTAL LINKS */}
 
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+        <div
+          className="
+            rounded-3xl
+            border
+            theme-border
+            theme-surface
+            p-6
+            transition-colors
+            duration-250
+          "
+        >
           <div className="flex items-center justify-between">
-            <span className="text-zinc-500">
+            <span className="theme-muted">
               Total Links
             </span>
 
-            <FaLink className="text-lime-400" />
+            <FaLink
+              className="
+                theme-accent
+              "
+            />
           </div>
 
-          <h2 className="mt-4 text-5xl font-black text-white">
+          <h2
+            className="
+              mt-4
+              text-5xl
+              font-black
+              theme-text
+            "
+          >
             {totalLinks}
           </h2>
 
-          <p className="mt-2 text-sm text-zinc-600">
+          <p
+            className="
+              mt-2
+              text-sm
+              theme-muted
+            "
+          >
             Links on your profile
           </p>
         </div>
 
-        {/* Total Clicks */}
+        {/* TOTAL CLICKS */}
 
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+        <div
+          className="
+            rounded-3xl
+            border
+            theme-border
+            theme-surface
+            p-6
+            transition-colors
+            duration-250
+          "
+        >
           <div className="flex items-center justify-between">
-            <span className="text-zinc-500">
+            <span className="theme-muted">
               Total Clicks
             </span>
 
-            <FaMousePointer className="text-lime-400" />
+            <FaMousePointer
+              className="
+                theme-accent
+              "
+            />
           </div>
 
-          <h2 className="mt-4 text-5xl font-black text-white">
+          <h2
+            className="
+              mt-4
+              text-5xl
+              font-black
+              theme-text
+            "
+          >
             {totalClicks}
           </h2>
 
-          <p className="mt-2 text-sm text-zinc-600">
+          <p
+            className="
+              mt-2
+              text-sm
+              theme-muted
+            "
+          >
             Across all your links
           </p>
         </div>
 
-        {/* Average Clicks */}
+        {/* AVERAGE CLICKS */}
 
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+        <div
+          className="
+            rounded-3xl
+            border
+            theme-border
+            theme-surface
+            p-6
+            transition-colors
+            duration-250
+          "
+        >
           <div className="flex items-center justify-between">
-            <span className="text-zinc-500">
+            <span className="theme-muted">
               Avg Clicks / Link
             </span>
 
-            <FaChartLine className="text-lime-400" />
+            <FaChartLine
+              className="
+                theme-accent
+              "
+            />
           </div>
 
-          <h2 className="mt-4 text-5xl font-black text-white">
+          <h2
+            className="
+              mt-4
+              text-5xl
+              font-black
+              theme-text
+            "
+          >
             {averageClicks}
           </h2>
 
-          <p className="mt-2 text-sm text-zinc-600">
+          <p
+            className="
+              mt-2
+              text-sm
+              theme-muted
+            "
+          >
             Average performance
           </p>
         </div>
-
       </div>
 
       {/* -------------------------------- */}
       {/* Overall Performance              */}
       {/* -------------------------------- */}
 
-      <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 sm:p-8">
-
+      <div
+        className="
+          rounded-3xl
+          border
+          theme-border
+          theme-surface
+          p-6
+          transition-colors
+          duration-250
+          sm:p-8
+        "
+      >
         <div>
-          <h2 className="text-2xl font-bold text-white">
+          <h2
+            className="
+              text-2xl
+              font-bold
+              theme-text
+            "
+          >
             Overall Performance
           </h2>
 
-          <p className="mt-1 text-sm text-zinc-500">
-            A quick overview of your link performance.
+          <p
+            className="
+              mt-1
+              text-sm
+              theme-muted
+            "
+          >
+            A quick overview of your link
+            performance.
           </p>
         </div>
 
         <div className="mt-8 grid gap-8 sm:grid-cols-3">
 
-          {/* Total Clicks */}
-
           <div>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm theme-muted">
               Total clicks
             </p>
 
-            <p className="mt-2 text-3xl font-black text-white">
+            <p
+              className="
+                mt-2
+                text-3xl
+                font-black
+                theme-text
+              "
+            >
               {totalClicks}
             </p>
           </div>
 
-          {/* Most Clicked */}
-
           <div>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm theme-muted">
               Most clicked link
             </p>
 
-            <p className="mt-2 truncate text-xl font-bold text-white">
+            <p
+              className="
+                mt-2
+                truncate
+                text-xl
+                font-bold
+                theme-text
+              "
+            >
               {mostClicked?.title ||
                 "No links yet"}
             </p>
           </div>
 
-          {/* Best Share */}
-
           <div>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm theme-muted">
               Best link share
             </p>
 
-            <p className="mt-2 text-3xl font-black text-white">
+            <p
+              className="
+                mt-2
+                text-3xl
+                font-black
+                theme-accent
+              "
+            >
               {bestLinkShare}%
             </p>
           </div>
@@ -288,203 +440,294 @@ const selectedLinkData =
       {/* Performance Over Time            */}
       {/* -------------------------------- */}
 
-      <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 sm:p-8">
+      <div
+        className="
+          rounded-3xl
+          border
+          theme-border
+          theme-surface
+          p-6
+          transition-colors
+          duration-250
+          sm:p-8
+        "
+      >
 
-        {/* Chart Header */}
+        {/* CHART HEADER */}
 
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-
+        <div
+          className="
+            flex
+            flex-col
+            gap-5
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+          "
+        >
           <div>
-            <h2 className="text-2xl font-bold text-white">
+            <h2
+              className="
+                text-2xl
+                font-bold
+                theme-text
+              "
+            >
               Performance Over Time
             </h2>
 
-            <p className="mt-1 text-sm text-zinc-500">
-              Track how your selected link performs over time.
+            <p
+              className="
+                mt-1
+                text-sm
+                theme-muted
+              "
+            >
+              Track how your selected link
+              performs over time.
             </p>
           </div>
 
-          {/* Link Filter */}
+          {/* LINK FILTER */}
 
-<div className="relative">
-  <button
-    type="button"
-    onClick={() =>
-      setLinkDropdownOpen(
-        (prev) => !prev
-      )
-    }
-    className="
-      flex
-      min-w-[190px]
-      items-center
-      justify-between
-      gap-4
-      rounded-xl
-      border
-      border-zinc-700
-      bg-zinc-950
-      px-4
-      py-2.5
-      text-sm
-      text-white
-      transition
-      hover:border-zinc-500
-      focus:border-zinc-400
-      focus:outline-none
-    "
-  >
-    <span className="truncate">
-      {selectedLink === "all"
-        ? "All Links"
-        : selectedLinkData?.title ||
-          "Untitled Link"}
-    </span>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() =>
+                setLinkDropdownOpen(
+                  (prev) => !prev
+                )
+              }
+              className="
+                flex
+                min-w-[190px]
+                items-center
+                justify-between
+                gap-4
+                rounded-xl
+                border
+                theme-border
+                theme-surface-secondary
+                px-4
+                py-2.5
+                text-sm
+                theme-text
+                transition
+                hover:border-[var(--border-hover)]
+                focus:border-[var(--accent)]
+                focus:outline-none
+              "
+            >
+              <span className="truncate">
+                {selectedLink === "all"
+                  ? "All Links"
+                  : selectedLinkData?.title ||
+                    "Untitled Link"}
+              </span>
 
-    <FaChevronDown
-      className={`shrink-0 text-xs text-zinc-500 transition-transform ${
-        linkDropdownOpen
-          ? "rotate-180"
-          : ""
-      }`}
-    />
-  </button>
-
-  <AnimatePresence>
-    {linkDropdownOpen && (
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -6,
-          scale: 0.98,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-          scale: 1,
-        }}
-        exit={{
-          opacity: 0,
-          y: -6,
-          scale: 0.98,
-        }}
-        transition={{
-          duration: 0.15,
-        }}
-        className="
-          absolute
-          right-0
-          top-full
-          z-50
-          mt-2
-          w-[240px]
-          overflow-hidden
-          rounded-2xl
-          border
-          border-zinc-800
-          bg-zinc-950
-          p-1.5
-          shadow-2xl
-          shadow-black/50
-        "
-      >
-        {/* All Links */}
-
-        <button
-          type="button"
-          onClick={() => {
-            setSelectedLink("all");
-            setLinkDropdownOpen(false);
-          }}
-          className={`
-            flex
-            w-full
-            items-center
-            justify-between
-            rounded-xl
-            px-3
-            py-3
-            text-left
-            text-sm
-            transition
-            ${
-              selectedLink === "all"
-                ? "bg-zinc-800 text-white"
-                : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
-            }
-          `}
-        >
-          <span>All Links</span>
-
-          {selectedLink === "all" && (
-            <FaCheck className="text-xs text-lime-400" />
-          )}
-        </button>
-
-        {/* Individual Links */}
-
-        <div className="my-1 border-t border-zinc-800" />
-
-        <div className="max-h-60 overflow-y-auto">
-          {links.map((link) => {
-            const isSelected =
-              selectedLink === link._id;
-
-            return (
-              <button
-                key={link._id}
-                type="button"
-                onClick={() => {
-                  setSelectedLink(
-                    link._id
-                  );
-                  setLinkDropdownOpen(
-                    false
-                  );
-                }}
+              <FaChevronDown
                 className={`
-                  flex
-                  w-full
-                  items-center
-                  justify-between
-                  rounded-xl
-                  px-3
-                  py-3
-                  text-left
-                  text-sm
-                  transition
+                  shrink-0
+                  text-xs
+                  theme-muted
+                  transition-transform
+
                   ${
-                    isSelected
-                      ? "bg-zinc-800 text-white"
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                    linkDropdownOpen
+                      ? "rotate-180"
+                      : ""
                   }
                 `}
-              >
-                <span className="truncate pr-3">
-                  {link.title ||
-                    "Untitled Link"}
-                </span>
+              />
+            </button>
 
-                {isSelected && (
-                  <FaCheck className="shrink-0 text-xs text-lime-400" />
-                )}
-              </button>
-            );
-          })}
+            <AnimatePresence>
+              {linkDropdownOpen && (
+                <motion.div
+                  initial={{
+                    opacity: 0,
+                    y: -6,
+                    scale: 0.98,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -6,
+                    scale: 0.98,
+                  }}
+                  transition={{
+                    duration: 0.15,
+                  }}
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-50
+                    mt-2
+                    w-[240px]
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    theme-border
+                    theme-surface
+                    p-1.5
+                    shadow-2xl
+                    shadow-black/10
+                    dark:shadow-black/50
+                  "
+                >
+
+                  {/* ALL LINKS */}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedLink(
+                        "all"
+                      );
+
+                      setLinkDropdownOpen(
+                        false
+                      );
+                    }}
+                    className={`
+                      flex
+                      w-full
+                      items-center
+                      justify-between
+                      rounded-xl
+                      px-3
+                      py-3
+                      text-left
+                      text-sm
+                      transition
+
+                      ${
+                        selectedLink ===
+                        "all"
+                          ? `
+                            bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]
+                            text-[var(--accent)]
+                          `
+                          : `
+                            theme-muted
+                            hover:bg-[var(--surface-secondary)]
+                            hover:text-[var(--foreground)]
+                          `
+                      }
+                    `}
+                  >
+                    <span>
+                      All Links
+                    </span>
+
+                    {selectedLink ===
+                      "all" && (
+                      <FaCheck
+                        className="
+                          text-xs
+                          theme-accent
+                        "
+                      />
+                    )}
+                  </button>
+
+                  <div
+                    className="
+                      my-1
+                      border-t
+                      theme-border
+                    "
+                  />
+
+                  {/* INDIVIDUAL LINKS */}
+
+                  <div className="max-h-60 overflow-y-auto">
+                    {links.map((link) => {
+                      const isSelected =
+                        selectedLink ===
+                        link._id;
+
+                      return (
+                        <button
+                          key={link._id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedLink(
+                              link._id
+                            );
+
+                            setLinkDropdownOpen(
+                              false
+                            );
+                          }}
+                          className={`
+                            flex
+                            w-full
+                            items-center
+                            justify-between
+                            rounded-xl
+                            px-3
+                            py-3
+                            text-left
+                            text-sm
+                            transition
+
+                            ${
+                              isSelected
+                                ? `
+                                  bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]
+                                  text-[var(--accent)]
+                                `
+                                : `
+                                  theme-muted
+                                  hover:bg-[var(--surface-secondary)]
+                                  hover:text-[var(--foreground)]
+                                `
+                            }
+                          `}
+                        >
+                          <span className="truncate pr-3">
+                            {link.title ||
+                              "Untitled Link"}
+                          </span>
+
+                          {isSelected && (
+                            <FaCheck
+                              className="
+                                shrink-0
+                                text-xs
+                                theme-accent
+                              "
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-</div>
-        </div>
 
-        {/* Chart */}
+        {/* CHART */}
 
-        <div className="mt-8 h-[320px] w-full sm:h-[400px]">
-
+        <div
+          className="
+            mt-8
+            h-[320px]
+            w-full
+            sm:h-[400px]
+          "
+        >
           {analyticsLoading ? (
             <div className="flex h-full items-center justify-center">
-              <p className="text-zinc-500">
+              <p className="theme-muted">
                 Loading analytics...
               </p>
             </div>
@@ -494,11 +737,20 @@ const selectedLinkData =
 
                 <FaChartLine
                   size={40}
-                  className="mx-auto text-zinc-700"
+                  className="
+                    mx-auto
+                    theme-muted
+                  "
                 />
 
-                <p className="mt-4 text-zinc-500">
-                  No analytics data available yet.
+                <p
+                  className="
+                    mt-4
+                    theme-muted
+                  "
+                >
+                  No analytics data available
+                  yet.
                 </p>
 
               </div>
@@ -519,13 +771,13 @@ const selectedLinkData =
               >
 
                 <CartesianGrid
-                  stroke="#27272a"
+                  stroke="var(--chart-grid)"
                   vertical={false}
                 />
 
                 <XAxis
                   dataKey="date"
-                  stroke="#71717a"
+                  stroke="var(--chart-axis)"
                   tick={{
                     fontSize: 12,
                   }}
@@ -534,7 +786,7 @@ const selectedLinkData =
                 />
 
                 <YAxis
-                  stroke="#71717a"
+                  stroke="var(--chart-axis)"
                   tick={{
                     fontSize: 12,
                   }}
@@ -546,23 +798,25 @@ const selectedLinkData =
                 <Tooltip
                   contentStyle={{
                     backgroundColor:
-                      "#09090b",
+                      "var(--chart-tooltip-bg)",
                     border:
-                      "1px solid #27272a",
+                      "1px solid var(--chart-tooltip-border)",
                     borderRadius:
                       "12px",
-                    color: "#fff",
+                    color:
+                      "var(--chart-tooltip-text)",
                   }}
                 />
 
                 <Line
                   type="monotone"
                   dataKey="clicks"
-                  stroke="#a3e635"
+                  stroke="var(--chart-accent)"
                   strokeWidth={3}
                   dot={{
                     r: 4,
-                    fill: "#a3e635",
+                    fill:
+                      "var(--chart-accent)",
                   }}
                   activeDot={{
                     r: 6,
@@ -572,7 +826,6 @@ const selectedLinkData =
               </LineChart>
             </ResponsiveContainer>
           )}
-
         </div>
       </div>
 
@@ -580,38 +833,76 @@ const selectedLinkData =
       {/* Top Links                        */}
       {/* -------------------------------- */}
 
-      <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 sm:p-8">
-
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-
+      <div
+        className="
+          rounded-3xl
+          border
+          theme-border
+          theme-surface
+          p-6
+          transition-colors
+          duration-250
+          sm:p-8
+        "
+      >
+        <div
+          className="
+            flex
+            flex-col
+            gap-2
+            sm:flex-row
+            sm:items-end
+            sm:justify-between
+          "
+        >
           <div>
-            <h2 className="text-2xl font-bold text-white">
+            <h2
+              className="
+                text-2xl
+                font-bold
+                theme-text
+              "
+            >
               Top Links
             </h2>
 
-            <p className="mt-1 text-sm text-zinc-500">
+            <p className="mt-1 text-sm theme-muted">
               Ranked by total clicks.
             </p>
           </div>
 
-          <p className="text-sm text-zinc-600">
+          <p
+            className="
+              text-sm
+              theme-muted
+            "
+          >
             {rankedLinks.length} link
             {rankedLinks.length !== 1 &&
               "s"}
           </p>
-
         </div>
 
-        {/* Table */}
+        {/* TABLE */}
 
         <div className="mt-6 overflow-x-auto">
-
           <div className="min-w-[600px]">
 
-            {/* Header */}
+            {/* HEADER */}
 
-            <div className="grid grid-cols-[60px_1fr_120px_120px] gap-4 border-b border-zinc-800 px-4 pb-4 text-sm text-zinc-500">
-
+            <div
+              className="
+                grid
+                grid-cols-[60px_1fr_120px_120px]
+                gap-4
+                border-b
+                theme-border
+                px-4
+                pb-4
+                text-sm
+                theme-muted
+              "
+            >
               <span>#</span>
 
               <span>Link</span>
@@ -623,21 +914,24 @@ const selectedLinkData =
               <span className="text-right">
                 Share
               </span>
-
             </div>
 
-            {/* Rows */}
+            {/* ROWS */}
 
             <div>
-
               {rankedLinks.length === 0 ? (
-                <div className="py-12 text-center text-zinc-500">
+                <div
+                  className="
+                    py-12
+                    text-center
+                    theme-muted
+                  "
+                >
                   No links available.
                 </div>
               ) : (
                 rankedLinks.map(
                   (link, index) => {
-
                     const clicks =
                       link.clicks || 0;
 
@@ -659,16 +953,21 @@ const selectedLinkData =
                           items-center
                           gap-4
                           border-b
-                          border-zinc-800
+                          theme-border
                           px-4
                           py-5
                           last:border-b-0
                         "
                       >
 
-                        {/* Rank */}
+                        {/* RANK */}
 
-                        <span className="font-bold text-zinc-500">
+                        <span
+                          className="
+                            font-bold
+                            theme-muted
+                          "
+                        >
                           {String(
                             index + 1
                           ).padStart(
@@ -677,32 +976,55 @@ const selectedLinkData =
                           )}
                         </span>
 
-                        {/* Link */}
+                        {/* LINK */}
 
                         <div className="min-w-0">
-
-                          <p className="truncate font-semibold text-white">
+                          <p
+                            className="
+                              truncate
+                              font-semibold
+                              theme-text
+                            "
+                          >
                             {link.title ||
                               "Untitled Link"}
                           </p>
 
                           {link.url && (
-                            <p className="mt-1 truncate text-xs text-zinc-600">
+                            <p
+                              className="
+                                mt-1
+                                truncate
+                                text-xs
+                                theme-muted
+                              "
+                            >
                               {link.url}
                             </p>
                           )}
-
                         </div>
 
-                        {/* Clicks */}
+                        {/* CLICKS */}
 
-                        <span className="text-right font-bold text-white">
+                        <span
+                          className="
+                            text-right
+                            font-bold
+                            theme-text
+                          "
+                        >
                           {clicks}
                         </span>
 
-                        {/* Share */}
+                        {/* SHARE */}
 
-                        <span className="text-right text-zinc-400">
+                        <span
+                          className="
+                            text-right
+                            font-medium
+                            theme-accent
+                          "
+                        >
                           {percentage}%
                         </span>
 
@@ -711,11 +1033,9 @@ const selectedLinkData =
                   }
                 )
               )}
-
             </div>
 
           </div>
-
         </div>
       </div>
 
