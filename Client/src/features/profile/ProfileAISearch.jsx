@@ -95,20 +95,23 @@ function ProfileAISearch({
                 }
                 placeholder="Ask anything about my projects, experience or skills..."
                 className="
-                  min-w-0
-                  flex-1
-                  h-12
-                  bg-transparent
-                  px-3
-                  text-sm
-                  text-white
-                  placeholder:text-zinc-500
-                  outline-none
-                  disabled:opacity-60
-                  sm:h-14
-                  sm:px-4
-                  sm:text-base
-                "
+                
+  min-w-0
+  flex-1
+  h-12
+  bg-transparent
+  px-3
+  text-sm
+  text-white!
+  caret-white
+  placeholder:text-zinc-500
+  outline-none
+  disabled:opacity-60
+  sm:h-14
+  sm:px-4
+  sm:text-base
+"
+                
               />
             </div>
 
