@@ -1,6 +1,8 @@
 import { geminiModel } from "../../config/gemini.js";
 import { fetchRepository } from "../github/github.api.js";
 import * as knowledgeDao from "./knowledge.dao.js";
+import { indexProjectKnowledge, deleteProjectKnowledge } from "../ai/rag/knowledgeIndexer.js";
+import { runProfileAI } from "../ai/rag/profileGraph.js";
 
 const createStatusError = (
   status,
@@ -66,86 +68,6 @@ Example questions:
   );
 };
 
-const searchKnowledge = async (
-  query,
-  projects
-) => {
-  const context = projects
-    .map(
-      (project) => `
-ID: ${project._id}
-Title: ${project.title}
-
-Summary:
-${project.summary}
-
-Description:
-${project.description}
-
-Technologies:
-${project.technologies.join(", ")}
-
-Concepts:
-${project.concepts.join(", ")}
-
-GitHub:
-${project.githubUrl}
-
-Demo:
-${project.demoUrl || "N/A"}
-
-----------------------------------------
-`
-    )
-    .join("\n");
-
-  const prompt = `
-You are an AI assistant for a LinksHub profile.
-
-Answer ONLY using the provided projects.
-
-Return ONLY valid JSON.
-
-Format:
-
-{
-  "answer":"short answer",
-  "projects":[
-    "PROJECT_ID_1",
-    "PROJECT_ID_2"
-  ]
-}
-
-Rules:
-- projects MUST contain the IDs of the relevant projects.
-- Never invent project IDs.
-- If nothing matches:
-
-{
-  "answer":"I couldn't find any relevant project.",
-  "projects":[]
-}
-
-User Question:
-${query}
-
-Projects:
-${context}
-`;
-
-  const result =
-    await geminiModel.generateContent(prompt);
-
-  const text = result.response.text();
-
-  const json = text
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .trim();
-
-  return JSON.parse(json);
-};
-
 export const importProjectForUser = async (
   userId,
   githubUrl,
@@ -181,7 +103,7 @@ const repo =
   );
   const ai = await summarizeProject(repo);
 
-  return knowledgeDao.createProject({
+  const project = await knowledgeDao.createProject({
     owner: userId,
     type: "project",
     title: repo.title,
@@ -197,6 +119,18 @@ const repo =
       : ai.questions,
     readme: repo.readme,
   });
+
+  try {
+    await indexProjectKnowledge(project);
+  } catch (error) {
+    await knowledgeDao.deleteProjectByIdAndOwner(
+      project._id,
+      userId
+    );
+    throw error;
+  }
+
+  return project;
 };
 
 export const getKnowledge = (userId) =>
@@ -207,55 +141,37 @@ export const searchProjects = async ({
   query,
 }) => {
   if (!username) {
-    throw createStatusError(
-      400,
-      "Username is required."
-    );
+    throw createStatusError(400, "Username is required.");
   }
 
   if (!query?.trim()) {
-    throw createStatusError(
-      400,
-      "Query is required."
-    );
+    throw createStatusError(400, "Query is required.");
   }
 
-  const user =
-    await knowledgeDao.findUserByUsername(
-      username
-    );
+  const user = await knowledgeDao.findUserByUsername(username);
 
   if (!user) {
-    throw createStatusError(
-      404,
-      "Profile not found."
-    );
+    throw createStatusError(404, "Profile not found.");
   }
 
-  const projects =
-    await knowledgeDao.findPublicProjectsByOwner(
-      user._id
-    );
+  const projects = await knowledgeDao.findPublicProjectsByOwner(user._id);
 
   if (!projects.length) {
-    throw createStatusError(
-      404,
-      "No public projects found."
-    );
+    throw createStatusError(404, "No public projects found.");
   }
 
-  const aiResponse =
-    await searchKnowledge(query, projects);
+  const graphResult = await runProfileAI({
+    ownerId: user._id,
+    query,
+  });
 
-  const matchedProjects = projects.filter(
-    (project) =>
-      aiResponse.projects.includes(
-        project._id.toString()
-      )
+  const matchedProjects = projects.filter((project) =>
+    graphResult.projectIds.includes(project._id.toString())
   );
 
-  const formattedProjects =
-    matchedProjects.map((project) => ({
+  return {
+    answer: graphResult.answer,
+    projects: matchedProjects.map((project) => ({
       _id: project._id,
       title: project.title,
       summary: project.summary,
@@ -263,11 +179,7 @@ export const searchProjects = async ({
       demoUrl: project.demoUrl,
       technologies: project.technologies,
       tags: project.tags,
-    }));
-
-  return {
-    answer: aiResponse.answer,
-    projects: formattedProjects,
+    })),
   };
 };
 
@@ -287,4 +199,6 @@ export const deleteProject = async (
       "Project not found."
     );
   }
+
+  await deleteProjectKnowledge(projectId);
 };
