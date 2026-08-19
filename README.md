@@ -820,18 +820,7 @@ That is the direction LinksHub is designed to grow toward.
 
 ---
 
-## Submission
 
-**GitHub:**  
-`https://github.com/harshit403-pixel/LinksHub`
-
-**Live Project:**  
-`https://linkshub.onrender.com/`
-
-**Demo Video:**  
-`<ADD_VIDEO_URL>`
-
----
 
 ## Author
 
