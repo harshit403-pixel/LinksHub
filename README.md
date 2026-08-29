@@ -1,5 +1,5 @@
 # LinksHub
- 
+
 <div align="center">
 
 ### Your developer identity, links, projects, and knowledge — in one place.
