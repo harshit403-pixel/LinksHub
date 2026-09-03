@@ -1,6 +1,8 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
+
 import {
   FaGlobe,
   FaGithub,
@@ -8,6 +10,9 @@ import {
   FaLinkedin,
   FaYoutube,
 } from "react-icons/fa";
+
+import { Turnstile } from "@marsidev/react-turnstile";
+
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { useLogin } from "./useLogin";
@@ -18,42 +23,10 @@ function Login() {
     password: "",
   });
 
-const turnstileRef = useRef(null);
-const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileToken, setTurnstileToken] =
+    useState("");
+
   const { mutate, isPending } = useLogin();
-
-
-  useEffect(() => {
-  if (!window.turnstile || !turnstileRef.current) {
-    return;
-  }
-
-  const widgetId = window.turnstile.render(
-    turnstileRef.current,
-    {
-      sitekey:
-        import.meta.env.VITE_TURNSTILE_SITE_KEY,
-
-      callback: (token) => {
-        setTurnstileToken(token);
-      },
-
-      "expired-callback": () => {
-        setTurnstileToken("");
-      },
-
-      "error-callback": () => {
-        setTurnstileToken("");
-      },
-    }
-  );
-
-  return () => {
-    if (window.turnstile) {
-      window.turnstile.remove(widgetId);
-    }
-  };
-}, []);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -61,23 +34,23 @@ const [turnstileToken, setTurnstileToken] = useState("");
       [e.target.name]: e.target.value,
     }));
   };
-const handleSubmit = (e) => {
-  e.preventDefault();
 
-  if (!turnstileToken) {
-    return;
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  mutate({
-    ...formData,
-    turnstileToken,
-  });
-};
+    if (!turnstileToken) {
+      toast.error("Please complete the security check");
+      return;
+    }
 
+    mutate({
+      ...formData,
+      turnstileToken,
+    });
+  };
 
   const handleGoogleLogin = () => {
-    window.location.href =
-      "/api/auth/google";
+    window.location.href = "/api/auth/google";
   };
 
   return (
@@ -88,10 +61,8 @@ const handleSubmit = (e) => {
         items-center
         justify-center
         p-4
-
         theme-bg
         theme-text
-
         transition-colors
         duration-250
       "
@@ -142,7 +113,6 @@ const handleSubmit = (e) => {
             "
           >
             <div className="mb-7">
-
               <h1
                 className="
                   text-6xl
@@ -155,7 +125,6 @@ const handleSubmit = (e) => {
                 <br />
                 Back.
               </h1>
-
             </div>
 
             <form
@@ -177,13 +146,26 @@ const handleSubmit = (e) => {
                 onChange={handleChange}
               />
 
-           <div ref={turnstileRef} />
+              <Turnstile
+                siteKey="0x4AAAAAAEl0yxcCBRUiqieq"
+                theme="auto"
+                size="normal"
+                onSuccess={(token) => {
+                  setTurnstileToken(token);
+                }}
+                onExpire={() => {
+                  setTurnstileToken("");
+                }}
+                onError={() => {
+                  setTurnstileToken("");
+                }}
+              />
 
-<Button
-  disabled={isPending || !turnstileToken}
->
-  {isPending ? "Signing In..." : "Sign In"}
-</Button>
+              <Button
+                disabled={isPending || !turnstileToken}
+              >
+                {isPending ? "Signing In..." : "Sign In"}
+              </Button>
 
               <div className="relative flex items-center gap-1">
                 <div
@@ -237,12 +219,9 @@ const handleSubmit = (e) => {
                   theme-text
                   transition-all
                   duration-200
-
                   hover:border-[var(--border-hover)]
                   hover:scale-[1.01]
-
                   active:scale-[0.98]
-
                   disabled:cursor-not-allowed
                   disabled:opacity-50
                 "
@@ -323,9 +302,6 @@ const handleSubmit = (e) => {
               lg:grid
             "
           >
-
-            {/* BRAND CARD */}
-
             <div
               className="
                 col-span-2
@@ -353,9 +329,7 @@ const handleSubmit = (e) => {
                   theme-accent-bg
                 "
               >
-                <span className="font-bold">
-                  H
-                </span>
+                <span className="font-bold">H</span>
               </div>
 
               <div>
@@ -374,8 +348,6 @@ const handleSubmit = (e) => {
                 </h3>
               </div>
             </div>
-
-            {/* FEATURED */}
 
             <div
               className="
@@ -399,12 +371,8 @@ const handleSubmit = (e) => {
                 </h3>
               </div>
 
-              <FaGlobe
-                size={24}
-              />
+              <FaGlobe size={24} />
             </div>
-
-            {/* GITHUB */}
 
             <div
               className="
@@ -425,8 +393,6 @@ const handleSubmit = (e) => {
               />
             </div>
 
-            {/* INSTAGRAM */}
-
             <div
               className="
                 flex
@@ -445,8 +411,6 @@ const handleSubmit = (e) => {
                 className="theme-text"
               />
             </div>
-
-            {/* LINKEDIN */}
 
             <div
               className="
@@ -477,8 +441,6 @@ const handleSubmit = (e) => {
               />
             </div>
 
-            {/* YOUTUBE */}
-
             <div
               className="
                 col-span-2
@@ -508,8 +470,6 @@ const handleSubmit = (e) => {
               />
             </div>
 
-            {/* BOTTOM CARD */}
-
             <div
               className="
                 col-span-4
@@ -538,7 +498,6 @@ const handleSubmit = (e) => {
                 All your links.
               </h2>
             </div>
-
           </motion.div>
         </div>
       </div>

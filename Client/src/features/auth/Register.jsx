@@ -2,13 +2,14 @@ import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useEffect, useRef } from "react";
 
 import {
   FaUser,
   FaEnvelope,
   FaRocket,
 } from "react-icons/fa";
+
+import { Turnstile } from "@marsidev/react-turnstile";
 
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
@@ -37,8 +38,8 @@ function Register() {
     "help",
   ];
 
-const turnstileRef = useRef(null);
-const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileToken, setTurnstileToken] =
+    useState("");
 
   const validateUsername = (username) => {
     if (!username) {
@@ -65,8 +66,7 @@ const [turnstileToken, setTurnstileToken] = useState("");
     if (!/^[a-zA-Z0-9]+$/.test(username)) {
       return {
         valid: false,
-        message:
-          "Only letters and numbers allowed",
+        message: "Only letters and numbers allowed",
       };
     }
 
@@ -89,20 +89,16 @@ const [turnstileToken, setTurnstileToken] = useState("");
 
   const navigate = useNavigate();
 
-  const [formData, setFormData] =
-    useState({
-      username: "",
-      email: "",
-      password: "",
-    });
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
   const usernameValidation =
-    validateUsername(
-      formData.username
-    );
+    validateUsername(formData.username);
 
-  const queryClient =
-    useQueryClient();
+  const queryClient = useQueryClient();
 
   const {
     mutate,
@@ -127,9 +123,7 @@ const [turnstileToken, setTurnstileToken] = useState("");
 
         navigate("/dashboard");
 
-        toast.success(
-          "Welcome to LinksHub"
-        );
+        toast.success("Welcome to LinksHub");
       } catch (err) {
         console.log(err);
       }
@@ -146,61 +140,29 @@ const [turnstileToken, setTurnstileToken] = useState("");
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     }));
   };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  if (!turnstileToken) {
-    toast.error("Please complete the security check");
-    return;
-  }
+    if (!turnstileToken) {
+      toast.error(
+        "Please complete the security check"
+      );
+      return;
+    }
 
-  mutate({
-    ...formData,
-    turnstileToken,
-  });
-};
+    mutate({
+      ...formData,
+      turnstileToken,
+    });
+  };
 
   const handleGoogleRegister = () => {
-    window.location.href =
-      "/api/auth/google";
+    window.location.href = "/api/auth/google";
   };
-
-  useEffect(() => {
-  if (!window.turnstile || !turnstileRef.current) {
-    return;
-  }
-
-  const widgetId = window.turnstile.render(
-    turnstileRef.current,
-    {
-      sitekey:
-        import.meta.env.VITE_TURNSTILE_SITE_KEY,
-
-      callback: (token) => {
-        setTurnstileToken(token);
-      },
-
-      "expired-callback": () => {
-        setTurnstileToken("");
-      },
-
-      "error-callback": () => {
-        setTurnstileToken("");
-      },
-    }
-  );
-
-  return () => {
-    if (window.turnstile) {
-      window.turnstile.remove(widgetId);
-    }
-  };
-}, []);
 
   return (
     <div
@@ -284,12 +246,8 @@ const handleSubmit = (e) => {
                 <Input
                   label="Username"
                   name="username"
-                  value={
-                    formData.username
-                  }
-                  onChange={
-                    handleChange
-                  }
+                  value={formData.username}
+                  onChange={handleChange}
                 />
 
                 {formData.username && (
@@ -304,9 +262,7 @@ const handleSubmit = (e) => {
                       }
                     `}
                   >
-                    {
-                      usernameValidation.message
-                    }
+                    {usernameValidation.message}
                   </p>
                 )}
               </div>
@@ -323,20 +279,32 @@ const handleSubmit = (e) => {
                 label="Password"
                 type="password"
                 name="password"
-                value={
-                  formData.password
-                }
+                value={formData.password}
                 onChange={handleChange}
               />
-              
-                      <div ref={turnstileRef} />
+
+              <Turnstile
+                siteKey="0x4AAAAAAEl0yxcCBRUiqieq"
+                theme="auto"
+                size="normal"
+                onSuccess={(token) => {
+                  setTurnstileToken(token);
+                }}
+                onExpire={() => {
+                  setTurnstileToken("");
+                }}
+                onError={() => {
+                  setTurnstileToken("");
+                }}
+              />
+
               <Button
-  disabled={
-    isPending ||
-    !usernameValidation.valid ||
-    !turnstileToken
-  }
->
+                disabled={
+                  isPending ||
+                  !usernameValidation.valid ||
+                  !turnstileToken
+                }
+              >
                 {isPending
                   ? "Creating Account..."
                   : "Create Account"}
@@ -387,9 +355,7 @@ const handleSubmit = (e) => {
 
               <button
                 type="button"
-                onClick={
-                  handleGoogleRegister
-                }
+                onClick={handleGoogleRegister}
                 disabled={isPending}
                 className="
                   flex
@@ -407,12 +373,9 @@ const handleSubmit = (e) => {
                   theme-text
                   transition-all
                   duration-200
-
                   hover:border-[var(--border-hover)]
                   hover:scale-[1.01]
-
                   active:scale-[0.98]
-
                   disabled:cursor-not-allowed
                   disabled:opacity-50
                 "
@@ -493,9 +456,6 @@ const handleSubmit = (e) => {
               lg:grid
             "
           >
-
-            {/* USERNAME */}
-
             <div
               className="
                 col-span-2
@@ -518,12 +478,8 @@ const handleSubmit = (e) => {
                 </h3>
               </div>
 
-              <FaUser
-                size={24}
-              />
+              <FaUser size={24} />
             </div>
-
-            {/* ROCKET */}
 
             <div
               className="
@@ -563,8 +519,6 @@ const handleSubmit = (e) => {
               </div>
             </div>
 
-            {/* EMAIL */}
-
             <div
               className="
                 flex
@@ -583,8 +537,6 @@ const handleSubmit = (e) => {
                 className="theme-text"
               />
             </div>
-
-            {/* LINK */}
 
             <div
               className="
@@ -608,8 +560,6 @@ const handleSubmit = (e) => {
                 🔗
               </span>
             </div>
-
-            {/* CUSTOM LINK */}
 
             <div
               className="
@@ -637,11 +587,10 @@ const handleSubmit = (e) => {
                 "
               >
                 Share everything
+                <br />
                 from one place
               </h2>
             </div>
-
-            {/* BOTTOM */}
 
             <div
               className="
@@ -674,7 +623,6 @@ const handleSubmit = (e) => {
                 Share.
               </h2>
             </div>
-
           </motion.div>
         </div>
       </div>
