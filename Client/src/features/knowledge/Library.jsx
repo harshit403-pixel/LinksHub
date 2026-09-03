@@ -7,7 +7,7 @@ import {
 
 import { toast } from "sonner";
 
-import DeleteProjectModal from "./deleteProjectModal";
+import DeleteProjectModal from "./DeleteProjectModal.jsx";
 
 import GithubConnect from "../github/GithubConnect";
 import GithubRepositoriesModal from "../github/GithubRepositoriesModal";

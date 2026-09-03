@@ -11,26 +11,18 @@ import passport from "./modules/auth/passport.js";
 
 const app = express();
 
-const __filename = fileURLToPath(
-  import.meta.url
-);
-
-const __dirname = path.dirname(
-  __filename
-);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
     origin:
-      process.env.NODE_ENV ===
-      "production"
+      process.env.NODE_ENV === "production"
         ? true
         : "http://localhost:5173",
     credentials: true,
   })
 );
-
-
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -39,29 +31,16 @@ app.use(apiLimiter);
 
 app.use(passport.initialize());
 
-
 app.use("/api", apiRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(
-    express.static(
-      path.join(
-        __dirname,
-        "../../Client/dist"
-      )
-    )
-  );
+  const publicPath = path.join(__dirname, "../public");
+
+  app.use(express.static(publicPath));
 
   app.use((req, res) => {
-    res.sendFile(
-      path.join(
-        __dirname,
-        "../../Client/dist/index.html"
-      )
-    );
+    res.sendFile(path.join(publicPath, "index.html"));
   });
 }
-
-
 
 export default app;
