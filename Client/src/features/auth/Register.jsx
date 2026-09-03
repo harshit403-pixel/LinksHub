@@ -295,8 +295,11 @@ const handleSubmit = (e) => {
                 }
                 onChange={handleChange}
               />
-              <Turnstile
+             <Turnstile
   siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+  options={{
+    appearance: "always",
+  }}
   onSuccess={(token) => setTurnstileToken(token)}
   onExpire={() => setTurnstileToken("")}
   onError={() => setTurnstileToken("")}
