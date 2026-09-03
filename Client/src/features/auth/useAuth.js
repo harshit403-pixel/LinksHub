@@ -6,6 +6,7 @@ export const useAuth = () => {
     queryKey: ["auth"],
     queryFn: getMe,
     retry: false,
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 };
