@@ -4,13 +4,51 @@ import * as authDao from "./auth.dao.js";
 import cloudinary from "../../config/cloudinary.js";
 import crypto from "crypto";
 
-const createStatusError = (
-  status,
-  message
-) => {
+const createStatusError = (status, message) => {
   const error = new Error(message);
   error.status = status;
   return error;
+};
+
+const verifyTurnstile = async (token) => {
+  if (!token) {
+    throw createStatusError(
+      400,
+      "Security verification required"
+    );
+  }
+
+  if (!config.TURNSTILE_SECRET) {
+    throw new Error(
+      "Turnstile secret is not configured"
+    );
+  }
+
+  const response = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        secret: config.TURNSTILE_SECRET,
+        response: token,
+      }),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!result.success) {
+    throw createStatusError(
+      400,
+      "Security verification failed"
+    );
+  }
+
+  return true;
 };
 
 export const generateToken = (userId) => {
@@ -31,7 +69,10 @@ export const registerUser = async ({
   username,
   email,
   password,
+  turnstileToken,
 }) => {
+  await verifyTurnstile(turnstileToken);
+
   const userExists =
     await authDao.findExistingUser({
       email,
@@ -60,7 +101,10 @@ export const registerUser = async ({
 export const loginUser = async ({
   identifier,
   password,
+  turnstileToken,
 }) => {
+  await verifyTurnstile(turnstileToken);
+
   const user =
     await authDao.findUserByIdentifier(
       identifier
@@ -115,15 +159,15 @@ export const updateProfile = async (
 ) => {
   const user = await authDao.findUserById(userId);
 
-  if (theme) {
-    user.theme = theme;
-  }
-
   if (!user) {
     throw createStatusError(
       404,
       "User not found"
     );
+  }
+
+  if (theme) {
+    user.theme = theme;
   }
 
   user.displayName =
@@ -142,8 +186,6 @@ export const uploadProfilePicture = async (
   userId,
   file
 ) => {
-
-
   if (!file) {
     throw createStatusError(
       400,
@@ -151,11 +193,8 @@ export const uploadProfilePicture = async (
     );
   }
 
-
   const base64 =
     `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
-
-
 
   const result =
     await cloudinary.uploader.upload(
@@ -165,19 +204,21 @@ export const uploadProfilePicture = async (
       }
     );
 
-
-
   const user = await authDao.findUserById(userId);
 
+  if (!user) {
+    throw createStatusError(
+      404,
+      "User not found"
+    );
+  }
 
   user.profilePicture = result.secure_url;
 
   await user.save();
 
-
   return result.secure_url;
 };
-
 
 export const findOrCreateGoogleUser = async ({
   googleId,
@@ -185,7 +226,6 @@ export const findOrCreateGoogleUser = async ({
   displayName,
   profilePicture,
 }) => {
-  // 1. Check if Google account is already connected
   let user = await authDao.findUserByGoogleId(
     googleId
   );
@@ -194,8 +234,6 @@ export const findOrCreateGoogleUser = async ({
     return user;
   }
 
-  // 2. Check if an account already exists
-  // with the same email
   user = await authDao.findUserByEmail(email);
 
   if (user) {
@@ -213,7 +251,6 @@ export const findOrCreateGoogleUser = async ({
     return user;
   }
 
-  // 3. Generate a unique username
   const baseUsername =
     email
       .split("@")[0]
@@ -230,12 +267,9 @@ export const findOrCreateGoogleUser = async ({
     counter++;
   }
 
-  // 4. Generate an internal random password
-  // Google users never see or use this password.
   const password =
     crypto.randomBytes(32).toString("hex");
 
-  // 5. Create the user
   return authDao.createGoogleUser({
     googleId,
     email,

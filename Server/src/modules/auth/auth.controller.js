@@ -8,7 +8,6 @@ import {
 } from "./auth.service.js";
 import passport from "./passport.js";
 
-
 const handleStatusError = (res, error) => {
   if (!error.status) {
     return false;
@@ -19,31 +18,27 @@ const handleStatusError = (res, error) => {
   });
 };
 
-export const registerUser = async (
-  req,
-  res
-) => {
+export const registerUser = async (req, res) => {
   try {
     const {
       username,
       email,
       password,
+      turnstileToken,
     } = req.body;
 
-    const {
-      token,
-      user,
-    } = await registerUserService({
-      username,
-      email,
-      password,
-    });
+    const { token, user } =
+      await registerUserService({
+        username,
+        email,
+        password,
+        turnstileToken,
+      });
 
     res.cookie("token", token, {
       httpOnly: true,
       secure:
-        process.env.NODE_ENV ===
-        "production",
+        process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -59,9 +54,8 @@ export const registerUser = async (
   } catch (error) {
     if (error?.code === 11000) {
       const duplicateField =
-        Object.keys(
-          error.keyValue || {}
-        )[0] || "field";
+        Object.keys(error.keyValue || {})[0] ||
+        "field";
 
       return res.status(409).json({
         message: `${duplicateField} already exists`,
@@ -85,17 +79,23 @@ export const loginUser = async (req, res) => {
     const {
       identifier,
       password,
+      turnstileToken,
     } = req.body;
 
-    const {
-      token,
-      user,
-    } = await loginUserService({
-      identifier,
-      password,
-    });
+    const { token, user } =
+      await loginUserService({
+        identifier,
+        password,
+        turnstileToken,
+      });
 
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure:
+        process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(200).json({
       message: "Login successful",
@@ -216,18 +216,14 @@ export const logoutUser = (req, res) => {
   });
 };
 
-
-
-export const googleAuth = passport.authenticate(
-  "google",
-  {
+export const googleAuth =
+  passport.authenticate("google", {
     scope: [
       "openid",
       "email",
       "profile",
     ],
-  }
-);
+  });
 
 export const googleAuthCallback = (
   req,
@@ -253,23 +249,14 @@ export const googleAuthCallback = (
       const token =
         generateToken(user._id);
 
-      res.cookie(
-        "token",
-        token,
-        {
-          httpOnly: true,
-          secure:
-            process.env.NODE_ENV ===
-            "production",
-          sameSite: "lax",
-          maxAge:
-            7 *
-            24 *
-            60 *
-            60 *
-            1000,
-        }
-      );
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure:
+          process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge:
+          7 * 24 * 60 * 60 * 1000,
+      });
 
       return res.redirect(
         `${process.env.FRONTEND_URL}/dashboard`

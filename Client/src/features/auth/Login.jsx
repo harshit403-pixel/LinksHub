@@ -8,7 +8,7 @@ import {
   FaLinkedin,
   FaYoutube,
 } from "react-icons/fa";
-
+import { Turnstile } from "@marsidev/react-turnstile";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { useLogin } from "./useLogin";
@@ -19,6 +19,7 @@ function Login() {
     password: "",
   });
 
+  const [turnstileToken, setTurnstileToken] = useState("");
   const { mutate, isPending } = useLogin();
 
   const handleChange = (e) => {
@@ -27,11 +28,18 @@ function Login() {
       [e.target.name]: e.target.value,
     }));
   };
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    mutate(formData);
-  };
+  if (!turnstileToken) {
+    return;
+  }
+
+  mutate({
+    ...formData,
+    turnstileToken,
+  });
+};
 
   const handleGoogleLogin = () => {
     window.location.href =
@@ -135,11 +143,18 @@ function Login() {
                 onChange={handleChange}
               />
 
-              <Button disabled={isPending}>
-                {isPending
-                  ? "Signing In..."
-                  : "Sign In"}
-              </Button>
+              <Turnstile
+  siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+  onSuccess={(token) => setTurnstileToken(token)}
+  onExpire={() => setTurnstileToken("")}
+  onError={() => setTurnstileToken("")}
+/>
+
+<Button
+  disabled={isPending || !turnstileToken}
+>
+  {isPending ? "Signing In..." : "Sign In"}
+</Button>
 
               <div className="relative flex items-center gap-1">
                 <div

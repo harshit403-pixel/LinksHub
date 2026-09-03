@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 import {
   FaUser,
@@ -35,6 +36,8 @@ function Register() {
     "support",
     "help",
   ];
+
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const validateUsername = (username) => {
     if (!username) {
@@ -147,11 +150,19 @@ function Register() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    mutate(formData);
-  };
+  if (!turnstileToken) {
+    toast.error("Please complete the security check");
+    return;
+  }
+
+  mutate({
+    ...formData,
+    turnstileToken,
+  });
+};
 
   const handleGoogleRegister = () => {
     window.location.href =
@@ -284,13 +295,20 @@ function Register() {
                 }
                 onChange={handleChange}
               />
+              <Turnstile
+  siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+  onSuccess={(token) => setTurnstileToken(token)}
+  onExpire={() => setTurnstileToken("")}
+  onError={() => setTurnstileToken("")}
+/>
 
               <Button
-                disabled={
-                  isPending ||
-                  !usernameValidation.valid
-                }
-              >
+  disabled={
+    isPending ||
+    !usernameValidation.valid ||
+    !turnstileToken
+  }
+>
                 {isPending
                   ? "Creating Account..."
                   : "Create Account"}
