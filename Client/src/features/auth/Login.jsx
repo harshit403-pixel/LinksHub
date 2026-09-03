@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FaGlobe,
   FaGithub,
@@ -8,7 +8,6 @@ import {
   FaLinkedin,
   FaYoutube,
 } from "react-icons/fa";
-import { Turnstile } from "@marsidev/react-turnstile";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { useLogin } from "./useLogin";
@@ -19,8 +18,42 @@ function Login() {
     password: "",
   });
 
-  const [turnstileToken, setTurnstileToken] = useState("");
+const turnstileRef = useRef(null);
+const [turnstileToken, setTurnstileToken] = useState("");
   const { mutate, isPending } = useLogin();
+
+
+  useEffect(() => {
+  if (!window.turnstile || !turnstileRef.current) {
+    return;
+  }
+
+  const widgetId = window.turnstile.render(
+    turnstileRef.current,
+    {
+      sitekey:
+        import.meta.env.VITE_TURNSTILE_SITE_KEY,
+
+      callback: (token) => {
+        setTurnstileToken(token);
+      },
+
+      "expired-callback": () => {
+        setTurnstileToken("");
+      },
+
+      "error-callback": () => {
+        setTurnstileToken("");
+      },
+    }
+  );
+
+  return () => {
+    if (window.turnstile) {
+      window.turnstile.remove(widgetId);
+    }
+  };
+}, []);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -40,6 +73,7 @@ const handleSubmit = (e) => {
     turnstileToken,
   });
 };
+
 
   const handleGoogleLogin = () => {
     window.location.href =
@@ -143,24 +177,7 @@ const handleSubmit = (e) => {
                 onChange={handleChange}
               />
 
-            <Turnstile
-  siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-  options={{
-    appearance: "always",
-    theme: "light",
-    size: "normal",
-  }}
-  onSuccess={(token) => {
-    setTurnstileToken(token);
-  }}
-  onExpire={() => {
-
-    setTurnstileToken("");
-  }}
-  onError={(error) => {
-    setTurnstileToken("");
-  }}
-/>
+           <div ref={turnstileRef} />
 
 <Button
   disabled={isPending || !turnstileToken}

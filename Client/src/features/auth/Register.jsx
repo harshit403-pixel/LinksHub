@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { useEffect, useRef } from "react";
 
 import {
   FaUser,
@@ -37,7 +37,8 @@ function Register() {
     "help",
   ];
 
-  const [turnstileToken, setTurnstileToken] = useState("");
+const turnstileRef = useRef(null);
+const [turnstileToken, setTurnstileToken] = useState("");
 
   const validateUsername = (username) => {
     if (!username) {
@@ -169,6 +170,38 @@ const handleSubmit = (e) => {
       "/api/auth/google";
   };
 
+  useEffect(() => {
+  if (!window.turnstile || !turnstileRef.current) {
+    return;
+  }
+
+  const widgetId = window.turnstile.render(
+    turnstileRef.current,
+    {
+      sitekey:
+        import.meta.env.VITE_TURNSTILE_SITE_KEY,
+
+      callback: (token) => {
+        setTurnstileToken(token);
+      },
+
+      "expired-callback": () => {
+        setTurnstileToken("");
+      },
+
+      "error-callback": () => {
+        setTurnstileToken("");
+      },
+    }
+  );
+
+  return () => {
+    if (window.turnstile) {
+      window.turnstile.remove(widgetId);
+    }
+  };
+}, []);
+
   return (
     <div
       className="
@@ -295,25 +328,8 @@ const handleSubmit = (e) => {
                 }
                 onChange={handleChange}
               />
-                      <Turnstile
-  siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-  options={{
-    appearance: "always",
-    theme: "light",
-    size: "normal",
-  }}
-  onSuccess={(token) => {
-    setTurnstileToken(token);
-  }}
-  onExpire={() => {
-
-    setTurnstileToken("");
-  }}
-  onError={(error) => {
-    setTurnstileToken("");
-  }}
-/>
-
+              
+                      <div ref={turnstileRef} />
               <Button
   disabled={
     isPending ||
