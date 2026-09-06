@@ -21,39 +21,51 @@ export const fetchRepository = async (
   githubUrl,
   accessToken
 ) => {
-  const { owner, repo } =
-    parseGithubUrl(githubUrl);
+  const { owner, repo } = parseGithubUrl(githubUrl);
 
-const headers = {
-  Accept: "application/vnd.github+json",
-};
+  const headers = {
+    Accept: "application/vnd.github+json",
+  };
 
-if (accessToken) {
-  headers.Authorization = `Bearer ${accessToken}`;
-}
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
 
-  const repoResponse = await axios.get(
-    `https://api.github.com/repos/${owner}/${repo}`,
-    { headers }
-  );
+  let repoResponse;
+
+  try {
+    repoResponse = await axios.get(
+      `https://api.github.com/repos/${owner}/${repo}`,
+      { headers }
+    );
+  } catch (error) {
+    console.error("GitHub API ERROR:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      limit: error.response?.headers?.["x-ratelimit-limit"],
+      remaining:
+        error.response?.headers?.["x-ratelimit-remaining"],
+      reset:
+        error.response?.headers?.["x-ratelimit-reset"],
+    });
+
+    throw error;
+  }
 
   let readme = "";
 
   try {
-    const readmeResponse =
-      await axios.get(
-        `https://raw.githubusercontent.com/${owner}/${repo}/${repoResponse.data.default_branch}/README.md`
-      );
+    const readmeResponse = await axios.get(
+      `https://raw.githubusercontent.com/${owner}/${repo}/${repoResponse.data.default_branch}/README.md`
+    );
 
     readme = readmeResponse.data;
   } catch {}
 
   return {
     title: repoResponse.data.name,
-    description:
-      repoResponse.data.description || "",
-    homepage:
-      repoResponse.data.homepage || "",
+    description: repoResponse.data.description || "",
+    homepage: repoResponse.data.homepage || "",
     stars: repoResponse.data.stargazers_count,
     topics: repoResponse.data.topics || [],
     language: repoResponse.data.language,
