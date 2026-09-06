@@ -25,10 +25,24 @@ export const fetchRepository = async (
 
   const headers = {
     Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "LinksHub",
   };
 
   if (accessToken) {
+    // Connected GitHub user
     headers.Authorization = `Bearer ${accessToken}`;
+  } else if (
+    process.env.GITHUB_CLIENT_ID &&
+    process.env.GITHUB_CLIENT_SECRET
+  ) {
+    // Manual import — authenticate as the LinksHub OAuth app,
+    // not as the user.
+    const credentials = Buffer.from(
+      `${process.env.GITHUB_CLIENT_ID}:${process.env.GITHUB_CLIENT_SECRET}`
+    ).toString("base64");
+
+    headers.Authorization = `Basic ${credentials}`;
   }
 
   let repoResponse;
