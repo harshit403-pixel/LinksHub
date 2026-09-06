@@ -55,17 +55,53 @@ Example questions:
 - Explain the architecture of ${project.title}.
 `;
 
-  const result =
-    await geminiModel.generateContent(prompt);
+  const maxRetries = 3;
 
-  const text = result.response.text();
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result =
+        await geminiModel.generateContent(prompt);
 
-  return JSON.parse(
-    text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim()
-  );
+      const text = result.response.text();
+
+      return JSON.parse(
+        text
+          .replace(/```json/g, "")
+          .replace(/```/g, "")
+          .trim()
+      );
+    } catch (error) {
+      const message = error?.message || "";
+
+      const isRetryable =
+        message.includes("503") ||
+        message.includes("Service Unavailable") ||
+        message.includes("429") ||
+        message.includes("Too Many Requests");
+
+      if (!isRetryable || attempt === maxRetries) {
+        console.error("Gemini project summarization error:", {
+          attempt,
+          message,
+        });
+
+        throw createStatusError(
+          503,
+          "AI service is temporarily unavailable. Please try importing the repository again in a moment."
+        );
+      }
+
+      const delay = attempt * 3000;
+
+      console.log(
+        `Gemini temporarily unavailable. Retrying in ${delay / 1000}s... (${attempt}/${maxRetries})`
+      );
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, delay)
+      );
+    }
+  }
 };
 
 export const importProjectForUser = async (
