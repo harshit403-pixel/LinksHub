@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -20,10 +20,14 @@ import {
   FaMoon,
 } from "react-icons/fa";
 
+import { interpolate } from "flubber";
+
 import { useAuth } from "../../features/auth/useAuth";
 import { useLogout } from "../../features/auth/useLogout";
 
+
 function DashboardNavbar() {
+
   const { data: authData } = useAuth();
   const { mutate: logout } = useLogout();
 
@@ -38,11 +42,8 @@ function DashboardNavbar() {
   const [isAtTop, setIsAtTop] =
     useState(true);
 
-  /* ================================= */
-  /* THEME */
-  /* ================================= */
-
   const [isDark, setIsDark] = useState(() => {
+
     const savedTheme =
       localStorage.getItem("theme");
 
@@ -53,22 +54,34 @@ function DashboardNavbar() {
     return true;
   });
 
+
   /* ================================= */
-  /* APPLY THEME */
+  /* LOGO */
+  /* ================================= */
+
+  const logoRef = useRef(null);
+
+
+  /* ================================= */
+  /* THEME */
   /* ================================= */
 
   useEffect(() => {
+
     const root =
       document.documentElement;
 
     if (isDark) {
+
       root.classList.add("dark");
 
       localStorage.setItem(
         "theme",
         "dark"
       );
+
     } else {
+
       root.classList.remove("dark");
 
       localStorage.setItem(
@@ -76,7 +89,9 @@ function DashboardNavbar() {
         "light"
       );
     }
+
   }, [isDark]);
+
 
   /* ================================= */
   /* TOGGLE THEME */
@@ -85,6 +100,418 @@ function DashboardNavbar() {
   const toggleTheme = () => {
     setIsDark((prev) => !prev);
   };
+
+
+  /* ================================= */
+  /* LOGO MORPH
+  /* ================================= */
+
+  useEffect(() => {
+
+    const logo = logoRef.current;
+
+    if (!logo) return;
+
+
+    const left =
+      logo.querySelector("#logo-left");
+
+    const middle =
+      logo.querySelector("#logo-middle");
+
+    const right =
+      logo.querySelector("#logo-right");
+
+
+    /*
+    =====================================
+    INITIAL PATHS
+    =====================================
+    */
+
+    const initialPaths = {
+
+      left:
+        "M109.5 1.5H0L0.5 457H109.5V256.5H205.5V457H303V234L109.5 149.5V1.5Z",
+
+      middle:
+        "M431 134.5H330.5V329L431 455H521.5L622.5 329C623 264.167 623.7 134.5 622.5 134.5H521.5V329H431V134.5Z",
+
+      right:
+        "M755.5 0H648H645.5V453H737.5V411.5H944V157.5L755.5 145V0Z"
+
+    };
+
+
+    /*
+    =====================================
+    FINAL PATHS
+    =====================================
+    */
+
+    const finalPaths = {
+
+      left:
+        "M109.5 1.5H0L0.5 457H109.5V256.5C109.5 199 205.5 203 205.5 256.5V457H303V234C303 93.5 142.5 94.5 109.5 149.5V1.5Z",
+
+      middle:
+        "M431 134.5H330.5V329C337.491 400.741 355.872 430.84 431 455C466.342 461.797 486.157 460.938 521.5 455C590.695 434.156 616.705 410.282 622.5 329C623 264.167 623.7 134.5 622.5 134.5H519.5V329C516 379.5 433.5 375 431 329V134.5Z",
+
+      right:
+        "M648 0H755.5V145C836.655 103.605 892.329 104.763 944 157.5C1017.9 232.926 1001.64 341.694 944 411.5C875.815 494.079 740.984 451.707 737.5 414.416V453H645.5V0H648Z"
+
+    };
+
+
+    /*
+    =====================================
+    CREATE INTERPOLATORS
+    =====================================
+    */
+
+    const leftForward =
+      interpolate(
+        initialPaths.left,
+        finalPaths.left,
+        {
+          maxSegmentLength: 2
+        }
+      );
+
+    const leftReverse =
+      interpolate(
+        finalPaths.left,
+        initialPaths.left,
+        {
+          maxSegmentLength: 2
+        }
+      );
+
+
+    const middleForward =
+      interpolate(
+        initialPaths.middle,
+        finalPaths.middle,
+        {
+          maxSegmentLength: 2
+        }
+      );
+
+    const middleReverse =
+      interpolate(
+        finalPaths.middle,
+        initialPaths.middle,
+        {
+          maxSegmentLength: 2
+        }
+      );
+
+
+    const rightForward =
+      interpolate(
+        initialPaths.right,
+        finalPaths.right,
+        {
+          maxSegmentLength: 2
+        }
+      );
+
+    const rightReverse =
+      interpolate(
+        finalPaths.right,
+        initialPaths.right,
+        {
+          maxSegmentLength: 2
+        }
+      );
+
+
+    /*
+    =====================================
+    ANIMATION STATE
+    =====================================
+    */
+
+    let animationFrame = null;
+
+    let startTime = null;
+
+    let fromProgress = 0;
+
+    let targetProgress = 0;
+
+
+    /*
+    =====================================
+    SPEED
+    =====================================
+    
+    Increase this number = slower
+    Decrease this number = faster
+
+    800 = 0.8 seconds
+    1000 = 1 second
+    1200 = 1.2 seconds
+    */
+
+    const duration = 800;
+
+
+    /*
+    =====================================
+    EASING
+    =====================================
+    */
+
+    const ease = (t) => {
+
+      return t < 0.5
+        ? 4 * t * t * t
+        : 1 -
+            Math.pow(
+              -2 * t + 2,
+              3
+            ) / 2;
+
+    };
+
+
+    /*
+    =====================================
+    ANIMATE
+    =====================================
+    */
+
+    const animate = (target) => {
+
+      targetProgress = target;
+
+      if (animationFrame) {
+        cancelAnimationFrame(
+          animationFrame
+        );
+      }
+
+      startTime = null;
+
+      fromProgress =
+        target === 1
+          ? 0
+          : 1;
+
+
+      const frame = (timestamp) => {
+
+        if (!startTime) {
+          startTime = timestamp;
+        }
+
+
+        const elapsed =
+          timestamp - startTime;
+
+
+        let progress =
+          Math.min(
+            elapsed / duration,
+            1
+          );
+
+
+        progress = ease(progress);
+
+
+        const current =
+          fromProgress +
+          (targetProgress - fromProgress) *
+            progress;
+
+
+        /*
+        =================================
+        UPDATE PATHS
+        =================================
+        */
+
+        left.setAttribute(
+          "d",
+          leftForward(current)
+        );
+
+        middle.setAttribute(
+          "d",
+          middleForward(current)
+        );
+
+        right.setAttribute(
+          "d",
+          rightForward(current)
+        );
+
+
+        if (progress < 1) {
+
+          animationFrame =
+            requestAnimationFrame(
+              frame
+            );
+
+        }
+
+      };
+
+
+      animationFrame =
+        requestAnimationFrame(frame);
+    };
+
+
+    /*
+    =====================================
+    HOVER IN
+    =====================================
+    */
+
+    const handleMouseEnter = () => {
+
+      animate(1);
+
+    };
+
+
+    /*
+    =====================================
+    HOVER OUT
+    =====================================
+    */
+
+    const handleMouseLeave = () => {
+
+      /*
+      Reverse using the same
+      interpolators.
+      */
+
+      if (animationFrame) {
+
+        cancelAnimationFrame(
+          animationFrame
+        );
+
+      }
+
+      let startTime = null;
+
+      const startProgress = 1;
+
+      const endProgress = 0;
+
+
+      const frame = (timestamp) => {
+
+        if (!startTime) {
+          startTime = timestamp;
+        }
+
+
+        const elapsed =
+          timestamp - startTime;
+
+
+        let progress =
+          Math.min(
+            elapsed / duration,
+            1
+          );
+
+
+        progress = ease(progress);
+
+
+        const current =
+          startProgress +
+          (endProgress - startProgress) *
+            progress;
+
+
+        left.setAttribute(
+          "d",
+          leftForward(current)
+        );
+
+        middle.setAttribute(
+          "d",
+          middleForward(current)
+        );
+
+        right.setAttribute(
+          "d",
+          rightForward(current)
+        );
+
+
+        if (progress < 1) {
+
+          animationFrame =
+            requestAnimationFrame(
+              frame
+            );
+
+        }
+
+      };
+
+
+      animationFrame =
+        requestAnimationFrame(frame);
+    };
+
+
+    logo.addEventListener(
+      "mouseenter",
+      handleMouseEnter
+    );
+
+    logo.addEventListener(
+      "mouseleave",
+      handleMouseLeave
+    );
+
+
+    /*
+    =====================================
+    CLEANUP
+    =====================================
+    */
+
+    return () => {
+
+      logo.removeEventListener(
+        "mouseenter",
+        handleMouseEnter
+      );
+
+      logo.removeEventListener(
+        "mouseleave",
+        handleMouseLeave
+      );
+
+      if (animationFrame) {
+
+        cancelAnimationFrame(
+          animationFrame
+        );
+
+      }
+
+    };
+
+  }, []);
+
+
+  /* ================================= */
+  /* AUTH */
+  /* ================================= */
 
   const profileUrl =
     `/${authData?.user?.username}`;
@@ -95,37 +522,53 @@ function DashboardNavbar() {
   const username =
     authData?.user?.username || "User";
 
+
   /* ================================= */
   /* SCROLL */
   /* ================================= */
 
   useEffect(() => {
+
     let lastScrollY =
       window.scrollY;
 
     const handleScroll = () => {
+
       const currentScrollY =
         window.scrollY;
+
 
       setIsAtTop(
         currentScrollY <= 20
       );
 
+
       if (currentScrollY <= 20) {
+
         setVisible(true);
+
       } else if (
         currentScrollY > lastScrollY
       ) {
+
         setVisible(false);
+
         setIsProfileOpen(false);
+
       } else if (
         currentScrollY < lastScrollY
       ) {
+
         setVisible(true);
+
       }
 
-      lastScrollY = currentScrollY;
+
+      lastScrollY =
+        currentScrollY;
+
     };
+
 
     window.addEventListener(
       "scroll",
@@ -135,23 +578,36 @@ function DashboardNavbar() {
       }
     );
 
+
     return () => {
+
       window.removeEventListener(
         "scroll",
         handleScroll
       );
+
     };
+
   }, []);
+
 
   /* ================================= */
   /* CLOSE PROFILE ON ROUTE CHANGE */
   /* ================================= */
 
   useEffect(() => {
+
     setIsProfileOpen(false);
+
   }, [location.pathname]);
 
+
+  /* ================================= */
+  /* RETURN */
+  /* ================================= */
+
   return (
+
     <motion.header
       initial={{ y: 0 }}
       animate={{
@@ -175,6 +631,7 @@ function DashboardNavbar() {
         pointer-events-none
       "
     >
+
       <div
         className="
           relative
@@ -186,6 +643,7 @@ function DashboardNavbar() {
           setIsProfileOpen(false)
         }
       >
+
         <motion.nav
           layout
           className="
@@ -206,6 +664,7 @@ function DashboardNavbar() {
             duration-250
           "
         >
+
           {/* ================================= */}
           {/* LOGO */}
           {/* ================================= */}
@@ -216,38 +675,68 @@ function DashboardNavbar() {
               flex
               shrink-0
               items-center
-              gap-2
               rounded-full
               px-3
               py-2
             "
           >
-            <motion.div
-              whileHover={{
-                rotate: -8,
-                scale: 1.08,
-              }}
-              whileTap={{
-                scale: 0.95,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 18,
-              }}
+
+            <div
+              ref={logoRef}
               className="
                 flex
                 h-9
-                w-9
+                w-16
                 items-center
                 justify-center
-                rounded-full
-                theme-accent-bg
+                cursor-pointer
               "
             >
-              L
-            </motion.div>
+
+              <svg
+                viewBox="0 0 994 460"
+                className="h-full w-full"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+
+                <path
+                  id="logo-left"
+                  fill="currentColor"
+                  className="theme-text"
+                  d="M109.5 1.5H0L0.5 457H109.5V256.5H205.5V457H303V234L109.5 149.5V1.5Z"
+                />
+
+                <path
+                  id="logo-middle"
+                  fill="currentColor"
+                  className="theme-text"
+                  d="M431 134.5H330.5V329L431 455H521.5L622.5 329C623 264.167 623.7 134.5 622.5 134.5H521.5V329H431V134.5Z"
+                />
+
+                <path
+                  id="logo-right"
+                  fill="currentColor"
+                  className="theme-text"
+                  d="M755.5 0H648H645.5V453H737.5V411.5H944V157.5L755.5 145V0Z"
+                />
+
+               <ellipse
+  cx="812"
+  cy="288"
+  rx="75.5"
+  ry="78.5"
+  fill={isDark ? "#000000" : "#FFFFFF"}
+  style={{
+    transition: "fill 250ms ease",
+  }}
+/>
+              </svg>
+
+            </div>
+
           </Link>
+
 
           {/* ================================= */}
           {/* NAVIGATION */}
@@ -265,6 +754,7 @@ function DashboardNavbar() {
               duration-250
             "
           >
+
             <NavItem
               to="/dashboard"
               icon={<FaHome />}
@@ -279,9 +769,11 @@ function DashboardNavbar() {
               to="/dashboard/library"
               icon={<FaLink />}
               label="Library"
-              active={location.pathname.startsWith(
-                "/dashboard/library"
-              )}
+              active={
+                location.pathname.startsWith(
+                  "/dashboard/library"
+                )
+              }
             />
 
             <NavItem
@@ -303,7 +795,9 @@ function DashboardNavbar() {
                 "/dashboard/deleted"
               }
             />
+
           </div>
+
 
           {/* ================================= */}
           {/* PROFILE */}
@@ -320,6 +814,7 @@ function DashboardNavbar() {
               setIsProfileOpen(true)
             }
           >
+
             <motion.button
               type="button"
               whileHover={{
@@ -352,7 +847,9 @@ function DashboardNavbar() {
                 duration-250
               "
             >
+
               {profilePicture ? (
+
                 <img
                   src={profilePicture}
                   alt={username}
@@ -362,7 +859,9 @@ function DashboardNavbar() {
                     object-cover
                   "
                 />
+
               ) : (
+
                 <div
                   className="
                     flex
@@ -375,6 +874,7 @@ function DashboardNavbar() {
                 >
                   <FaUser size={15} />
                 </div>
+
               )}
 
               <span
@@ -390,14 +890,18 @@ function DashboardNavbar() {
                   theme-accent-bg
                 "
               />
+
             </motion.button>
+
 
             {/* ================================= */}
             {/* PROFILE DROPDOWN */}
             {/* ================================= */}
 
             <AnimatePresence>
+
               {isProfileOpen && (
+
                 <motion.div
                   initial={{
                     opacity: 0,
@@ -444,9 +948,8 @@ function DashboardNavbar() {
                     setIsProfileOpen(true)
                   }
                 >
-                  {/* ================================= */}
+
                   {/* USER INFO */}
-                  {/* ================================= */}
 
                   <div
                     className="
@@ -458,7 +961,9 @@ function DashboardNavbar() {
                       duration-250
                     "
                   >
+
                     <div className="flex items-center gap-3">
+
                       <div
                         className="
                           h-11
@@ -470,7 +975,9 @@ function DashboardNavbar() {
                           theme-accent-bg
                         "
                       >
+
                         {profilePicture ? (
+
                           <img
                             src={profilePicture}
                             alt={username}
@@ -480,7 +987,9 @@ function DashboardNavbar() {
                               object-cover
                             "
                           />
+
                         ) : (
+
                           <div
                             className="
                               flex
@@ -492,10 +1001,14 @@ function DashboardNavbar() {
                           >
                             <FaUser />
                           </div>
+
                         )}
+
                       </div>
 
+
                       <div className="min-w-0">
+
                         <p
                           className="
                             truncate
@@ -517,15 +1030,17 @@ function DashboardNavbar() {
                         >
                           @{username}
                         </p>
+
                       </div>
+
                     </div>
+
                   </div>
+
 
                   <div className="space-y-1">
 
-                    {/* ================================= */}
                     {/* VIEW PROFILE */}
-                    {/* ================================= */}
 
                     <Link
                       to={profileUrl}
@@ -548,6 +1063,7 @@ function DashboardNavbar() {
                         duration-200
                       "
                     >
+
                       <FaUser
                         className="
                           theme-muted
@@ -560,11 +1076,11 @@ function DashboardNavbar() {
                       <span>
                         View Profile
                       </span>
+
                     </Link>
 
-                    {/* ================================= */}
+
                     {/* THEME SWITCH */}
-                    {/* ================================= */}
 
                     <button
                       type="button"
@@ -586,19 +1102,25 @@ function DashboardNavbar() {
                         duration-200
                       "
                     >
+
                       <div className="flex items-center gap-3">
+
                         {isDark ? (
+
                           <FaMoon
                             className="
                               theme-accent
                             "
                           />
+
                         ) : (
+
                           <FaSun
                             className="
                               theme-accent
                             "
                           />
+
                         )}
 
                         <span>
@@ -606,9 +1128,9 @@ function DashboardNavbar() {
                             ? "Dark Mode"
                             : "Light Mode"}
                         </span>
+
                       </div>
 
-                      {/* Toggle */}
 
                       <div
                         className="
@@ -621,6 +1143,7 @@ function DashboardNavbar() {
                           duration-300
                         "
                       >
+
                         <motion.div
                           animate={{
                             x: isDark
@@ -642,14 +1165,16 @@ function DashboardNavbar() {
                             shadow-sm
                           "
                         />
+
                       </div>
+
                     </button>
 
-                    {/* ================================= */}
+
                     {/* LOGOUT */}
-                    {/* ================================= */}
 
                     <motion.button
+                      type="button"
                       whileHover={{
                         x: 3,
                       }}
@@ -659,11 +1184,13 @@ function DashboardNavbar() {
                         damping: 25,
                       }}
                       onClick={() => {
+
                         setIsProfileOpen(
                           false
                         );
 
                         logout();
+
                       }}
                       className="
                         flex
@@ -681,22 +1208,34 @@ function DashboardNavbar() {
                         duration-200
                       "
                     >
+
                       <FaSignOutAlt />
 
                       <span>
                         Logout
                       </span>
+
                     </motion.button>
+
                   </div>
+
                 </motion.div>
+
               )}
+
             </AnimatePresence>
+
           </div>
+
         </motion.nav>
+
       </div>
+
     </motion.header>
+
   );
 }
+
 
 /* ================================= */
 /* NAV ITEM */
@@ -708,7 +1247,9 @@ function NavItem({
   label,
   active,
 }) {
+
   return (
+
     <Link
       to={to}
       className="
@@ -723,7 +1264,9 @@ function NavItem({
         text-sm
       "
     >
+
       {active && (
+
         <motion.span
           layoutId="active-nav"
           transition={{
@@ -739,7 +1282,9 @@ function NavItem({
             theme-accent-bg
           "
         />
+
       )}
+
 
       <span
         className={`
@@ -759,6 +1304,7 @@ function NavItem({
         {icon}
       </span>
 
+
       <span
         className={`
           relative
@@ -777,8 +1323,12 @@ function NavItem({
       >
         {label}
       </span>
+
     </Link>
+
   );
 }
 
+
 export default DashboardNavbar;
+
