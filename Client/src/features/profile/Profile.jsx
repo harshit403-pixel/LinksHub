@@ -465,182 +465,118 @@ function Profile() {
 
         {/* LINKS */}
 
-        <Column>
-          <div className="py-8 sm:py-10">
-            <div className="mb-6">
-              <h2 className="font-serif text-2xl text-[var(--foreground)] sm:text-3xl">
-                Links
-              </h2>
+       <Column>
+  <div className="py-8 sm:py-10">
+    <div className="mb-6">
+      <h2 className="font-serif text-2xl text-[var(--foreground)] sm:text-3xl">
+        Links
+      </h2>
 
-              <p className="mt-1 text-sm text-[var(--muted)]">
-                Where to find me.
-              </p>
+      <p className="mt-1 text-sm text-[var(--muted)]">
+        Where to find me.
+      </p>
+    </div>
+
+    <div className="flex flex-wrap border-l-2 border-t border-dashed border-[var(--border)]">
+      {links.map((link, index) => (
+        <motion.a
+          key={link._id}
+          href={`/api/links/go/${link._id}`}
+          target="_blank"
+          rel="noreferrer"
+          initial={{
+            opacity: 0,
+            y: 12,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            delay: index * 0.05,
+          }}
+          className="
+            group
+            flex
+            min-h-[76px]
+            flex-1
+            basis-[220px]
+            items-center
+            justify-between
+            gap-4
+            border-b
+            border-r-2
+            border-dashed
+            border-[var(--border)]
+            px-5
+            py-3
+            transition-colors
+            hover:bg-[var(--surface-secondary)]
+            sm:px-6
+          "
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <div
+              className="
+                flex
+                h-12
+                w-12
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-[var(--border)]
+                bg-[var(--surface)]
+                text-[var(--foreground)]
+                transition-all
+                duration-300
+                group-hover:scale-105
+              "
+            >
+              {getLinkIcon(link.url)}
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {links.map(
-                (link, index) => (
-                  <motion.a
-                    key={link._id}
-                    href={`/api/links/go/${link._id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    initial={{
-                      opacity: 0,
-                      y: 20,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    transition={{
-                      delay:
-                        index * 0.05,
-                    }}
-                    className={`
-                      group
-                      relative
-                      overflow-hidden
-                      rounded-2xl
-                      border
-                      border-[var(--border)]
-                      bg-[var(--surface-secondary)]
-                      p-5
-                      transition-colors
-                      sm:p-6
-                      hover:border-[var(--muted-foreground)]
-                      ${
-                        index === 0
-                          ? "sm:col-span-2 sm:min-h-[220px]"
-                          : ""
-                      }
-                    `}
-                  >
-                    <div
-                      className={`
-                        absolute
-                        inset-x-0
-                        bottom-0
-                        h-0
-                        transition-all
-                        duration-500
-                        ease-out
-                        group-hover:h-full
-                        ${getLinkColor(
-                          link.url
-                        )}
-                      `}
-                    />
-
-                    {link.previewImage && (
-                      <div
-                        className="
-                          absolute
-                          inset-0
-                          z-20
-                          opacity-0
-                          transition-all
-                          duration-500
-                          group-hover:opacity-100
-                        "
-                      >
-                        <img
-                          src={
-                            link.previewImage
-                          }
-                          alt={
-                            link.previewTitle
-                          }
-                          className="
-                            absolute
-                            inset-0
-                            h-full
-                            w-full
-                            object-cover
-                            object-[50%_20%]
-                          "
-                        />
-
-                        <div
-                          className="
-                            absolute
-                            inset-0
-                            flex
-                            flex-col
-                            justify-end
-                            bg-black/70
-                            p-5
-                            sm:p-6
-                          "
-                        >
-                          <h3 className="text-lg font-bold text-white sm:text-xl">
-                            {
-                              link.previewTitle
-                            }
-                          </h3>
-
-                          <p className="mt-2 line-clamp-2 text-sm text-zinc-300">
-                            {
-                              link.previewDescription
-                            }
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="relative z-10 flex h-full flex-col justify-between">
-                      <div>
-                        <div
-                          className={`
-                            flex
-                            h-11
-                            w-11
-                            items-center
-                            justify-center
-                            rounded-full
-                            border
-                            border-[var(--border)]
-                            bg-[var(--surface)]
-                            ${themeText}
-                            transition-all
-                            duration-300
-                            group-hover:scale-110
-                            group-hover:text-white
-                            sm:h-12
-                            sm:w-12
-                          `}
-                        >
-                          {getLinkIcon(
-                            link.url
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h2 className="break-words text-xl font-bold text-[var(--foreground)] sm:text-2xl">
-                          {link.title}
-                        </h2>
-
-                        <p className="mt-3 text-sm font-medium text-[var(--muted)] transition-colors duration-300 group-hover:text-white sm:text-base">
-                          Open Link →
-                        </p>
-                      </div>
-                    </div>
-                  </motion.a>
-                )
-              )}
-            </div>
-
-            {links.length === 0 && (
-              <div className="rounded-2xl border border-[var(--border)] p-6 text-center sm:p-10">
-                <p className="text-[var(--muted)]">
-                  No links available
-                </p>
-              </div>
-            )}
+            <span
+              className="
+                min-w-0
+                truncate
+                text-base
+                font-medium
+                text-[var(--foreground)]
+                sm:text-lg
+              "
+            >
+              {link.title}
+            </span>
           </div>
-        </Column>
 
+          <span
+            className="
+              shrink-0
+              text-lg
+              text-[var(--muted)]
+              transition-transform
+              duration-300
+              group-hover:translate-x-0.5
+              group-hover:-translate-y-0.5
+            "
+          >
+            ↗
+          </span>
+        </motion.a>
+      ))}
+    </div>
+
+    {links.length === 0 && (
+      <div className="border border-dashed border-[var(--border)] p-6 text-center sm:p-10">
+        <p className="text-[var(--muted)]">
+          No links available
+        </p>
+      </div>
+    )}
+  </div>
+</Column>
         {/* PROJECTS */}
 
         {projects.length > 0 && (

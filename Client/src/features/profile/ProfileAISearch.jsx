@@ -189,7 +189,7 @@ function ProfileAISearch({
                         )
                       }
                       className="
-                        rounded-full
+                        
                         border
                         border-[var(--border)]
                         bg-[var(--surface-secondary)]

@@ -85,7 +85,7 @@ function ProfileShareModal({
             w-full
             max-w-md
             overflow-hidden
-            rounded-[28px]
+            
             border
             border-white/[0.1]
             bg-[#0a0a0a]
@@ -108,7 +108,7 @@ function ProfileShareModal({
               w-9
               items-center
               justify-center
-              rounded-full
+              
               border
               border-white/[0.08]
               text-zinc-500
@@ -141,7 +141,7 @@ function ProfileShareModal({
           {/* QR */}
 
           <div className="mt-7 flex justify-center">
-            <div className="rounded-[22px] bg-white p-4">
+            <div className=" bg-white p-4">
               <QRCode
                 value={profileUrl}
                 size={190}
@@ -151,7 +151,7 @@ function ProfileShareModal({
 
           {/* URL */}
 
-          <div className="mt-6 flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3">
+          <div className="mt-6 flex items-center gap-3  border border-white/[0.08] bg-white/[0.025] px-4 py-3">
             <FaLink
               className="shrink-0 text-zinc-600"
               size={13}
@@ -173,7 +173,7 @@ function ProfileShareModal({
                 items-center
                 justify-center
                 gap-2
-                rounded-xl
+                
                 border
                 border-white/[0.1]
                 py-3.5
@@ -198,7 +198,7 @@ function ProfileShareModal({
                 items-center
                 justify-center
                 gap-2
-                rounded-xl
+                
                 bg-white
                 py-3.5
                 text-sm

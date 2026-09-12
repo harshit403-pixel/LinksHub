@@ -9,8 +9,16 @@ import {
   FaDiscord,
   FaFacebook,
   FaTiktok,
+  FaRedditAlien,
   FaLink,
 } from "react-icons/fa6";
+
+import {
+  SiLeetcode,
+  SiCodeforces,
+  SiHackerrank,
+} from "react-icons/si";
+
 
 export const getLinkIcon = (url = "") => {
   const value = url.toLowerCase();
@@ -34,7 +42,10 @@ export const getLinkIcon = (url = "") => {
     return <FaXTwitter size={18} />;
   }
 
-  if (value.includes("youtube.com") || value.includes("youtu.be")) {
+  if (
+    value.includes("youtube.com") ||
+    value.includes("youtu.be")
+  ) {
     return <FaYoutube size={18} />;
   }
 
@@ -49,6 +60,22 @@ export const getLinkIcon = (url = "") => {
   if (value.includes("tiktok.com")) {
     return <FaTiktok size={18} />;
   }
+
+  if (value.includes("reddit.com")) {
+    return <FaRedditAlien size={18} />;
+  }
+
+if (value.includes("leetcode.com")) {
+  return <SiLeetcode size={18} />;
+}
+
+if (value.includes("codeforces.com")) {
+  return <SiCodeforces size={18} />;
+}
+
+if (value.includes("hackerrank.com")) {
+  return <SiHackerrank size={18} />;
+}
 
   if (value.startsWith("mailto:")) {
     return <FaEnvelope size={18} />;

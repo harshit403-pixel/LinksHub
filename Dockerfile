@@ -25,6 +25,6 @@ COPY Server/ ./
 
 COPY --from=client-build /app/dist ./public
 
-EXPOSE 4000
+EXPOSE 3000
 
 CMD ["node", "server.js"]
