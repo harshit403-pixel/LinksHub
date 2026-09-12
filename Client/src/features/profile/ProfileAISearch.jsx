@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { FiSearch } from "react-icons/fi";
-import { FaGithub, FaGlobe } from "react-icons/fa";
+import {
+  FaGithub,
+  FaArrowUpRightFromSquare,
+} from "react-icons/fa6";
+
 import { useProfileAISearch } from "./useProfileAIsearch";
 
 function ProfileAISearch({
@@ -38,7 +42,7 @@ function ProfileAISearch({
     const finalQuery =
       query.trim() ||
       suggestions[0] ||
-      "Tell me about your projects.";
+      "Tell me about my projects.";
 
     setLastQuestion(finalQuery);
 
@@ -55,9 +59,7 @@ function ProfileAISearch({
     );
   };
 
-  const handleSuggestionClick = (
-    question
-  ) => {
+  const handleSuggestionClick = (question) => {
     setLastQuestion(question);
 
     mutate(
@@ -74,18 +76,29 @@ function ProfileAISearch({
   };
 
   return (
-    <div>
+    <div className="w-full">
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 sm:space-y-5"
+        className="space-y-5"
       >
-        <div className="rounded-2xl border border-zinc-800 bg-black/40 backdrop-blur">
-          <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
+        {/* SEARCH */}
+
+        <div
+          className="
+            overflow-hidden
+            
+            border
+            border-[var(--border)]
+            bg-[var(--surface-secondary)]
+            transition
+            focus-within:border-[var(--muted-foreground)]
+          "
+        >
+          <div className="flex flex-col gap-3 p-2.5 sm:flex-row sm:items-center">
             <div className="flex min-w-0 flex-1 items-center">
-              <FiSearch
-                size={20}
-                className="shrink-0 text-zinc-500"
-              />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center text-[var(--muted)]">
+                <FiSearch size={18} />
+              </div>
 
               <input
                 value={query}
@@ -93,25 +106,23 @@ function ProfileAISearch({
                 onChange={(e) =>
                   setQuery(e.target.value)
                 }
-                placeholder="Ask anything about my projects, experience or skills..."
+                placeholder="Ask anything about my work..."
                 className="
-                
-  min-w-0
-  flex-1
-  h-12
-  bg-transparent
-  px-3
-  text-sm
-  text-white!
-  caret-white
-  placeholder:text-zinc-500
-  outline-none
-  disabled:opacity-60
-  sm:h-14
-  sm:px-4
-  sm:text-base
-"
-                
+                  h-12
+                  min-w-0
+                  flex-1
+                  bg-transparent
+                  px-2
+                  text-sm
+                  text-[var(--foreground)]
+                  caret-[var(--foreground)]
+                  outline-none
+                  placeholder:text-[var(--muted)]
+                  disabled:opacity-50
+                  sm:h-14
+                  sm:px-3
+                  sm:text-base
+                "
               />
             </div>
 
@@ -119,21 +130,24 @@ function ProfileAISearch({
               type="submit"
               disabled={isPending}
               className="
+                flex
+                h-12
                 w-full
                 shrink-0
-                rounded-xl
-                bg-white
-                px-5
-                py-3
+                items-center
+                justify-center
+                bg-[var(--foreground)]
+                px-6
                 text-sm
                 font-semibold
-                text-black
+                text-[var(--background)]
                 transition
-                hover:scale-105
+                hover:opacity-80
+                active:scale-[0.99]
                 disabled:cursor-not-allowed
-                disabled:opacity-60
+                disabled:opacity-50
+                sm:h-11
                 sm:w-auto
-                sm:py-2.5
               "
             >
               {isPending
@@ -143,18 +157,23 @@ function ProfileAISearch({
           </div>
         </div>
 
+        {/* SUGGESTIONS */}
+
         {!data &&
+          !isPending &&
           suggestions.length > 0 && (
             <motion.div
               initial={{
                 opacity: 0,
+                y: 8,
               }}
               animate={{
                 opacity: 1,
+                y: 0,
               }}
             >
-              <p className="mb-3 text-sm font-medium text-zinc-500">
-                Suggested Questions
+              <p className="mb-3 text-xs uppercase tracking-[0.15em] text-[var(--muted)]">
+                Try asking
               </p>
 
               <div className="flex flex-wrap gap-2">
@@ -170,20 +189,20 @@ function ProfileAISearch({
                         )
                       }
                       className="
-                        w-full
                         rounded-full
                         border
-                        border-zinc-800
-                        bg-zinc-900
+                        border-[var(--border)]
+                        bg-[var(--surface-secondary)]
                         px-4
-                        py-2
-                        text-sm
-                        text-zinc-300
-                        transition
-                        hover:border-white
-                        hover:bg-zinc-800
-                        hover:text-white
-                        sm:w-auto
+                        py-2.5
+                        text-left
+                        text-xs
+                        text-[var(--muted-foreground)]
+                        transition-all
+                        hover:border-[var(--muted-foreground)]
+                        hover:bg-[var(--surface)]
+                        hover:text-[var(--foreground)]
+                        sm:text-sm
                       "
                     >
                       {question}
@@ -192,244 +211,329 @@ function ProfileAISearch({
               </div>
             </motion.div>
           )}
-                <AnimatePresence mode="wait">
-        {isPending && (
-          <motion.div
-            key="loading"
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-            }}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 sm:p-6"
-          >
-            <h3 className="text-xl font-bold text-white">
-              Answer
-            </h3>
 
-            <div className="mt-6 space-y-3 animate-pulse">
-              <div className="h-4 w-full rounded bg-zinc-800" />
-              <div className="h-4 w-11/12 rounded bg-zinc-800" />
-              <div className="h-4 w-9/12 rounded bg-zinc-800" />
-              <div className="h-4 w-10/12 rounded bg-zinc-800" />
-            </div>
+        <AnimatePresence mode="wait">
+          {/* LOADING */}
 
-            <p className="mt-6 text-sm text-zinc-500">
-              Searching through projects...
-            </p>
-          </motion.div>
-        )}
-
-        {error && (
-          <motion.div
-            key="error"
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-            }}
-            className="rounded-3xl border border-red-900 bg-zinc-900 p-5 sm:p-6"
-          >
-            <h3 className="text-xl font-bold text-white">
-              Something went wrong
-            </h3>
-
-            <p className="mt-3 text-zinc-400">
-              Please try asking your question
-              again.
-            </p>
-
-            <button
-              onClick={() => reset()}
+          {isPending && (
+            <motion.div
+              key="loading"
+              initial={{
+                opacity: 0,
+                y: 15,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+              }}
               className="
-                mt-6
-                rounded-xl
+                
                 border
-                border-zinc-700
-                px-5
-                py-2
-                text-white
-                transition
-                hover:border-white
+                border-[var(--border)]
+                bg-[var(--surface-secondary)]
+                p-5
+                sm:p-6
               "
             >
-              Try Again
-            </button>
-          </motion.div>
-        )}
+              <div className="flex items-center gap-3">
+                <div className="flex gap-1">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--muted-foreground)]" />
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--muted-foreground)] [animation-delay:150ms]" />
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--muted-foreground)] [animation-delay:300ms]" />
+                </div>
 
-        {data && (
-          <motion.div
-            key="answer"
-            ref={answerRef}
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-            }}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 sm:p-6"
-          >
-            <div className="mb-8">
-              <p className="text-sm uppercase tracking-wider text-zinc-500">
-                Question
-              </p>
-
-              <h2 className="mt-2 break-words text-xl font-semibold text-white">
-                {lastQuestion}
-              </h2>
-            </div>
-
-            <div>
-              <p className="text-sm uppercase tracking-wider text-zinc-500">
-                Answer
-              </p>
-
-              <p className="mt-4 whitespace-pre-wrap break-words leading-7 text-zinc-300 sm:leading-8">
-                {data.data.answer}
-              </p>
-            </div>
-
-            {data.data.projects.length === 0 && (
-              <div className="mt-8 rounded-2xl border border-zinc-800 bg-black/30 p-5">
-                <h4 className="text-lg font-semibold text-white">
-                  No matching projects
-                </h4>
-
-                <p className="mt-2 text-zinc-400">
-                  I couldn't find a project
-                  related to this question.
-                  Try asking about React,
-                  Node.js, authentication,
-                  APIs, or a specific project.
+                <p className="text-sm text-[var(--muted)]">
+                  Searching through projects...
                 </p>
               </div>
-            )}
 
-            {data.data.projects.length > 0 && (
-              <>
-                <h3 className="mt-10 mb-5 text-lg font-semibold text-white">
-                  Sources
-                </h3>
+              <div className="mt-6 space-y-3">
+                <div className="h-3 w-full animate-pulse rounded bg-[var(--border)]" />
+                <div className="h-3 w-11/12 animate-pulse rounded bg-[var(--border)]" />
+                <div className="h-3 w-8/12 animate-pulse rounded bg-[var(--border)]" />
+              </div>
+            </motion.div>
+          )}
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  {data.data.projects.map(
-                    (project) => (                    <motion.div
-                      key={project._id}
-                      initial={{
-                        opacity: 0,
-                        y: 15,
-                      }}
-                      animate={{
-                        opacity: 1,
-                        y: 0,
-                      }}
-                      transition={{
-                        duration: 0.25,
-                      }}
-                       className="
-                         rounded-2xl
-                         border
-                         border-zinc-800
-                         bg-black/30
-                         p-4
-                         transition-all
-                         hover:border-zinc-700
-                         hover:bg-black/50
-                         sm:p-5
-                       "
-                     >
-                       <h4 className="break-words text-lg font-bold text-white">
-                         {project.title}
-                       </h4>
+          {/* ERROR */}
 
-                      <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">
-                        {project.summary}
-                      </p>
+          {error && (
+            <motion.div
+              key="error"
+              initial={{
+                opacity: 0,
+                y: 15,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+              }}
+              className="
+                
+                border
+                border-red-500/20
+                bg-red-500/[0.03]
+                p-5
+                sm:p-6
+              "
+            >
+              <p className="text-xs uppercase tracking-[0.15em] text-red-400/60">
+                AI unavailable
+              </p>
 
-                      <div className="mt-5 flex flex-wrap gap-2">
-                        {project.technologies
-                          ?.slice(0, 5)
-                          .map((tech) => (
-                            <span
-                              key={tech}
-                              className="
-                                rounded-full
-                                bg-zinc-800
-                                px-3
-                                py-1
-                                text-xs
-                                text-zinc-300
-                              "
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                      </div>
+              <h3 className="mt-2 text-lg font-medium text-[var(--foreground)]">
+                Something went wrong
+              </h3>
 
-                       <div className="mt-6 flex flex-wrap gap-4 sm:gap-5">
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noreferrer"
+              <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
+                I couldn't answer that question
+                right now. Please try again.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => reset()}
+                className="
+                  mt-5
+                  
+                  border
+                  border-[var(--border)]
+                  px-4
+                  py-2
+                  text-sm
+                  text-[var(--muted-foreground)]
+                  transition
+                  hover:border-[var(--muted-foreground)]
+                  hover:text-[var(--foreground)]
+                "
+              >
+                Try Again
+              </button>
+            </motion.div>
+          )}
+
+          {/* ANSWER */}
+
+          {data && (
+            <motion.div
+              key="answer"
+              ref={answerRef}
+              initial={{
+                opacity: 0,
+                y: 15,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+              }}
+              className="
+                
+                border
+                border-[var(--border)]
+                bg-[var(--surface-secondary)]
+                p-5
+                sm:p-7
+              "
+            >
+              {/* QUESTION */}
+
+              <div className="border-b border-[var(--border)] pb-6">
+                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--muted)]">
+                  Question
+                </p>
+
+                <h2 className="mt-2 text-lg font-medium leading-7 text-[var(--foreground)] sm:text-xl">
+                  {lastQuestion}
+                </h2>
+              </div>
+
+              {/* ANSWER */}
+
+              <div className="pt-6">
+                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--muted)]">
+                  Answer
+                </p>
+
+                <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-[var(--muted-foreground)] sm:text-base sm:leading-8">
+                  {data.data.answer}
+                </p>
+              </div>
+
+              {/* SOURCES */}
+
+              {data.data.projects?.length > 0 && (
+                <div className="mt-8 border-t border-[var(--border)] pt-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--muted)]">
+                      Sources
+                    </p>
+
+                    <span className="text-xs text-[var(--muted)]">
+                      {data.data.projects.length}{" "}
+                      {data.data.projects.length ===
+                      1
+                        ? "project"
+                        : "projects"}
+                    </span>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {data.data.projects.map(
+                      (project) => (
+                        <motion.div
+                          key={project._id}
+                          initial={{
+                            opacity: 0,
+                            y: 10,
+                          }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                          }}
                           className="
-                            flex
-                            items-center
-                            gap-2
-                            text-zinc-300
+                            group
+                            
+                            border
+                            border-[var(--border)]
+                            bg-[var(--surface)]
+                            p-4
                             transition
-                            hover:text-white
+                            hover:border-[var(--muted-foreground)]
+                            hover:bg-[var(--surface-secondary)]
                           "
                         >
-                          <FaGithub />
-                          GitHub
-                        </a>
+                          <div className="flex items-start justify-between gap-3">
+                            <h4 className="min-w-0 break-words text-sm font-medium text-[var(--foreground)]">
+                              {project.title}
+                            </h4>
 
-                        {project.demoUrl && (
-                          <a
-                            href={project.demoUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="
-                              flex
-                              items-center
-                              gap-2
-                              text-zinc-300
-                              transition
-                              hover:text-white
-                            "
-                          >
-                            <FaGlobe />
-                            Demo
-                          </a>
-                        )}
-                      </div>
-                    </motion.div>
-                  ))}
+                            {project.githubUrl && (
+                              <a
+                                href={
+                                  project.githubUrl
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                                className="
+                                  shrink-0
+                                  text-[var(--muted)]
+                                  transition
+                                  hover:text-[var(--foreground)]
+                                "
+                                aria-label={`View ${project.title} on GitHub`}
+                              >
+                                <FaGithub size={14} />
+                              </a>
+                            )}
+                          </div>
+
+                          <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--muted)]">
+                            {project.summary}
+                          </p>
+
+                          {project.technologies
+                            ?.length > 0 && (
+                            <div className="mt-3 flex flex-wrap gap-1.5">
+                              {project.technologies
+                                .slice(0, 4)
+                                .map(
+                                  (
+                                    technology
+                                  ) => (
+                                    <span
+                                      key={
+                                        technology
+                                      }
+                                      className="
+                                        rounded-md
+                                        border
+                                        border-[var(--border)]
+                                        bg-[var(--surface-secondary)]
+                                        px-2.5
+                                        py-1
+                                        text-[10px]
+                                        text-[var(--muted)]
+                                      "
+                                    >
+                                      {technology}
+                                    </span>
+                                  )
+                                )}
+                            </div>
+                          )}
+
+                          {project.demoUrl && (
+                            <a
+                              href={
+                                project.demoUrl
+                              }
+                              target="_blank"
+                              rel="noreferrer"
+                              className="
+                                mt-4
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                text-xs
+                                text-[var(--muted)]
+                                transition
+                                hover:text-[var(--foreground)]
+                              "
+                            >
+                              View project
+                              <FaArrowUpRightFromSquare
+                                size={9}
+                              />
+                            </a>
+                          )}
+                        </motion.div>
+                      )
+                    )}
+                  </div>
                 </div>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-      </form> 
+              )}
+
+              {/* NO MATCHES */}
+
+              {data.data.projects?.length ===
+                0 && (
+                <div
+                  className="
+                    mt-8
+                    
+                    border
+                    border-[var(--border)]
+                    bg-[var(--surface)]
+                    p-5
+                  "
+                >
+                  <h4 className="text-sm font-medium text-[var(--foreground)]">
+                    No matching projects
+                  </h4>
+
+                  <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+                    I couldn't find a project
+                    related to this question. Try
+                    asking about a specific
+                    technology or project.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </form>
+
+      {/* EMPTY STATE */}
 
       {!isPending &&
         !data &&
@@ -443,25 +547,22 @@ function ProfileAISearch({
               opacity: 1,
             }}
             className="
-              mt-8
-              rounded-3xl
+              mt-5
+              
               border
-              border-zinc-800
-              bg-zinc-900
+              border-[var(--border)]
+              bg-[var(--surface-secondary)]
               p-6
               text-center
-              sm:p-10
             "
           >
-            <h3 className="text-xl font-semibold text-white">
-              No Projects Available
+            <h3 className="text-base font-medium text-[var(--foreground)]">
+              No projects available
             </h3>
 
-            <p className="mt-3 text-zinc-500">
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">
               This developer hasn't added any
-              projects yet. Once projects are
-              available, you'll be able to ask
-              questions about them here.
+              projects yet.
             </p>
           </motion.div>
         )}

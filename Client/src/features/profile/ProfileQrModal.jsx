@@ -1,10 +1,30 @@
-import { QRCodeCanvas } from "qrcode.react";
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import QRCode from "react-qr-code";
+import { FaXmark, FaDownload } from "react-icons/fa6";
 
-function ProfileQrModal({
-  profileUrl,
-  onClose,
-}) {
+function ProfileQrModal({ profileUrl, onClose }) {
+  const handleDownload = () => {
+    const svg = document.getElementById("profile-qr");
+
+    if (!svg) return;
+
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svg);
+
+    const blob = new Blob([source], {
+      type: "image/svg+xml;charset=utf-8",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "linkshub-profile-qr.svg";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -15,140 +35,123 @@ function ProfileQrModal({
         className="
           fixed
           inset-0
-          z-[999]
+          z-[1000]
           flex
           items-center
           justify-center
-          bg-black/70
+          bg-black/80
           p-4
-          backdrop-blur-sm
+          backdrop-blur-md
         "
       >
         <motion.div
           initial={{
             opacity: 0,
-            scale: 0.95,
             y: 20,
+            scale: 0.97,
           }}
           animate={{
             opacity: 1,
-            scale: 1,
             y: 0,
+            scale: 1,
           }}
           exit={{
             opacity: 0,
-            scale: 0.95,
             y: 20,
+            scale: 0.97,
           }}
-          transition={{
-            duration: 0.2,
-          }}
-          onClick={(e) =>
-            e.stopPropagation()
-          }
+          transition={{ duration: 0.2 }}
+          onClick={(e) => e.stopPropagation()}
           className="
+            relative
             w-full
-            max-w-md
-            rounded-3xl
+            max-w-sm
+            rounded-[28px]
             border
-            border-zinc-200
-            bg-white
-            p-8
+            border-white/[0.1]
+            bg-[#0a0a0a]
+            p-6
             text-center
-            text-zinc-900
-            transition-colors
-            duration-250
-
-            dark:border-zinc-800
-            dark:bg-zinc-900
-            dark:text-white
+            shadow-2xl
+            sm:p-8
           "
         >
-          {/* TITLE */}
-
-          <h2
-            className="
-              mb-2
-              text-3xl
-              font-black
-              text-zinc-900
-
-              dark:text-white
-            "
-          >
-            Profile QR
-          </h2>
-
-          {/* DESCRIPTION */}
-
-          <p
-            className="
-              mb-6
-              text-zinc-500
-            "
-          >
-            Scan to open profile
-          </p>
-
-          {/* QR CODE */}
-
-          <div
-            className="
-              inline-block
-              rounded-2xl
-              bg-white
-              p-4
-              shadow-sm
-            "
-          >
-            <QRCodeCanvas
-              value={profileUrl}
-              size={240}
-              bgColor="#ffffff"
-              fgColor="#000000"
-            />
-          </div>
-
-          {/* PROFILE URL */}
-
-          <p
-            className="
-              mt-6
-              break-all
-              text-sm
-              text-zinc-500
-            "
-          >
-            {profileUrl}
-          </p>
-
-          {/* CLOSE */}
-
           <button
             type="button"
             onClick={onClose}
             className="
-              mt-6
+              absolute
+              right-5
+              top-5
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              rounded-full
+              border
+              border-white/[0.08]
+              text-zinc-600
+              transition
+              hover:border-white/20
+              hover:text-white
+            "
+            aria-label="Close"
+          >
+            <FaXmark size={14} />
+          </button>
+
+          <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-700">
+            LinksHub
+          </p>
+
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+            Scan my profile
+          </h2>
+
+          <p className="mt-2 text-sm text-zinc-500">
+            Open this profile on your phone.
+          </p>
+
+          <div className="mx-auto mt-7 flex w-fit rounded-3xl bg-white p-5">
+            <QRCode
+              id="profile-qr"
+              value={profileUrl}
+              size={190}
+              bgColor="#ffffff"
+              fgColor="#000000"
+              level="H"
+            />
+          </div>
+
+          <div className="mt-6 rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3">
+            <p className="truncate text-xs text-zinc-500">
+              {profileUrl}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDownload}
+            className="
+              mt-4
+              inline-flex
               w-full
-              cursor-pointer
-              rounded-2xl
-              bg-red-500
-              py-3
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              bg-white
+              py-3.5
+              text-sm
               font-semibold
-              text-white
-              transition-all
-
-              hover:bg-red-600
-              hover:scale-[1.01]
-
-              active:scale-[0.98]
-
-              dark:bg-lime-400
-              dark:text-black
-              dark:hover:bg-lime-300
+              text-black
+              transition
+              hover:bg-zinc-200
             "
           >
-            Close
+            <FaDownload size={13} />
+            Download QR
           </button>
         </motion.div>
       </motion.div>
