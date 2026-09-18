@@ -201,6 +201,44 @@ select:focus {
 }
 
 /* =========================================================
+   LANDING PAGE
+========================================================= */
+
+.font-display {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+.font-body {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.grid-texture {
+  background-image: radial-gradient(
+    circle,
+    var(--border) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.eyebrow::before,
+.eyebrow::after {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--border-hover);
+}
+
+/* =========================================================
    ACCESSIBILITY
 ========================================================= */
 
@@ -223,4 +261,156 @@ button:disabled {
 
 .danger-border {
   border-color: var(--danger);
+}
+
+/* ─────────────────────────────────────
+   Animated Landing Grid
+───────────────────────────────────── */
+
+.landing-grid-horizontal,
+.landing-grid-vertical {
+  position: absolute;
+  overflow: hidden;
+  opacity: 0.9;
+}
+
+
+/* Horizontal dashed line */
+.landing-grid-horizontal {
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--border) 0,
+    var(--border) 5px,
+    transparent 5px,
+    transparent 11px
+  );
+}
+
+/* Vertical dashed line */
+.landing-grid-vertical {
+  width: 1px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--border) 0,
+    var(--border) 5px,
+    transparent 5px,
+    transparent 11px
+  );
+}
+
+/* Traveling glow */
+.landing-grid-horizontal::after,
+.landing-grid-vertical::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 999px;
+}
+
+/* Horizontal glow: left → right */
+.landing-grid-horizontal::after {
+  top: -3px;
+  left: -100px;
+  width: 100px;
+  height: 7px;
+
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    color-mix(in srgb, var(--foreground) 15%, transparent) 20%,
+    var(--foreground) 50%,
+    color-mix(in srgb, var(--foreground) 15%, transparent) 80%,
+    transparent 100%
+  );
+
+  filter: blur(2px);
+
+  animation: landing-grid-horizontal 4s linear infinite;
+}
+
+/* Vertical glow: top → bottom */
+.landing-grid-vertical::after {
+  top: -100px;
+  left: -3px;
+  width: 7px;
+  height: 100px;
+
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--foreground) 15%, transparent) 20%,
+    var(--foreground) 50%,
+    color-mix(in srgb, var(--foreground) 15%, transparent) 80%,
+    transparent 100%
+  );
+
+  filter: blur(2px);
+
+  animation: landing-grid-vertical 5s linear infinite;
+}
+
+@keyframes landing-grid-vertical {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(100% + 100px));
+  }
+}
+
+/* Different timing so they don't move together */
+.landing-grid-delay-1::after {
+  animation-delay: 1.2s;
+}
+
+.landing-grid-delay-2::after {
+  animation-delay: 2.4s;
+}
+
+@keyframes landing-grid-horizontal {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(100vw + 200px));
+  }
+}
+
+@keyframes landing-grid-vertical {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(100vh + 200px));
+  }
+}
+
+
+
+.how-pixel {
+  position: relative;
+  border-right: 1px solid rgba(0, 0, 0, 0.07);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.how-pixel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--pixel-color);
+  opacity: 0;
+  transform: scale(0.65);
+  transform-origin: center;
+}
+
+.how-pixel.is-active::after {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 80ms linear,
+    transform 80ms steps(2);
 }

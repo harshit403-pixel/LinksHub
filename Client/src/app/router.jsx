@@ -15,19 +15,16 @@ import Profile from "../features/profile/Profile";
 import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
 import Library from "../features/knowledge/Library";
+import Landing from "../features/landing/Landing.jsx";
 
 export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     children: [
-      {
-        path: "/",
-        element: (
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        ),
-      },
+     {
+  path: "/",
+  element: <Landing />,
+},
       {
         path: "/login",
         element: (
