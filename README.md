@@ -400,11 +400,11 @@ The current embedding setup uses:
 
 ```text
 Model: gemini-embedding-001
-Dimensions: 768
+Dimensions: 3072
 Similarity: cosine
 ```
 
-The vector index must therefore use **768 dimensions**.
+The vector index must therefore use **3072 dimensions**.
 
 ---
 

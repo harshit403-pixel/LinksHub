@@ -40,14 +40,14 @@ export const vectorCollection = client
  * Gemini embeddings
  *
  * gemini-embedding-001
- * 768 dimensions
+ * 3072 dimensions
  */
 const embeddings =
   new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GEMINI_API_KEY,
     model: "gemini-embedding-001",
     taskType: TaskType.RETRIEVAL_DOCUMENT,
-    outputDimensionality: 768,
+    outputDimensionality: 3072,
   });
 
 export const vectorStore =
