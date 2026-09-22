@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from "react";
 
 const InkCursor = () => {
@@ -16,11 +17,20 @@ const InkCursor = () => {
     const points = [];
     const MAX_POINTS = 400;
 
+    // Actual mouse position
+    const target = {
+      x: -100,
+      y: -100,
+    };
+
+    // Smooth cursor position
     const mouse = {
       x: -100,
       y: -100,
       active: false,
     };
+
+    const EASE = 0.06;
 
     const resize = () => {
       width = window.innerWidth;
@@ -50,37 +60,16 @@ const InkCursor = () => {
     };
 
     const handleMouseMove = (event) => {
-      const x = event.clientX;
-      const y = event.clientY;
+      target.x = event.clientX;
+      target.y = event.clientY;
 
       if (!mouse.active) {
-        mouse.x = x;
-        mouse.y = y;
+        mouse.x = target.x;
+        mouse.y = target.y;
         mouse.active = true;
 
-        addPoint(x, y);
-        return;
+        addPoint(mouse.x, mouse.y);
       }
-
-      const dx = x - mouse.x;
-      const dy = y - mouse.y;
-
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      // Interpolate points for smooth fast movement
-      const steps = Math.min(Math.ceil(distance / 3), 40);
-
-      for (let i = 1; i <= steps; i++) {
-        const progress = i / steps;
-
-        addPoint(
-          mouse.x + dx * progress,
-          mouse.y + dy * progress
-        );
-      }
-
-      mouse.x = x;
-      mouse.y = y;
     };
 
     const handleMouseLeave = () => {
@@ -90,38 +79,65 @@ const InkCursor = () => {
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Newest points are at the end of the array.
-// Tail (oldest points) dissolves first
-for (let i = 0; i < points.length; i++) {
-  points[i].life -= 0.005;
+      if (mouse.active) {
+        // Smooth delayed movement
+        mouse.x += (target.x - mouse.x) * EASE;
+        mouse.y += (target.y - mouse.y) * EASE;
 
-  if (points[i].life <= 0) {
-    points.splice(i, 1);
-    i--;
-  }
-}
-      // Draw the trail segment by segment
-  for (let i = 1; i < points.length; i++) {
-  const previous = points[i - 1];
-  const current = points[i];
+        // Add interpolated points for a continuous trail
+        const lastPoint = points[points.length - 1];
 
-  const life = Math.min(previous.life, current.life);
+        if (lastPoint) {
+          const dx = mouse.x - lastPoint.x;
+          const dy = mouse.y - lastPoint.y;
 
-  if (life <= 0) continue;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const steps = Math.min(Math.ceil(distance / 3), 40);
 
-  const positionRatio = i / points.length;
+          for (let i = 1; i <= steps; i++) {
+            const progress = i / steps;
 
-  ctx.beginPath();
-  ctx.moveTo(previous.x, previous.y);
-  ctx.lineTo(current.x, current.y);
+            addPoint(
+              lastPoint.x + dx * progress,
+              lastPoint.y + dy * progress
+            );
+          }
+        } else {
+          addPoint(mouse.x, mouse.y);
+        }
+      }
 
-  // Thin at the tail, thicker near the cursor
-  ctx.lineWidth = 1 + positionRatio * 2.5;
-  ctx.lineCap = "round";
+      // Tail dissolves first
+      for (let i = points.length - 1; i >= 0; i--) {
+        points[i].life -= 0.005;
 
-  ctx.strokeStyle = `rgba(255, 255, 255, ${life * 0.7})`;
-  ctx.stroke();
-}
+        if (points[i].life <= 0) {
+          points.splice(i, 1);
+        }
+      }
+
+      // Draw ink trail
+      for (let i = 1; i < points.length; i++) {
+        const previous = points[i - 1];
+        const current = points[i];
+
+        const life = Math.min(previous.life, current.life);
+
+        if (life <= 0) continue;
+
+        const positionRatio = i / points.length;
+
+        ctx.beginPath();
+        ctx.moveTo(previous.x, previous.y);
+        ctx.lineTo(current.x, current.y);
+
+        // Thin tail, thick head
+        ctx.lineWidth = 1 + positionRatio * 2.5;
+        ctx.lineCap = "round";
+
+        ctx.strokeStyle = `rgba(255, 255, 255, ${life * 0.7})`;
+        ctx.stroke();
+      }
 
       // Soft cursor head
       if (mouse.active) {
@@ -182,19 +198,19 @@ for (let i = 0; i < points.length; i++) {
   }, []);
 
   return (
-<canvas
-  ref={canvasRef}
-  aria-hidden="true"
-  className="
-    pointer-events-none
-    fixed
-    inset-0
-    z-[9999]
-    hidden
-    md:block
-    mix-blend-difference
-  "
-/>
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="
+        pointer-events-none
+        fixed
+        inset-0
+        z-[9999]
+        hidden
+        md:block
+        mix-blend-difference
+      "
+    />
   );
 };
 
