@@ -68,11 +68,12 @@ const Problem = () => {
       });
 
       ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top top",
-        end: "bottom bottom",
-        pin: contentRef.current,
-        scrub: true,
+  trigger: sectionRef.current,
+  start: "top top",
+  end: "bottom bottom",
+  pin: contentRef.current,
+  scrub: true,
+  invalidateOnRefresh: true,
 
         onUpdate: (self) => {
           const index = Math.min(

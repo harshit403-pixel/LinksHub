@@ -414,3 +414,29 @@ button:disabled {
     opacity 80ms linear,
     transform 80ms steps(2);
 }
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+body.landing-cursor-hidden,
+body.landing-cursor-hidden * {
+  cursor: none !important;
+}

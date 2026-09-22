@@ -5,10 +5,9 @@ import BracketFrame from "../../components/ui/BracketFrame";
 import CipherText from "../../components/ui/CipherText";
 
 const NAV_LINKS = [
-  { label: "Features", href: "#features" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "AI assistant", href: "#ai-assistant" },
-  { label: "FAQ", href: "#faq" },
+
+
+
 ];
 
 function Navbar() {
