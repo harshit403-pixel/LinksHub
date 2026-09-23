@@ -30,7 +30,7 @@ const InkCursor = () => {
       active: false,
     };
 
-    const EASE = 0.06;
+    const EASE = 0.08;
 
     const resize = () => {
       width = window.innerWidth;
