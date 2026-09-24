@@ -65,13 +65,18 @@ const Hero = () => {
             <div className="absolute -bottom-2 -right-2 z-20 h-8 w-8 border-b border-r border-dashed border-[var(--foreground)]" />
 
             {/* Real LinksHub desktop screenshot */}
-            <div className="relative mx-auto w-full overflow-hidden border border-dashed border-[var(--border)] bg-[var(--surface)]">
-              <img
-                src="/images/landing/profile-desktop.png"
-                alt="LinksHub developer profile"
-                className="block h-auto w-full"
-              />
-            </div>
+            {/* Real LinksHub desktop video */}
+<div className="relative mx-auto w-full overflow-hidden border border-dashed border-[var(--border)] bg-[var(--surface)]">
+<video
+  src="/images/landing/profile-demo-optimized.mp4"
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+  className="block h-auto w-full"
+/>
+</div>
 
           </div>
         </div>

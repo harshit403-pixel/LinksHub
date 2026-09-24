@@ -436,7 +436,3 @@ html.lenis body {
   pointer-events: none;
 }
 
-body.landing-cursor-hidden,
-body.landing-cursor-hidden * {
-  cursor: none !important;
-}

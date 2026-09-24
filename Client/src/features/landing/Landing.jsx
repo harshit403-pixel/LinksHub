@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import Navbar from "./Navbar";
 import Hero from "./Hero";
 import Problem from "./Problem";
@@ -5,23 +7,33 @@ import Solution from "./Solution";
 import HowItWorks from "./HowItWorks";
 import FAQ from "./FAQ";
 import Footer from "./Footer";
+
 import SmoothScroll from "../../components/SmoothScroll";
-import InkCursor from "../../components/InkCursor";
-import { useEffect } from "react";
+import Preloader from "../../components/Preloader";
 
 const Landing = () => {
-  useEffect(() => {
-  document.body.classList.add("landing-cursor-hidden");
+  const [isLoading, setIsLoading] = useState(true);
+useEffect(() => {
+  const video = document.createElement("video");
+
+  video.src = "/images/landing/profile-demo-optimized.mp4";
+  video.preload = "auto";
+  video.load();
 
   return () => {
-    document.body.classList.remove("landing-cursor-hidden");
+    video.src = "";
   };
 }, []);
+
   return (
     <SmoothScroll>
+      {/* Preloader */}
+      {isLoading && (
+        <Preloader onComplete={() => setIsLoading(false)} />
+      )}
+
       <div className="relative min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
-        {/* Ink cursor - landing page only */}
-        <InkCursor />
+        
 
         {/* Global animated vertical grid */}
         <div className="pointer-events-none absolute inset-0 z-0">
