@@ -1,7 +1,7 @@
 # LinksHub
 
 <div align="center">
-
+ 
 ### Your developer identity, links, projects, and knowledge — in one place.
 
 **LinksHub** is an AI-powered developer portfolio and link-in-bio platform that combines  
@@ -18,7 +18,7 @@ profile links, GitHub integration, project showcasing, analytics, and an AI assi
 
 <br />
 
-**[Live Demo](https://linkshub.onrender.com/) · [GitHub](https://github.com/harshit403-pixel/LinksHub) · [Demo Video](<ADD_VIDEO_URL>)**
+**[Live Demo](https://linkshub-np0r.onrender.com/) · [GitHub](https://github.com/harshit403-pixel/LinksHub) · [Demo Video](<ADD_VIDEO_URL>)**
 
 </div>
 
