@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Link2, Menu, X, ArrowUpRight } from "lucide-react";
 import BracketFrame from "../../components/ui/BracketFrame";
 import CipherText from "../../components/ui/CipherText";
+import { motion } from "framer-motion";
 
 const NAV_LINKS = [
 
@@ -10,7 +11,7 @@ const NAV_LINKS = [
 
 ];
 
-function Navbar() {
+function Navbar({ logoRef, isLoading }) {
   const [open, setOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
 
@@ -79,28 +80,27 @@ function Navbar() {
           sm:px-6
         "
       >
-        {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2 font-display font-semibold tracking-tight"
-        >
-          <span
-            className="
-              flex
-              h-7
-              w-7
-              items-center
-              justify-center
-              rounded-md
-              bg-[var(--foreground)]
-              text-[var(--background)]
-            "
-          >
-            <Link2 size={15} strokeWidth={2.5} />
-          </span>
+    
 
-          LinksHub
-        </Link>
+<Link
+  to="/"
+  className="flex items-center gap-2 font-display font-semibold tracking-tight"
+>
+  <img
+    ref={logoRef}
+    height={25}
+    width={25}
+    src="/favicon.svg"
+    alt=""
+    style={{
+      opacity: isLoading ? 0 : 1,
+    }}
+  />
+
+  LinksHub
+</Link>
+
+
 
         {/* Desktop navigation */}
         <nav className="hidden items-center gap-7 font-display text-sm md:flex">

@@ -1,398 +1,137 @@
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import Matter from "matter-js";
 
-const headImages = [
-  "/images/landing/problem/problem-1.webp",
-  "/images/landing/problem/problem-2.webp",
-  "/images/landing/problem/problem-3.webp",
-  "/images/landing/preloader/pre-1.webp",
-  "/images/landing/preloader/pre-2.webp",
-  "/images/landing/preloader/pre-3.webp",
-];
+import { useEffect, useState } from "react";
+import { motion, useAnimationControls } from "framer-motion";
 
-// More copies = more heads
-const HEAD_COUNT = 40;
+const LOGO_SIZE = 146;
 
-const Preloader = ({ onComplete }) => {
-  const physicsRef = useRef(null);
-  const engineRef = useRef(null);
-  const animationRef = useRef(null);
+const Preloader = ({ onComplete, targetRef }) => {
+  const controls = useAnimationControls();
+  const [isClosing, setIsClosing] = useState(false);
+  const [targetRect, setTargetRect] = useState(null);
 
-  const bodiesRef = useRef([]);
-
-  const [ready, setReady] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
-
-  /*
-   * Preload all unique images first
-   */
   useEffect(() => {
-    let loaded = 0;
+    let cancelled = false;
+    let timer;
+    let closeTimer;
 
-    headImages.forEach((src) => {
-      const img = new Image();
+    const startAnimation = async () => {
+      const target = targetRef.current;
 
-      img.src = src;
-
-      const done = () => {
-        loaded++;
-
-        if (loaded === headImages.length) {
-          setReady(true);
-        }
-      };
-
-      img.onload = done;
-      img.onerror = done;
-    });
-  }, []);
-
-  /*
-   * Matter.js physics
-   */
-  useEffect(() => {
-    if (!ready || !physicsRef.current) return;
-
-    const container = physicsRef.current;
-
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    const {
-      Engine,
-      Bodies,
-      Body,
-      Composite,
-      Runner,
-    } = Matter;
-
-    const engine = Engine.create();
-
-    engineRef.current = engine;
-
-    /*
-     * Gravity
-     */
-    engine.gravity.y = 1.15;
-
-    /*
-     * Floor
-     */
-    const floor = Bodies.rectangle(
-      width / 2,
-      height + 60,
-      width + 300,
-      100,
-      {
-        isStatic: true,
-        friction: 0.8,
-        restitution: 0.15,
+      if (!target) {
+        onComplete?.();
+        return;
       }
-    );
 
-    /*
-     * Walls
-     */
-    const leftWall = Bodies.rectangle(
-      -50,
-      height / 2,
-      100,
-      height * 2,
-      {
-        isStatic: true,
-      }
-    );
+      const rect = target.getBoundingClientRect();
+      setTargetRect(rect);
 
-    const rightWall = Bodies.rectangle(
-      width + 50,
-      height / 2,
-      100,
-      height * 2,
-      {
-        isStatic: true,
-      }
-    );
+      const startX = window.innerWidth / 2 - LOGO_SIZE / 2;
+      const startY = window.innerHeight / 2 - LOGO_SIZE / 2;
 
-    Composite.add(engine.world, [
-      floor,
-      leftWall,
-      rightWall,
-    ]);
+      controls.set({
+        x: 0,
+        y: 0,
+        width: LOGO_SIZE,
+        height: LOGO_SIZE,
+      });
 
-    /*
-     * Create many heads
-     */
-    const bodies = [];
+      timer = setTimeout(async () => {
+        if (cancelled) return;
 
-    for (let index = 0; index < HEAD_COUNT; index++) {
-      /*
-       * Randomly choose one of your six images
-       */
-      const imageIndex =
-        Math.floor(
-          Math.random() * headImages.length
-        );
-
-      /*
-       * Head size
-       */
-      const size =
-        Math.min(width * 0.15, 190) *
-        (0.75 + Math.random() * 0.35);
-
-      /*
-       * Spread heads across the entire screen
-       */
-      const x =
-        width * 0.08 +
-        Math.random() * width * 0.84;
-
-      /*
-       * Start at different heights above screen
-       */
-      const y =
-        -150 -
-        Math.random() * 1400;
-
-      const body = Bodies.circle(
-        x,
-        y,
-        size * 0.34,
-        {
-          restitution:
-            0.35 + Math.random() * 0.2,
-
-          friction:
-            0.45 + Math.random() * 0.25,
-
-          frictionAir: 0.018,
-
-          density: 0.002,
-
-          angle:
-            (Math.random() - 0.5) *
-            Math.PI,
-
-          /*
-           * Custom data
-           */
-          plugin: {
-            imageIndex,
-            size,
+        const logoAnimation = controls.start({
+          x: rect.left - startX,
+          y: rect.top - startY,
+          width: rect.width,
+          height: rect.height,
+          transition: {
+            duration: 2.0,
+            ease: [0.76, 0, 0.24, 1],
           },
-        }
-      );
+        });
 
-      /*
-       * Give each head a random horizontal movement
-       */
-      Body.setVelocity(body, {
-        x:
-          (Math.random() - 0.5) * 4,
+        // Begin collapsing the background just before the logo arrives
+        closeTimer = setTimeout(() => {
+          if (!cancelled) {
+            setIsClosing(true);
+          }
+        }, 1300);
 
-        y:
-          Math.random() * 1.5,
-      });
-
-      /*
-       * Random spin
-       */
-      Body.setAngularVelocity(
-        body,
-        (Math.random() - 0.5) * 0.08
-      );
-
-      Composite.add(
-        engine.world,
-        body
-      );
-
-      bodies.push(body);
-    }
-
-    bodiesRef.current = bodies;
-
-    /*
-     * Physics runner
-     */
-    const runner = Runner.create();
-
-    Runner.run(
-      runner,
-      engine
-    );
-
-    /*
-     * Update DOM positions
-     */
-    const update = () => {
-      bodies.forEach((body, index) => {
-        const element =
-          container.querySelector(
-            `[data-head="${index}"]`
-          );
-
-        if (!element) return;
-
-        /*
-         * Hide until Matter gives us a valid position
-         */
-        if (
-          !Number.isFinite(
-            body.position.x
-          ) ||
-          !Number.isFinite(
-            body.position.y
-          )
-        ) {
-          return;
-        }
-
-        element.style.opacity = "1";
-
-        element.style.transform = `
-          translate3d(
-            ${body.position.x}px,
-            ${body.position.y}px,
-            0
-          )
-          translate(-50%, -50%)
-          rotate(${body.angle}rad)
-        `;
-      });
-
-      animationRef.current =
-        requestAnimationFrame(update);
+        await logoAnimation;
+      }, 400);
     };
 
-    animationRef.current =
-      requestAnimationFrame(update);
-
-    /*
-     * Random little forces
-     */
-    const randomMovement = setInterval(() => {
-      bodies.forEach((body) => {
-        /*
-         * Only disturb heads that are
-         * already inside the screen.
-         */
-        if (
-          body.position.y > -100 &&
-          body.position.y < height
-        ) {
-          Body.applyForce(
-            body,
-            body.position,
-            {
-              x:
-                (Math.random() - 0.5) *
-                0.0015,
-
-              y:
-                (Math.random() - 0.5) *
-                0.0002,
-            }
-          );
-        }
-      });
-    }, 600);
-
-    /*
-     * Let the heads fall and settle.
-     */
-    const exitTimer = setTimeout(() => {
-      setIsExiting(true);
-    }, 5000);
+    startAnimation();
 
     return () => {
-      clearTimeout(exitTimer);
-      clearInterval(randomMovement);
-
-      if (animationRef.current) {
-        cancelAnimationFrame(
-          animationRef.current
-        );
-      }
-
-      Runner.stop(runner);
-      Engine.clear(engine);
-
-      engineRef.current = null;
-      bodiesRef.current = [];
+      cancelled = true;
+      clearTimeout(timer);
+      clearTimeout(closeTimer);
+      controls.stop();
     };
-  }, [ready]);
+  }, [controls, targetRef, onComplete]);
+
+  const clipPath = targetRect
+    ? `circle(0px at ${
+        targetRect.left + targetRect.width / 2
+      }px ${targetRect.top + targetRect.height / 2}px)`
+    : "circle(150% at 50% 50%)";
 
   return (
-    <motion.div
-      initial={{ y: "0%" }}
-      animate={{
-        y: isExiting ? "-100%" : "0%",
-      }}
-      transition={{
-        duration: 1.4,
-        ease: [0.76, 0, 0.24, 1],
-      }}
-      onAnimationComplete={() => {
-        if (isExiting) {
-          onComplete?.();
-        }
-      }}
-      className="fixed inset-0 z-[10000] overflow-hidden bg-white"
-    >
-      {/* Physics layer */}
-      <div
-        ref={physicsRef}
-        className="absolute inset-0 overflow-hidden"
-      >
-        {Array.from(
-          { length: HEAD_COUNT },
-          (_, index) => {
-            /*
-             * Use a random image for every head
-             */
-            const image =
-              headImages[
-                index %
-                  headImages.length
-              ];
-
-            return (
-              <div
-                key={index}
-                data-head={index}
-                className="absolute left-0 top-0"
-                style={{
-                  width:
-                    "min(15vw, 190px)",
-
-                  height:
-                    "min(15vw, 190px)",
-
-                  opacity: 0,
-
-                  transform:
-                    "translate(-50%, -50%)",
-
-                  willChange:
-                    "transform",
-
-                  pointerEvents: "none",
-                }}
-              >
-                <img
-                  src={image}
-                  alt=""
-                  draggable="false"
-                  className="h-full w-full select-none object-contain"
-                />
-              </div>
-            );
+    <div className="fixed inset-0 z-[10000] pointer-events-none">
+      {/* Background collapses into the navbar logo */}
+      <motion.div
+        className="absolute inset-0 overflow-hidden bg-[#FAFAF9]"
+        initial={{
+          clipPath: "circle(150% at 50% 50%)",
+        }}
+        animate={{
+          clipPath: isClosing
+            ? clipPath
+            : "circle(150% at 50% 50%)",
+        }}
+        transition={{
+          duration: 1,
+          ease: [0.76, 0, 0.24, 1],
+        }}
+        onAnimationComplete={() => {
+          if (isClosing) {
+            onComplete?.();
           }
-        )}
-      </div>
-    </motion.div>
+        }}
+      >
+        {/* Background glow */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200/50 blur-[100px]" />
+
+        {/* Background texture */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "radial-gradient(#000 0.6px, transparent 0.6px)",
+            backgroundSize: "6px 6px",
+          }}
+        />
+      </motion.div>
+
+      {/* Logo moves independently and stays visible */}
+      <motion.img
+        src="/favicon.svg"
+        alt="LinksHub"
+        initial={{
+          x: 0,
+          y: 0,
+          width: LOGO_SIZE,
+          height: LOGO_SIZE,
+        }}
+        animate={controls}
+        draggable={false}
+        className="pointer-events-none fixed z-10 select-none object-contain"
+        style={{
+          left: `calc(50% - ${LOGO_SIZE / 2}px)`,
+          top: `calc(50% - ${LOGO_SIZE / 2}px)`,
+        }}
+      />
+    </div>
   );
 };
 
