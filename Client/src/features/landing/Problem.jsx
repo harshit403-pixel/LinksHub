@@ -10,21 +10,21 @@ const problems = [
     title: "Your resume can't show everything.",
     description:
       "You may have built 10 or 15 projects, but your resume usually has room for only 2–3. The rest of your work never gets the attention it deserves.",
-    image: "/images/landing/problem/problem-1.png",
+    image: "/images/landing/problem/problem-1.webp",
   },
   {
     number: "02",
     title: "Your best work gets buried.",
     description:
       "Even with a GitHub link, recruiters have to open repositories, read READMEs, understand the stack, and figure out what you actually built.",
-    image: "/images/landing/problem/problem-2.png",
+    image: "/images/landing/problem/problem-2.webp",
   },
   {
     number: "03",
     title: "Recruiters still have unanswered questions.",
     description:
       "What did you build? Why this stack? How does it work? The answers exist, but finding them takes time.",
-    image: "/images/landing/problem/problem-3.png",
+    image: "/images/landing/problem/problem-3.webp",
   },
 ];
 

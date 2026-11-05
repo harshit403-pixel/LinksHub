@@ -12,28 +12,28 @@ const solutions = [
     title: ["Everything in one", "developer profile"],
     node: { x: 138, y: 88 },
     path: "M400 300 C 340 300 422 126 370 126",
-    image: "/images/landing/solution/profile.png",
+    image: "/images/landing/solution/profile.webp",
   },
   {
     key: "context",
     title: ["Project context", "beyond the repo"],
     node: { x: 730, y: 88 },
     path: "M700 300 C 760 300 678 126 730 126",
-    image: "/images/landing/solution/context.png",
+    image: "/images/landing/solution/context.webp",
   },
   {
     key: "assistant",
     title: ["AI that knows", "your work"],
     node: { x: 138, y: 476 },
     path: "M400 340 C 340 340 422 514 370 514",
-    image: "/images/landing/solution/assistant.png",
+    image: "/images/landing/solution/assistant.webp",
   },
   {
     key: "link",
     title: ["One link for", "your entire identity"],
     node: { x: 730, y: 476 },
     path: "M700 340 C 760 340 678 514 730 514",
-    image: "/images/landing/solution/link.png",
+    image: "/images/landing/solution/link.webp",
   },
 ];
 const NODE_W = 232;
